@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja" data-session="0">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>冒険の地図 ─ これからの、はなし ｜ 全12回</title>
+<style>
+  :root{
+    --void:#070A1F; --panel:#0E1436; --panel-2:#141B44;
+    --ink:#EDEAFB; --muted:#8B93C2; --line:rgba(160,170,220,.14);
+    --origin:#FFB84D; --cosmos:#6C8FFF; --life:#3FD1A7; --mind:#E85D9B; --future:#B07BFF;
+    --font-sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,system-ui,sans-serif;
+    --font-serif:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    --font-mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--void); color:var(--ink); font-family:var(--font-sans); line-height:1.9; font-size:17px; overflow-x:hidden; -webkit-font-smoothing:antialiased}
+  ruby rt{font-size:.55em; color:var(--muted); font-weight:400}
+  .stars{position:fixed; inset:0; z-index:0; pointer-events:none}
+  .stars span{position:absolute; background:#fff; border-radius:50%; opacity:.5; animation:tw 4s infinite ease-in-out}
+  @keyframes tw{0%,100%{opacity:.2}50%{opacity:.9}}
+  .wrap{position:relative; z-index:1; max-width:760px; margin:0 auto; padding:0 22px}
+  .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.22em; color:var(--muted); text-transform:uppercase; margin-bottom:14px; display:block}
+
+  .hero{min-height:80vh; display:flex; flex-direction:column; justify-content:center; padding:80px 0 40px; text-align:center}
+  .hero .kicker{font-family:var(--font-mono); font-size:13px; letter-spacing:.2em; color:var(--future); margin-bottom:24px}
+  .hero h1{font-size:clamp(38px,9vw,74px); line-height:1.06; font-weight:800; letter-spacing:.01em}
+  .hero h1 .grad{background:linear-gradient(90deg,var(--origin),var(--cosmos),var(--life),var(--mind),var(--future)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent}
+  .hero .sub{font-family:var(--font-serif); font-size:clamp(18px,3.5vw,24px); color:var(--ink); margin-top:26px; max-width:24em; margin-left:auto; margin-right:auto}
+  .hero .thread{font-family:var(--font-mono); font-size:12.5px; letter-spacing:.14em; color:var(--muted); margin-top:30px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; align-items:center}
+  .hero .thread b{color:var(--ink)}
+  .scrollcue{margin-top:44px; font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted); animation:bob 2.4s infinite}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(8px);opacity:1}}
+
+  /* 進捗バー */
+  .progress{position:sticky; top:0; z-index:5; background:rgba(7,10,31,.82); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:12px 0}
+  .progress .in{max-width:760px; margin:0 auto; padding:0 22px; display:flex; align-items:center; gap:14px}
+  .progress .track{flex:1; height:9px; border-radius:99px; background:var(--panel-2); overflow:hidden}
+  .progress .fill{height:100%; width:0; border-radius:99px; background:linear-gradient(90deg,var(--origin),var(--cosmos),var(--life),var(--mind),var(--future)); transition:width .5s}
+  .progress .num{font-family:var(--font-mono); font-size:13px; color:var(--ink); white-space:nowrap}
+  .progress .num b{color:var(--future)}
+
+  .actlabel{text-align:center; margin:56px 0 10px; font-family:var(--font-mono); font-size:12px; letter-spacing:.22em; color:var(--muted)}
+  .actlabel .big{display:block; font-family:var(--font-serif); font-size:clamp(20px,4vw,26px); color:var(--ink); letter-spacing:.02em; margin-top:8px; font-weight:700}
+
+  /* 地図(縦のみち) */
+  .map{position:relative; padding:20px 0 40px}
+  .map::before{content:""; position:absolute; left:31px; top:0; bottom:0; width:3px; background:linear-gradient(180deg,var(--origin),var(--cosmos),var(--life),var(--mind),var(--future)); opacity:.5; border-radius:99px}
+  @media(min-width:620px){ .map::before{left:50%; transform:translateX(-50%)} }
+
+  .station{position:relative; display:grid; grid-template-columns:64px 1fr; gap:16px; margin:0 0 18px; align-items:stretch}
+  @media(min-width:620px){
+    .station{grid-template-columns:1fr 64px 1fr}
+    .station .dot{grid-column:2}
+    .station .card{grid-column:3}
+    .station.left .card{grid-column:1; text-align:right}
+    .station.left .card .head{flex-direction:row-reverse}
+    .station.left .card .toggle{justify-content:flex-end}
+  }
+  .station .dot{position:relative; z-index:2; display:flex; align-items:flex-start; justify-content:center; padding-top:6px}
+  .station .dot .badge{width:56px; height:56px; border-radius:50%; display:grid; place-items:center; font-size:26px; background:var(--panel); border:2px solid var(--c,var(--cosmos)); box-shadow:0 0 0 5px var(--void), 0 0 22px -4px var(--c,var(--cosmos))}
+  .station .dot .no{position:absolute; top:-6px; right:2px; font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--void); background:var(--c,var(--cosmos)); border-radius:99px; padding:1px 7px}
+  @media(min-width:620px){ .station .dot .no{right:auto; left:2px} }
+
+  .card{display:block; text-decoration:none; color:inherit; background:linear-gradient(180deg,var(--panel),rgba(14,20,54,.4)); border:1px solid var(--line); border-left:3px solid var(--c,var(--cosmos)); border-radius:16px; padding:18px 20px; transition:transform .15s, border-color .2s, box-shadow .2s}
+  @media(min-width:620px){ .station.left .card{border-left:1px solid var(--line); border-right:3px solid var(--c,var(--cosmos))} }
+  .card:hover{transform:translateY(-3px); box-shadow:0 16px 40px -12px rgba(0,0,0,.6); border-color:var(--c,var(--cosmos))}
+  .card .head{display:flex; align-items:baseline; gap:10px}
+  .card .ttl{font-size:19px; font-weight:800; line-height:1.3}
+  .card .sub{color:var(--muted); font-size:14.5px; margin-top:6px; display:block}
+  .card .go{display:inline-block; margin-top:12px; font-family:var(--font-mono); font-size:12px; letter-spacing:.12em; color:var(--c,var(--cosmos)); font-weight:700}
+  .card.done{opacity:.96}
+  .card.done .ttl::after{content:" ✓"; color:var(--life)}
+
+  .toggle{display:flex; align-items:center; gap:8px; margin-top:12px; padding-top:12px; border-top:1px solid var(--line)}
+  .toggle button{font:inherit; font-family:var(--font-mono); font-size:12px; letter-spacing:.06em; font-weight:700; cursor:pointer; border-radius:99px; padding:6px 14px; border:1px solid var(--line); background:var(--panel-2); color:var(--muted); transition:all .18s}
+  .toggle button:hover{border-color:var(--life); color:var(--ink)}
+  .toggle button.on{background:linear-gradient(180deg,rgba(63,209,167,.28),var(--panel-2)); border-color:var(--life); color:var(--life)}
+
+  .finale{text-align:center; padding:60px 0 30px; margin-top:20px}
+  .finale .cert{display:inline-block; border:1px solid rgba(176,123,255,.4); border-radius:20px; padding:34px 30px; background:linear-gradient(180deg,rgba(176,123,255,.1),transparent); max-width:520px}
+  .finale .cert .seal{font-size:44px}
+  .finale .cert h3{font-family:var(--font-serif); font-size:clamp(22px,4.6vw,28px); margin:14px 0 10px}
+  .finale .cert p{color:var(--muted); font-size:15px; margin:0}
+  .finale .cert .done-msg{display:none; margin-top:16px; color:var(--future); font-weight:700}
+  .finale .cert.complete .done-msg{display:block}
+  .finale .cert.complete{border-color:var(--future); box-shadow:0 0 40px -10px rgba(176,123,255,.5)}
+
+  footer{border-top:1px solid var(--line); padding:30px 0 50px; color:var(--muted); font-size:13px; text-align:center}
+  footer .mono{font-family:var(--font-mono)}
+  :focus-visible{outline:2px solid var(--future); outline-offset:3px; border-radius:6px}
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} .stars span,.scrollcue{animation:none} .card{transition:none} }
+</style>
+</head>
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+
+<div class="progress" aria-hidden="false">
+  <div class="in">
+    <span class="num">冒険の進みぐあい</span>
+    <div class="track"><div class="fill" id="pfill"></div></div>
+    <span class="num"><b id="pnum">0</b> / 12</span>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">CosmoＳ &amp; Co. ／ 全12回・冒険の地図</div>
+    <h1>これからの、<br><span class="grad">はなし</span>。</h1>
+    <p class="sub">宇宙のはじまりから、きみ自身の未来まで。<br>1本の糸を、1年かけて歩く冒険。</p>
+    <div class="thread">🌌 宇宙 <span>→</span> 🧬 <b>DNA</b> <span>→</span> 🧠 <b>脳</b> <span>→</span> 🤖 <b>AI</b> <span>→</span> ✨ <b>きみ</b></div>
+    <div class="scrollcue">SCROLL ↓ 地図をひらく</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="actlabel">第 1 幕<span class="big">世界の物語 ── 私たちはどこから来たのか</span></div>
+  <div class="map" id="map1"></div>
+
+  <div class="actlabel">第 2 幕<span class="big">AIって何者? ── 隣にいる新しい知性</span></div>
+  <div class="map" id="map2"></div>
+
+  <div class="actlabel">第 3 幕<span class="big">これからの私たち ── 未来を選ぶ</span></div>
+  <div class="map" id="map3"></div>
+
+  <div class="finale">
+    <div class="cert" id="cert">
+      <div class="seal">🎓</div>
+      <h3>ぜんぶ歩いたら、卒業。</h3>
+      <p>12個の星をすべて訪れると、この地図が完成する。<br>そのとき、きみは「教わる人」から「伝える人」へ。</p>
+      <div class="done-msg">🌟 全12回、走破! 冒険の地図が完成しました。おめでとう!</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <p class="mono">これからの、はなし ／ 冒険の地図(目次)</p>
+    <p style="margin-top:8px">※「学んだ」の記録は、この端末のブラウザにだけ保存されます。この教材はAIと一緒に作りました。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sky=document.getElementById('stars');
+  if(sky && !reduce){ var n=window.innerWidth<560?46:90, html='';
+    for(var i=0;i<n;i++){ var s=(Math.random()*1.6+1).toFixed(1);
+      html+='<span style="left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;animation-delay:'+(Math.random()*4).toFixed(2)+'s;width:'+s+'px;height:'+s+'px"></span>'; }
+    sky.innerHTML=html; }
+
+  var C={origin:'var(--origin)',cosmos:'var(--cosmos)',life:'var(--life)',mind:'var(--mind)',future:'var(--future)'};
+  var SESSIONS=[
+    {n:1, act:1, c:'mind',   ic:'🤖', file:'第1回_AI最前線ツアー.html',        t:'AI最前線ツアー',       s:'きみはもう、未来に住んでいる'},
+    {n:2, act:1, c:'origin', ic:'🌌', file:'第2回_宇宙カレンダー.html',        t:'宇宙カレンダー',       s:'138億年を、ロープで歩く'},
+    {n:3, act:1, c:'life',   ic:'🧬', file:'第3回_生命というプログラム.html',  t:'生命というプログラム', s:'DNAは4文字の言葉'},
+    {n:4, act:1, c:'mind',   ic:'🧠', file:'第4回_脳という宇宙.html',          t:'脳という宇宙',         s:'おでこの裏の860億個'},
+    {n:5, act:2, c:'cosmos', ic:'🐱', file:'第5回_AIのつくりかた.html',        t:'AIのつくりかた',       s:'猫を1000回見せると'},
+    {n:6, act:2, c:'cosmos', ic:'🦜', file:'第6回_AIは言葉をわかってるの.html',t:'AIは言葉をわかってる?',s:'統計的オウム論争'},
+    {n:7, act:2, c:'mind',   ic:'💗', file:'第7回_AIに心はある.html',          t:'AIに心はある?',        s:'まだ誰も答えを知らない問い'},
+    {n:8, act:2, c:'future', ic:'🤝', file:'第8回_AIと友だちになる技術.html',  t:'AIと友だちになる技術', s:'命令より、対話'},
+    {n:9, act:3, c:'mind',   ic:'📎', file:'第9回_AIは危なくないの.html',      t:'AIは危なくないの?',    s:'賢さと優しさは別もの'},
+    {n:10,act:3, c:'cosmos', ic:'🛸', file:'第10回_宇宙人はどこにいる.html',   t:'宇宙人はどこにいる?',  s:'フェルミのパラドックス'},
+    {n:11,act:3, c:'future', ic:'🦾', file:'第11回_未来の体、未来の私.html',   t:'未来の体、未来の私',   s:'サイボーグと不老不死'},
+    {n:12,act:3, c:'future', ic:'🎓', file:'第12回_きみが先生.html',           t:'きみが先生',           s:'卒業制作発表会'}
+  ];
+
+  var KEY='cosmos_co_progress_v1';
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+  function save(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
+  var state=load();
+
+  function build(){
+    [1,2,3].forEach(function(act){
+      var box=document.getElementById('map'+act); box.innerHTML='';
+      SESSIONS.filter(function(x){return x.act===act;}).forEach(function(x,idx){
+        var side = (idx%2===0)?'left':'right';
+        var st=document.createElement('div'); st.className='station '+side;
+        var done = !!state[x.n];
+        st.innerHTML =
+          '<div class="dot" style="--c:'+C[x.c]+'"><div class="badge">'+x.ic+'</div><span class="no">'+x.n+'</span></div>'+
+          '<div class="card'+(done?' done':'')+'" style="--c:'+C[x.c]+'" data-file="'+x.file+'" tabindex="0" role="link">'+
+            '<div class="head"><span class="ttl">'+x.t+'</span></div>'+
+            '<span class="sub">'+x.s+'</span>'+
+            '<span class="go">この回をひらく →</span>'+
+            '<div class="toggle"><button type="button" class="mark'+(done?' on':'')+'" data-n="'+x.n+'">'+(done?'✓ 学んだ':'まだ / 学んだ?')+'</button></div>'+
+          '</div>';
+        box.appendChild(st);
+      });
+    });
+    // カードを開く(トグルボタンは除外)
+    document.querySelectorAll('.card').forEach(function(card){
+      function open(){ window.location.href = card.getAttribute('data-file'); }
+      card.addEventListener('click', function(e){ if(e.target.closest('.toggle')) return; open(); });
+      card.addEventListener('keydown', function(e){ if((e.key==='Enter'||e.key===' ') && !e.target.closest('.toggle')){ e.preventDefault(); open(); } });
+    });
+    // 学んだトグル
+    document.querySelectorAll('.mark').forEach(function(b){
+      b.addEventListener('click', function(e){
+        e.stopPropagation();
+        var n=+b.getAttribute('data-n');
+        if(state[n]){ delete state[n]; } else { state[n]=1; }
+        save(state); build(); updateProgress();
+      });
+    });
+  }
+
+  function updateProgress(){
+    var done=0; for(var i=1;i<=12;i++){ if(state[i]) done++; }
+    document.getElementById('pnum').textContent=done;
+    document.getElementById('pfill').style.width=(done/12*100)+'%';
+    document.getElementById('cert').classList.toggle('complete', done===12);
+  }
+
+  build(); updateProgress();
+})();
+</script>
+</body>
+</html>

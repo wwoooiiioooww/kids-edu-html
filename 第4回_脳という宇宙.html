@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ja" data-session="4">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>脳という宇宙 ─ おでこの裏の860億個｜これからの、はなし</title>
+<style>
+  :root{
+    --void:#070A1F; --panel:#0E1436; --panel-2:#141B44;
+    --ink:#EDEAFB; --muted:#8B93C2; --line:rgba(160,170,220,.14);
+    --origin:#FFB84D; --cosmos:#6C8FFF; --life:#3FD1A7; --mind:#E85D9B; --future:#B07BFF;
+    --font-sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,system-ui,sans-serif;
+    --font-serif:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    --font-mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--void); color:var(--ink); font-family:var(--font-sans);
+    line-height:1.9; font-size:17px; overflow-x:hidden; -webkit-font-smoothing:antialiased}
+  ruby rt{font-size:.55em; color:var(--muted); font-weight:400}
+
+  .stars{position:fixed; inset:0; z-index:0; pointer-events:none}
+  .stars span{position:absolute; background:#fff; border-radius:50%; opacity:.5; animation:tw 4s infinite ease-in-out}
+  @keyframes tw{0%,100%{opacity:.2}50%{opacity:.9}}
+
+  .wrap{position:relative; z-index:1; max-width:720px; margin:0 auto; padding:0 22px}
+  .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.22em;
+    color:var(--muted); text-transform:uppercase; margin-bottom:14px; display:block}
+  section{padding:72px 0}
+  h2{font-size:clamp(26px,5.5vw,38px); font-weight:800; line-height:1.2; margin-bottom:20px}
+  h2 .accent{color:var(--accent,var(--mind))}
+  p{margin-bottom:18px}
+  .muted{color:var(--muted)}
+  .serif{font-family:var(--font-serif)}
+
+  /* ヒーロー */
+  .hero{min-height:92vh; display:flex; flex-direction:column; justify-content:center; padding:80px 0 60px}
+  .hero .kicker{font-family:var(--font-mono); font-size:13px; letter-spacing:.2em; color:var(--mind); margin-bottom:26px}
+  .hero h1{font-size:clamp(38px,9vw,76px); line-height:1.08; font-weight:800; letter-spacing:.01em; margin-bottom:8px}
+  .hero h1 small{display:block; font-size:.42em; font-weight:600; color:var(--muted); letter-spacing:.14em; margin-top:18px}
+  .hero .lead{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,25px); color:var(--ink); margin-top:34px; max-width:20em}
+  .scrollcue{margin-top:60px; font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted); animation:bob 2.4s infinite}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(8px);opacity:1}}
+
+  /* リキャップ */
+  .recap{background:linear-gradient(180deg,rgba(232,93,155,.08),transparent);
+    border:1px solid var(--line); border-left:3px solid var(--mind); border-radius:16px; padding:26px 24px}
+  .recap .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--mind)}
+  .recap .q{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,23px); margin:10px 0 14px}
+  .recap .a b{color:var(--mind)}
+
+  /* 体験 */
+  .do{background:linear-gradient(180deg,var(--panel),var(--void)); border:1px solid var(--line); border-radius:20px; padding:30px 26px}
+  .do h3{font-size:22px; margin-bottom:16px; color:var(--life)}
+  .steps{list-style:none; counter-reset:s}
+  .steps li{counter-increment:s; position:relative; padding:10px 0 10px 44px; border-top:1px solid var(--line)}
+  .steps li:first-child{border-top:0}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:10px; width:28px; height:28px;
+    border-radius:50%; background:var(--life); color:var(--void); font-family:var(--font-mono);
+    font-weight:700; display:grid; place-items:center; font-size:14px}
+
+  details{border:1px solid var(--line); border-radius:14px; margin:18px 0; background:var(--panel); overflow:hidden}
+  details summary{cursor:pointer; padding:16px 20px; font-weight:700; list-style:none; display:flex; align-items:center; gap:10px; user-select:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"＋"; font-family:var(--font-mono); color:var(--cosmos)}
+  details[open] summary::before{content:"−"}
+  details .body{padding:2px 20px 20px; color:var(--muted); font-size:15.5px; line-height:1.85}
+  details .body b{color:var(--ink)}
+  details.col-note summary{color:var(--life)}
+  details.col-note summary::before{color:var(--life)}
+  details.col-adult summary::before{color:var(--origin)}
+
+  /* 署名要素:ニューロン発火シミュレーター */
+  .bioviz{background:linear-gradient(180deg,#0A1030,#070A1F); border:1px solid var(--line);
+    border-radius:18px; padding:18px 16px; box-shadow:0 20px 60px rgba(0,0,0,.4); margin:18px 0 6px}
+  .bioviz .lab{font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:var(--muted);
+    margin-bottom:12px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+  .bioviz canvas{display:block; width:100%; height:auto; border-radius:12px; background:#05081C;
+    border:1px solid rgba(232,93,155,.15); cursor:pointer; touch-action:manipulation}
+  .bioviz .cap{font-size:14.5px; color:var(--muted); margin-top:12px; min-height:3.4em; line-height:1.75}
+  .bioviz .cap b{color:var(--mind)}
+  .bioctl{display:flex; gap:14px; margin-top:14px; flex-wrap:wrap; align-items:center}
+  .bioctl .btn2{font:inherit; font-weight:700; font-size:14px; color:var(--ink); background:var(--panel-2);
+    border:1px solid var(--line); border-radius:999px; padding:10px 18px; cursor:pointer; transition:transform .15s, border-color .2s}
+  .bioctl .btn2:hover{transform:translateY(-1px); border-color:var(--mind)}
+  .bioctl .btn2.primary{background:linear-gradient(135deg,#5A1F3E,#0E1436); border-color:rgba(232,93,155,.5)}
+  .slider{display:flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:12px; color:var(--muted); flex:1; min-width:220px}
+  .slider input{flex:1; accent-color:var(--mind)}
+
+  /* 物語:マイルストーン */
+  .timeline{padding:20px 0}
+  .ms{opacity:0; transform:translateY(28px); transition:opacity .7s, transform .7s;
+    border-left:3px solid var(--c,var(--mind)); padding:6px 0 6px 22px; margin:0 0 20px}
+  .ms.in{opacity:1; transform:none}
+  .ms .when{font-family:var(--font-mono); font-size:14px; color:var(--c,var(--mind)); font-weight:700}
+  .ms h4{font-size:21px; margin:4px 0 6px}
+  .ms p{font-size:15.5px; color:var(--muted); margin:0}
+  .ms p b{color:var(--ink)}
+
+  /* フリップ・クイズ */
+  .quiz-grid{display:grid; gap:16px; margin-top:12px}
+  .flip{background:none; border:0; padding:0; text-align:left; width:100%; cursor:pointer; perspective:1200px; font:inherit; color:inherit}
+  .flip .inner{position:relative; transition:transform .6s; transform-style:preserve-3d; min-height:118px}
+  .flip[aria-expanded="true"] .inner{transform:rotateY(180deg)}
+  .flip .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; padding:20px 22px;
+    border:1px solid var(--line); display:flex; flex-direction:column; justify-content:center; gap:8px}
+  .flip .front{background:var(--panel-2)}
+  .flip .back{background:linear-gradient(180deg,var(--panel-2),var(--panel)); transform:rotateY(180deg); border-color:rgba(232,93,155,.42)}
+  .flip .q{font-weight:700; font-size:17px}
+  .flip .hint{font-family:var(--font-mono); font-size:11px; letter-spacing:.15em; color:var(--muted)}
+  .flip .a{color:var(--mind); font-weight:700; font-size:16px}
+  .flip .a small{display:block; color:var(--muted); font-weight:400; font-size:14px; margin-top:6px}
+
+  .talk{border:1px dashed var(--line); border-radius:16px; padding:24px; margin-top:8px}
+  .talk .q{font-family:var(--font-serif); font-size:clamp(20px,4vw,26px); line-height:1.5}
+  .grow{border:1px solid rgba(176,123,255,.45); border-radius:16px; padding:24px; background:linear-gradient(180deg,rgba(176,123,255,.08),transparent)}
+  .grow .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .grow .q{font-family:var(--font-serif); font-size:22px; margin-top:10px}
+
+  .bridge{text-align:center; padding:80px 0 40px}
+  .bridge .thread{font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted)}
+  .bridge .node{display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin:22px 0; font-family:var(--font-mono); font-size:13px; color:var(--muted)}
+  .bridge .node b{color:var(--mind)}
+  .bridge .next{font-family:var(--font-serif); font-size:clamp(21px,4.5vw,28px); margin-top:14px}
+
+  footer{border-top:1px solid var(--line); padding:30px 0 50px; color:var(--muted); font-size:13px}
+  footer .mono{font-family:var(--font-mono)}
+  :focus-visible{outline:2px solid var(--cosmos); outline-offset:3px; border-radius:6px}
+
+  @media (max-width:560px){ body{font-size:16px} }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .stars span,.scrollcue{animation:none}
+    .ms{transition:none; opacity:1; transform:none}
+    .flip .inner{transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+
+<!-- ═══════════ ヒーロー ═══════════ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">第1幕 世界の物語 ／ 第4回</div>
+    <h1>脳という宇宙<small>おでこの裏に、860億個の星がある。</small></h1>
+    <p class="lead">きみが「わかった!」と思うとき。<br>おでこの<ruby>裏<rt>うら</rt></ruby>では、小さな細胞たちが<br>いっせいに<b>ピカッ</b>と光っている。</p>
+    <div class="scrollcue">SCROLL ↓ 「わたし」をさがしに行く</div>
+  </div>
+</header>
+
+<!-- ═══════════ 前回の回収 ═══════════ -->
+<section id="recap">
+  <div class="wrap">
+    <span class="eyebrow">前回のつづき ／ 情報の物語</span>
+    <h2><span class="accent">情報</span>があるだけでは、考えられない</h2>
+    <p>前回わかったこと ── 生き物の正体は「物」じゃなくて<b>情報(DNA)</b>だった。でも、情報がしまってあるだけでは、まだ「考える」ことはできない。</p>
+    <div class="recap">
+      <span class="tag">今日のスタート</span>
+      <p class="q">情報を<b>受けとって、つないで、判断する</b>器官が、生き物に生まれた。</p>
+      <p class="a">それが<b>脳</b>。DNAという“設計図”から作られた、いちばんふしぎな器官。今日はその中をのぞいて、「わたし」がどこにいるのかをさがしに行く。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 体験:ニューロンごっこ ═══════════ -->
+<section id="experience">
+  <div class="wrap">
+    <span class="eyebrow">体験 ／ Hands-on</span>
+    <h2><span class="accent">人間ニューロン</span>ごっこ</h2>
+    <p>脳は、<b>ニューロン(神経細胞)</b>という小さな部品が、ものすごくたくさんつながってできている。ニューロンの仕事はシンプル。「<b>まわりから十分な合図をもらったら、次へ合図を送る</b>」。それだけ。まずはみんなで1個ずつのニューロンになって、<b>合図をリレー</b>してみよう。そのあと、画面の中で脳をぐーっと拡大して、この部品が<b>どう積み上がって「わたし」になるのか</b>を見に行く。</p>
+
+    <div class="do">
+      <h3>やってみよう</h3>
+      <ol class="steps">
+        <li>みんなで手をつないで、長い1本の列になる。きみたちは1人1個の<b>ニューロン</b>。</li>
+        <li>先頭の子が、次の子の手を「ギュッ」とにぎる。にぎられた子は、次の子の手をギュッ。合図が<b>伝わっていく</b>のを感じよう。</li>
+        <li>ルール追加:<b>両手をギュッとされないと、次に伝えちゃダメ</b>。合図が2つそろって初めて発火(=次へ)。これがニューロンの「<ruby>閾値<rt>いきち</rt></ruby>」。</li>
+        <li>枝分かれして<b>網(ネットワーク)</b>にしてみる。1か所の合図が、どこまで広がる? 広がらずに消えることもある?</li>
+      </ol>
+    </div>
+
+    <details class="col-note">
+      <summary>おうちの方へ ／ 進行メモ</summary>
+      <div class="body">
+        所要15〜20分。ねらいは「ニューロン1個はとても単純。でも大量につながると“考える”が生まれる」を体で入れること。ステップ3の「両手そろって初めて発火」が<b>閾値</b>の体感で、この後のシミュレーターと直結します。錯視カード(下のコラム)を数枚用意すると「脳は世界をそのまま見ていない」の導入になります。深追いせず、次のシミュレーターへ。</div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══════════ 署名要素:ニューロン発火シミュレーター ═══════════ -->
+<section id="sim" style="padding-top:0">
+  <div class="wrap">
+    <span class="eyebrow">署名要素 ／ さわって確かめる</span>
+    <h2><span class="accent">単純な部品</span>が、かさなって「わたし」になる</h2>
+    <p class="muted">脳をどんどん拡大して、いちばん小さな部品まで見てみよう。そして、その部品を<b>下から積み上げる</b>と、いちばん上には何が生まれる? ── <b>予想してから</b>、▶を押して進めてね。</p>
+
+    <div class="bioviz" id="brain">
+      <div class="lab"><span>BRAIN ／ ズーム → 積み上げ</span><span id="brainStep">STEP 0 / 6</span></div>
+      <canvas id="brainCv" width="680" height="460" aria-label="脳を拡大してニューロンとシナプスを見せ、線の向き→図形→顔→概念へと単純な部品が積み上がるまでを見せるシミュレーション。"></canvas>
+      <div class="bioctl">
+        <button class="btn2 primary" id="bPlay">▶ 再生</button>
+        <button class="btn2" id="bStep">⏭ 1ステップ</button>
+        <button class="btn2" id="bReset">↺ リセット</button>
+        <label class="slider">つながりの強さ（重み）
+          <input type="range" id="bWeight" min="0.4" max="1.4" step="0.05" value="1.0" aria-label="つながりの強さ（重み）">
+          <span id="bWeightVal">ちょうどいい</span>
+        </label>
+      </div>
+      <p class="cap" id="brainCap"></p>
+    </div>
+
+    <details class="col-adult">
+      <summary>◆ おとなコラム：この「積み上げ」は、目と脳の実話</summary>
+      <div class="body">
+        線の向き→形→顔→概念、という積み上げは、たとえではなく<b>脳のほんとうの作り</b>です。目から入った信号は、後頭部の<b>一次視覚野(V1)</b>で「線の傾き」に反応する細胞に受け取られ、<b>V4</b>あたりで色や形になり、<b>側頭葉</b>で「顔」や「特定の人」に反応する細胞へとつながっていきます。下位＝単純な特徴、上位＝複雑な概念。<b>単純な部品を階層的に積み上げると、世界の“意味”になる</b>──この設計思想が、次回のAI(ニューラルネットワーク)にそっくり受けつがれます。</div>
+    </details>
+    <details class="col-adult">
+      <summary>◆ おとなコラム：はじめて会った人を“覚える”とき、脳で何が起きる?</summary>
+      <div class="body">
+        新しい人に会うと、脳は<b>名前・顔・声・口ぐせ</b>など、バラバラに入ってきた情報を「これは同じ1人だ」と結びつけます。このとき変わっているのが、ニューロンどうしの<b>つなぎめの強さ(重み)</b>。会うほど、思い出すほど、その結びつきが強くなり、やがて<b>「その人にだけ光る細胞」(おばあちゃん細胞)</b>ができあがる。つまり「覚える＝重みを少しずつ調整すること」。<b>次回のAIの「学習」も、まったく同じで“重みの調整”です。</b>脳とAIが同じしくみだと分かる、いちばん大事なつながりです。</div>
+    </details>
+    <details class="col-adult">
+      <summary>◆ おとなコラム：強すぎる結びつきと「共感覚(シネスタジア)」</summary>
+      <div class="body">
+        シミュレーターで<b>重みを「つよすぎ」</b>にすると、ひとつの顔を見ただけなのに〈色〉や〈音〉の概念まで一緒に光りました。これは想像の話ではなく、人間にも実際にある<b>「共感覚(きょうかんかく／シネスタジア)」</b>という現象によく似ています。共感覚を持つ人は、たとえば<b>文字や数字に色を感じたり</b>、<b>音楽を聞くと色が見えたり</b>します。原因はまだ研究中ですが、有力な見方のひとつが「<b>ふだんは別々に働く脳の領域どうしが、強くつながりすぎている</b>」というもの。つまり<b>つなぎめ(重み)が強すぎて、本来まざらないはずの情報がまざる</b>。弱すぎれば概念は浮かばず、強すぎれば混ざってしまう ── <b>「ちょうどいい強さ」があること</b>が、脳にとってもAIにとっても大切だと分かる、面白い実例です。</div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══════════ 物語 ═══════════ -->
+<section id="story">
+  <div class="wrap">
+    <span class="eyebrow">物語 ／ おでこの裏のひみつ</span>
+    <h2>単純な部品から、<span class="accent">「わたし」</span>が生まれる</h2>
+    <p class="muted">ニューロン1個は、さっきのゲームみたいにとても単純。じゃあ、どうして「考える」「感じる」が生まれるんだろう?</p>
+
+    <div class="timeline">
+      <div class="ms" style="--c:var(--mind)">
+        <div class="when">その1</div>
+        <h4>ニューロン ── オール・オア・ナッシング</h4>
+        <p>ニューロンは「発火する」か「しない」かの<b>どちらか</b>。中くらい、はない。ゲームと同じで、合図が<ruby>閾値<rt>いきち</rt></ruby>を超えたらピカッ、超えなければ何もしない。とても単純なルールだ。</p>
+      </div>
+      <div class="ms" style="--c:var(--cosmos)">
+        <div class="when">その2</div>
+        <h4>シナプス ── つなぎめには“強さ(重み)”がある</h4>
+        <p>ニューロンどうしは、直接くっついてはいない。ほんの少しすき間があって、そこを化学物質がとんで合図を渡す。この<ruby>継<rt>つ</rt></ruby>ぎめを<b>シナプス</b>という。大事なのは、つなぎめには<b>「強さ(重み)」</b>があること。使うほど強くなり、強いほど合図がよく伝わる。この<b>強さを少しずつ調整すること</b>こそが「<b>おぼえる・学ぶ</b>」の正体だ ── そして次回、<b>AIもまったく同じことをする</b>。</p>
+      </div>
+      <div class="ms" style="--c:var(--origin)">
+        <div class="when">その3</div>
+        <h4>数が、けたちがい ── そして“数”が魔法を生む</h4>
+        <p>脳のニューロンは、なんと<b>約860億個</b>。そのつなぎめ(シナプス)は<b>数百兆</b>。さっきのゲームを、想像もできないくらい巨大にしたもの ── それがきみの頭の中で、今も光り続けている。<br>ふしぎなのはここ。ニューロン<b>1個</b>にできることは、ほとんど何もない。なのに<b>860億個</b>あつまると、笑ったり、なやんだり、この文を読んだりする「わたし」になる。<b>数が、けたはずれに増えると、部品ひとつでは説明できない何かが生まれる</b>。この“魔法”は、じつは次回からのAIでも、そっくり同じように起きる ── おぼえておいて。</p>
+      </div>
+      <div class="ms" style="--c:var(--mind)">
+        <div class="when">その4</div>
+        <h4>「おばあちゃん細胞」</h4>
+        <p>研究で、ある人の脳に「<b>特定の人の顔にだけ</b>強く反応するニューロン」が見つかった(有名な例が“ジェニファー・アニストン・ニューロン”)。名前を聞いても、写真を見ても、同じ1個が光る。<b>「概念(そのものの意味)」が、細胞に宿っている</b>のかもしれない。</p>
+      </div>
+      <div class="ms" style="--c:var(--future)">
+        <div class="when">その5</div>
+        <h4>脳は、世界を“そのまま”見ていない</h4>
+        <p>目に入るのは、バラバラの光の点だけ。脳はそれを材料に、「これは顔」「これはコップ」と<b>予測して、世界を組み立てている</b>。だから錯視にだまされる。きみが見ている世界は、外の世界そのものじゃなく、<b>脳が作った“いちばんそれっぽい映像”</b>なんだ。</p>
+      </div>
+    </div>
+
+    <details class="col-adult">
+      <summary>◆ もっと知りたい人へ：記憶って、どこにあるの?</summary>
+      <div class="body">
+        記憶は、脳の1か所にファイルのように保存されているわけではありません。「あの夏の海」の記憶は、色・音・におい・気持ちが<b>別々の場所</b>に散らばっていて、思い出すたびに<b>つなぎめ(シナプス)の強さ</b>としてよみがえり、組み立て直されます。だから思い出すたびに少しずつ変わる。記憶とは“もの”ではなく、<b>つながりのパターン</b>なのです。</div>
+    </details>
+    <details class="col-adult">
+      <summary>◆ おとなコラム：「意識」の場所は見つかっていない</summary>
+      <div class="body">
+        脳のどこを調べても「ここが“わたし”です」という中心は見つかっていません。たくさんのニューロンの活動<b>全体</b>から、なぜ“感じている私”が立ち上がるのか ── これは<b>意識のハードプロブレム</b>と呼ばれ、科学と哲学の最大級の難問です。この問いは第7回「AIに心はある?」で、もう一度きみをたずねてきます。</div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══════════ 問い:クイズ ═══════════ -->
+<section id="quiz">
+  <div class="wrap">
+    <span class="eyebrow">問い ／ まず予想してみよう</span>
+    <h2 style="--accent:var(--cosmos)"><span class="accent">当ててから</span>、めくってね</h2>
+    <p class="muted">カードをタップ(またはEnterキー)すると、答えがめくれます。先に予想するのがコツ。</p>
+
+    <div class="quiz-grid">
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">きみの脳のニューロンは、何個くらい?</span></div>
+        <div class="face back"><span class="a">約860億個。<small>天の川銀河の星の数とだいたい同じくらい。おでこの裏に、まるで1つの銀河がある。</small></span></div>
+      </div></button>
+
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">ニューロンは「半分だけ発火」できる?</span></div>
+        <div class="face back"><span class="a">できない。発火する(ピカッ)か、しないか、どちらか。<small>中くらいはない=オール・オア・ナッシング。単純なのに、大量につながると「考える」が生まれる。</small></span></div>
+      </div></button>
+
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">「おぼえる」とき、脳の中では何が変わる?</span></div>
+        <div class="face back"><span class="a">ニューロンのつなぎめ(シナプス)が、太く強くなる。<small>くり返すほど強くなる。だから練習すると上手になる。記憶は“もの”じゃなく“つながりの強さ”。</small></span></div>
+      </div></button>
+
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">きみが今“見ている”世界は、外の世界そのもの?</span></div>
+        <div class="face back"><span class="a">ちがう。脳が作った“予測の映像”。<small>目はバラバラの光しか受けとらない。脳が「たぶんこう」と組み立てている。だから錯視にだまされる。</small></span></div>
+      </div></button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 討論・発展 ═══════════ -->
+<section id="discuss">
+  <div class="wrap">
+    <span class="eyebrow">討論 ／ 答えは出さなくていい</span>
+    <div class="talk">
+      <p class="q">きみが見ている「赤」と、となりの子が見ている「赤」。<br>ほんとうに、同じ色に見えているのかな?</p>
+    </div>
+    <p class="muted" style="margin-top:22px">…確かめる方法はあるだろうか? 脳が作った映像なら、人によってちがっても気づけないかもしれない。話してみよう。</p>
+
+    <div class="grow" style="margin-top:16px">
+      <span class="tag">発展カード ／ 上級生・大人向け</span>
+      <p class="q">もし、きみの脳を<br>ぜんぶそっくりコピーできたら。<br>それは、“きみ”なのかな?</p>
+      <p class="muted" style="margin:12px 0 0">つなぎめの強さも、記憶も、全部うつしとった“コピー脳”。本人はここにいるのに、もう1人の「わたし」ができる? この問いは、ずっと先の回(未来の体・マインドアップロード)で、もう一度きみをたずねてくる。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 次回への橋 ═══════════ -->
+<section>
+  <div class="wrap bridge">
+    <div class="thread">── 情報の物語 ──</div>
+    <div class="node">宇宙のはじまり → DNA → <b>脳(いまここ)</b> → AI → これから</div>
+    <p class="muted">情報を“考える”ための、生き物の器官=脳を見た。単純な部品が階層に積み上がり、<b>つなぎめの強さ(重み)</b>を調整することで「わたし」が世界をわかる。</p>
+    <p class="next">じゃあ、同じしくみ ──<b>重みを調整して学ぶ脳</b>を、人間が作ったら?<br>次回からは第2幕。<b>人工の脳=AI</b>のつくりかたへ。</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="mono">これからの、はなし ／ 第4回 脳という宇宙</p>
+    <p style="margin-top:8px">※数字(約860億個・数百兆のシナプスなど)は代表的な目安です(諸説あり)。“ジェニファー・アニストン・ニューロン”は概念細胞の有名な研究例。この教材はAIと一緒に作りました。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 星空
+  var sky = document.getElementById('stars');
+  if(sky && !reduce){
+    var n = window.innerWidth < 560 ? 40 : 80, html='';
+    for(var i=0;i<n;i++){
+      var s=(Math.random()*1.6+1).toFixed(1);
+      html+='<span style="left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;animation-delay:'+(Math.random()*4).toFixed(2)+'s;width:'+s+'px;height:'+s+'px"></span>';
+    }
+    sky.innerHTML = html;
+  }
+
+  // フリップカード
+  document.querySelectorAll('.flip').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      btn.setAttribute('aria-expanded', btn.getAttribute('aria-expanded')==='true'?'false':'true');
+    });
+  });
+
+  // 物語カードの出現
+  var msList = document.querySelectorAll('.ms');
+  if('IntersectionObserver' in window && !reduce){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); });
+    }, {threshold:0.4});
+    msList.forEach(function(m){ io.observe(m); });
+  } else { msList.forEach(function(m){ m.classList.add('in'); }); }
+})();
+</script>
+<script>
+/* ═══ 第4回 署名：脳のズーム → 階層の積み上げ ═══ */
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cv = document.getElementById('brainCv');
+  if(!cv) return;
+  var g = cv.getContext('2d'), W=cv.width, H=cv.height;
+  var MONO='ui-monospace,"SFMono-Regular",Menlo,monospace';
+  var MIND='#E85D9B',COSMOS='#6C8FFF',LIFE='#3FD1A7',ORIGIN='#FFB84D',FUT='#B07BFF',MUT='#8B93C2',INK='#EDEAFB';
+
+  var STEP_MAX=6, step=0, weight=1.0, playing=false, playTimer=null, t=0;
+
+  // 重み(0.4〜1.4)を 0〜1 に正規化。線の太さ・数・濃さに使う
+  function wNorm(){ return Math.max(0, Math.min(1, (weight-0.4)/1.0)); }
+  function edgeW(){ return 0.8 + wNorm()*2.8; }   // つなぎめの線の太さ
+
+  var caps=[
+    '<b>①</b> これは、きみの脳。重さ約1.4kg、宇宙でいちばん複雑なもの。<b>▶再生</b>か<b>⏭1ステップ</b>で、中をぐんぐん拡大していこう。いちばん上には何が生まれると思う?',
+    'ぐっと拡大 ── 中身は<b>ニューロン(神経細胞)</b>がびっしり。星空みたいに、たがいにつながっている。下の<b>「つながりの強さ」スライダー</b>を動かしてみて。強くするほど、線が<b>太くはっきり</b>してくる。',
+    'もっと拡大。ニューロンは直接くっつかず、<b>すき間(シナプス)ごしに合図をリレー</b>する。<b>スライダーを強く</b>すると、とびかう合図の<b>玉が増える</b> ── つながりが強い＝たくさん合図を渡せる、ということ。',
+    'さあ、この部品を下から積み上げる。いちばん下の係は、<b>線の向き</b>だけを見る(たて・よこ・ななめ)。',
+    '線が集まると、次の係は<b>「形」</b>を見つける ── ○、かど、カーブ。',
+    '形が集まると、その上の係は<b>「顔」</b>だと気づく。目・鼻・口がそろった、と。',
+    'そして顔が集まって ── <b>「これは “あの人” だ!」</b>という〈<b>概念</b>〉に。たった1個の細胞が、特定の人にだけ光る(おばあちゃん細胞)。単純な部品がかさなって、<b>「わたしが世界をわかる」</b>が生まれた。'
+  ];
+  var capLow='<b>つながりが弱い(重みが小さい)</b>と、上まで合図が届かず、〈概念〉は浮かばない…。スライダーを右へ。';
+  var capOk ='<b>ちょうどいい強さ(重み)</b>にすると、〈あの人〉が<b>ひとつだけ</b>パッと浮かぶ! この“強さ”を少しずつ調整することこそ、次回のAIの<b>「学習」</b>だ。';
+  var capHigh='<b>つなぎめが強すぎる(重みが大きすぎ)</b>と、ひとつの顔を見ただけなのに、〈あの人〉だけでなく<b>〈色〉や〈音〉など、よけいな概念まで一緒に光ってしまう</b>。じつはこれ、人にもある「<b>共感覚(シネスタジア)</b>」に少し似ている ── ↓のコラムへ。';
+
+  var capEl=document.getElementById('brainCap'), stepEl=document.getElementById('brainStep');
+  function updateMeta(){
+    var c;
+    if(step>=6){
+      if(weight<0.75) c=capLow;
+      else if(weight>1.15) c=caps[6]+'<br><span style="color:'+MUT+'">'+capHigh+'</span>';
+      else c=caps[6]+'<br><span style="color:'+MUT+'">'+capOk+'</span>';
+    }
+    else c=caps[step];
+    if(capEl) capEl.innerHTML=c;
+    if(stepEl) stepEl.textContent='STEP '+step+' / '+STEP_MAX;
+  }
+
+  /* ---- scene A: fixed network nodes (step1) ---- */
+  var net=[]; (function(){
+    var s=[[.16,.28],[.30,.60],[.22,.82],[.40,.24],[.46,.50],[.37,.76],[.55,.34],[.60,.64],[.52,.88],
+           [.70,.28],[.73,.56],[.66,.82],[.83,.42],[.85,.72],[.27,.44],[.62,.20],[.79,.88],[.47,.40]];
+    for(var i=0;i<s.length;i++) net.push({x:s[i][0],y:s[i][1]});
+  })();
+
+  /* ---- scene B: ladder geometry ---- */
+  var rowY=[H-52, H-165, H-278, H-388];   // row0(bottom) .. row3(top)
+  var oriAng=[0, Math.PI/2, Math.PI/4, -Math.PI/4, Math.PI/2]; // orientation tiles
+  var oriX=[]; (function(){ for(var i=0;i<5;i++) oriX.push(150+i*95); })();
+  var shpX=[180,320,460,560];             // shape tiles
+  var faceX=W/2, conX=W/2;
+
+  function easePulse(){ return (Math.sin(t*0.05)+1)/2; }
+
+  function clr(){ g.clearRect(0,0,W,H); }
+
+  function brain(cx,cy,s,alpha){
+    g.save(); g.globalAlpha=alpha; g.translate(cx,cy); g.scale(s,s);
+    g.beginPath();
+    g.moveTo(-60,12);
+    g.bezierCurveTo(-72,-30,-30,-54,0,-46);
+    g.bezierCurveTo(32,-58,74,-30,60,8);
+    g.bezierCurveTo(72,36,30,52,0,44);
+    g.bezierCurveTo(-34,54,-58,40,-60,12);
+    g.closePath();
+    g.fillStyle='rgba(232,93,155,.12)'; g.fill();
+    g.strokeStyle=MIND; g.lineWidth=2; g.stroke();
+    g.strokeStyle='rgba(232,93,155,.55)'; g.lineWidth=1.4;
+    g.beginPath(); g.moveTo(-42,-6); g.bezierCurveTo(-22,-20,-6,4,10,-10); g.bezierCurveTo(28,-22,42,0,52,-8); g.stroke();
+    g.beginPath(); g.moveTo(-46,18); g.bezierCurveTo(-22,6,-8,26,12,12); g.bezierCurveTo(30,2,44,20,54,10); g.stroke();
+    g.restore();
+  }
+
+  function label(x,y,txt,col){
+    g.font='12px '+MONO; g.fillStyle=col; g.textAlign='left'; g.textBaseline='middle';
+    g.fillText(txt,x,y);
+  }
+
+  function tile(x,y,col,lit){
+    g.save();
+    g.strokeStyle=lit?col:'rgba(160,170,220,.25)'; g.lineWidth=1.4;
+    g.fillStyle=lit?'rgba(232,93,155,.05)':'rgba(255,255,255,.02)';
+    roundRect(x-26,y-26,52,52,8); g.fill(); g.stroke();
+    g.restore();
+  }
+  function roundRect(x,y,w,h,r){
+    g.beginPath();
+    g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r);
+    g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath();
+  }
+
+  function edge(x1,y1,x2,y2,on,col,glow){
+    g.strokeStyle = on ? col : 'rgba(160,170,220,.10)';
+    g.lineWidth = on ? edgeW() : 1;   // 重みが強いほど線が太くなる
+    g.globalAlpha = on ? (0.5+0.5*glow) : 1;
+    g.beginPath(); g.moveTo(x1,y1); g.lineTo(x2,y2); g.stroke();
+    g.globalAlpha=1;
+  }
+
+  function sceneA(){
+    var pulse=easePulse();
+    if(step===0){
+      brain(W/2,H/2-10,2.4,1);
+      g.font='13px '+MONO; g.fillStyle=MUT; g.textAlign='center'; g.textBaseline='middle';
+      g.fillText('脳 ─ ニューロン 約860億個', W/2, H-40);
+    } else if(step===1){
+      brain(70,58,0.6,0.9);
+      // zoom box -> network
+      g.strokeStyle='rgba(232,93,155,.35)'; g.setLineDash([5,5]); g.lineWidth=1.2;
+      roundRect(120,90,W-160,H-150,14); g.stroke(); g.setLineDash([]);
+      var ox=120, oy=90, ow=W-160, oh=H-150;
+      // edges
+      var wn=wNorm();
+      for(var i=0;i<net.length;i++) for(var j=i+1;j<net.length;j++){
+        var a=net[i], b=net[j];
+        var dx=a.x-b.x, dy=a.y-b.y;
+        if(dx*dx+dy*dy < 0.045){
+          g.strokeStyle='rgba(160,170,220,'+(0.10+wn*0.55)+')'; g.lineWidth=0.7+wn*2.8;
+          g.beginPath(); g.moveTo(ox+a.x*ow,oy+a.y*oh); g.lineTo(ox+b.x*ow,oy+b.y*oh); g.stroke();
+        }
+      }
+      for(var k=0;k<net.length;k++){
+        var nx=ox+net[k].x*ow, ny=oy+net[k].y*oh;
+        var tw=(Math.sin(t*0.06+k)+1)/2;
+        g.fillStyle=MIND; g.shadowColor=MIND; g.shadowBlur=6+tw*10;
+        g.beginPath(); g.arc(nx,ny,4.5,0,7); g.fill(); g.shadowBlur=0;
+      }
+      g.font='12px '+MONO; g.fillStyle=MUT; g.textAlign='left'; g.textBaseline='middle';
+      g.fillText('拡大 ×1万', 130, 108);
+    } else if(step===2){
+      // two neurons + synapse
+      var y=H/2-10;
+      drawNeuron(180,y,1,pulse);
+      drawNeuron(500,y,-1,pulse);
+      // synapse gap pulse ── 重みが強いほど、とぶ合図の玉が増える
+      var nBalls=Math.round(1+wNorm()*5);   // 1〜6個
+      g.fillStyle=ORIGIN; g.shadowColor=ORIGIN; g.shadowBlur=12;
+      for(var b=0;b<nBalls;b++){
+        var ph=((t*0.012 + b/nBalls)%1);
+        var gx=290+(410-290)*ph;
+        g.beginPath(); g.arc(gx,y,4,0,7); g.fill();
+      }
+      g.shadowBlur=0;
+      g.font='12px '+MONO; g.fillStyle=MUT; g.textAlign='center'; g.textBaseline='middle';
+      g.fillText('シナプス（すき間）', 350, y+70);
+      g.fillStyle=ORIGIN; g.fillText('→ 合図をリレー →', 350, y-70);
+    }
+  }
+
+  function drawNeuron(cx,cy,dir,pulse){
+    g.save();
+    g.strokeStyle=MIND; g.lineWidth=2;
+    // dendrites (back side)
+    for(var a=-2;a<=2;a++){
+      g.beginPath(); g.moveTo(cx,cy);
+      g.lineTo(cx-dir*70, cy+a*26); g.stroke();
+    }
+    // axon (forward)
+    g.beginPath(); g.moveTo(cx,cy); g.lineTo(cx+dir*95,cy); g.stroke();
+    // body
+    g.fillStyle='rgba(232,93,155,'+(0.3+0.3*pulse)+')'; g.shadowColor=MIND; g.shadowBlur=10+pulse*14;
+    g.beginPath(); g.arc(cx,cy,20,0,7); g.fill(); g.shadowBlur=0;
+    g.strokeStyle='rgba(255,255,255,.3)'; g.lineWidth=1.5; g.beginPath(); g.arc(cx,cy,20,0,7); g.stroke();
+    g.restore();
+  }
+
+  function sceneB(){
+    var rev = step-3;                 // 0..3 highest revealed row
+    var glow=easePulse();
+    var topLit = (step<6) ? false : (weight>=0.75);
+    // --- edges between rows (draw first) ---
+    // row0->row1
+    if(rev>=1){ for(var i=0;i<oriX.length;i++) for(var j=0;j<shpX.length;j++)
+      edge(oriX[i],rowY[0]-26,shpX[j],rowY[1]+26,true,'rgba(108,143,255,.5)',glow); }
+    // row1->row2
+    if(rev>=2){ for(var j=0;j<shpX.length;j++)
+      edge(shpX[j],rowY[1]-26,faceX,rowY[2]+30,true,'rgba(63,209,167,.5)',glow); }
+    // row2->row3 (weight-controlled at step6)
+    if(rev>=3){
+      var on = topLit; var col = on?'rgba(255,184,77,.7)':'rgba(160,170,220,.12)';
+      edge(faceX,rowY[2]-30,conX,rowY[3]+28, on, col, glow);
+    }
+
+    // --- row0: orientation lines ---
+    if(rev>=0){
+      g.font='11px '+MONO; g.fillStyle=COSMOS; g.textAlign='left'; g.textBaseline='middle';
+      g.fillText('線の向き',18,rowY[0]);
+      for(var i=0;i<oriX.length;i++){
+        tile(oriX[i],rowY[0],COSMOS,true);
+        g.save(); g.translate(oriX[i],rowY[0]); g.rotate(oriAng[i]);
+        g.strokeStyle=COSMOS; g.lineWidth=2.4; g.beginPath(); g.moveTo(-15,0); g.lineTo(15,0); g.stroke();
+        g.restore();
+      }
+    }
+    // --- row1: shapes ---
+    if(rev>=1){
+      g.font='11px '+MONO; g.fillStyle=LIFE; g.textAlign='left'; g.fillText('形',18,rowY[1]);
+      for(var j=0;j<shpX.length;j++){
+        tile(shpX[j],rowY[1],LIFE,true);
+        g.strokeStyle=LIFE; g.lineWidth=2.2; g.fillStyle='none';
+        var x=shpX[j], y=rowY[1];
+        if(j===0){ g.beginPath(); g.arc(x,y,13,0,7); g.stroke(); }
+        else if(j===1){ g.beginPath(); g.moveTo(x-13,y-13); g.lineTo(x-13,y+13); g.lineTo(x+13,y+13); g.stroke(); }
+        else if(j===2){ g.beginPath(); g.arc(x,y+6,14,Math.PI,2*Math.PI); g.stroke(); }
+        else { g.beginPath(); g.moveTo(x,y-14); g.lineTo(x+13,y+12); g.lineTo(x-13,y+12); g.closePath(); g.stroke(); }
+      }
+    }
+    // --- row2: face ---
+    if(rev>=2){
+      g.font='11px '+MONO; g.fillStyle=ORIGIN; g.textAlign='left'; g.fillText('顔',18,rowY[2]);
+      drawFaceTile(faceX,rowY[2]);
+    }
+    // --- row3: concept ---
+    if(rev>=3){
+      g.font='11px '+MONO; g.fillStyle=MIND; g.textAlign='left'; g.fillText('概念',18,rowY[3]);
+      var r=34;
+      if(!topLit){
+        g.strokeStyle='rgba(160,170,220,.4)'; g.lineWidth=2;
+        g.beginPath(); g.arc(conX,rowY[3],r,0,7); g.stroke();
+        g.fillStyle=MUT; g.font='bold 20px '+MONO; g.textAlign='center'; g.textBaseline='middle';
+        g.fillText('?',conX,rowY[3]);
+      } else if(weight>1.15){
+        // 強すぎ:ひとつの顔なのに、色や音など複数の概念が同時に光る(共感覚に似た状態)
+        var multi=[['あの人!',MIND,conX,r],['色!',COSMOS,conX-150,24],['音♪',LIFE,conX+150,24]];
+        for(var me=0;me<multi.length;me++){ edge(faceX,rowY[2]-30,multi[me][2],rowY[3]+multi[me][3],true,'rgba(255,184,77,.55)',glow); }
+        for(var mc=0;mc<multi.length;mc++){
+          var M=multi[mc];
+          g.fillStyle=M[1]; g.shadowColor=M[1]; g.shadowBlur=20+glow*16;
+          g.beginPath(); g.arc(M[2],rowY[3],M[3],0,7); g.fill(); g.shadowBlur=0;
+          g.fillStyle='#fff'; g.font='bold '+(mc===0?15:13)+'px '+MONO; g.textAlign='center'; g.textBaseline='middle';
+          g.fillText(M[0],M[2],rowY[3]);
+        }
+      } else {
+        g.fillStyle='rgba(232,93,155,.9)'; g.shadowColor=MIND; g.shadowBlur=24+glow*18;
+        g.beginPath(); g.arc(conX,rowY[3],r,0,7); g.fill(); g.shadowBlur=0;
+        g.fillStyle='#fff'; g.font='bold 15px '+MONO; g.textAlign='center'; g.textBaseline='middle';
+        g.fillText('あの人!',conX,rowY[3]);
+      }
+      // おばあちゃん細胞 note
+      g.font='11px '+MONO; g.fillStyle=MUT; g.textAlign='center';
+      g.fillText('（おばあちゃん細胞）',conX,rowY[3]-r-14);
+    }
+  }
+
+  function drawFaceTile(x,y){
+    tile(x,y,ORIGIN,true);
+    g.strokeStyle=ORIGIN; g.lineWidth=1.8; g.fillStyle=ORIGIN;
+    // eyes
+    g.beginPath(); g.arc(x-9,y-6,2.6,0,7); g.fill();
+    g.beginPath(); g.arc(x+9,y-6,2.6,0,7); g.fill();
+    // nose
+    g.beginPath(); g.moveTo(x,y-3); g.lineTo(x,y+5); g.stroke();
+    // mouth
+    g.beginPath(); g.arc(x,y+4,8,0.15*Math.PI,0.85*Math.PI); g.stroke();
+  }
+
+  function render(){
+    clr();
+    if(step<=2) sceneA(); else sceneB();
+  }
+
+  function frame(){ t++; render(); if(!reduce) requestAnimationFrame(frame); }
+
+  function setStep(s){
+    step=Math.max(0,Math.min(STEP_MAX,s));
+    updateMeta();
+    if(reduce) render();
+  }
+
+  document.getElementById('bStep').addEventListener('click', function(){
+    stopPlay(); if(step>=STEP_MAX) setStep(0); else setStep(step+1);
+  });
+  document.getElementById('bReset').addEventListener('click', function(){
+    stopPlay(); setStep(0);
+  });
+  var pBtn=document.getElementById('bPlay');
+  function stopPlay(){ playing=false; if(playTimer){clearTimeout(playTimer);playTimer=null;} pBtn.textContent='▶ 再生'; }
+  function tick(){ if(!playing) return; if(step>=STEP_MAX){ stopPlay(); return; } setStep(step+1); playTimer=setTimeout(tick,1700); }
+  pBtn.addEventListener('click', function(){
+    if(playing){ stopPlay(); return; }
+    if(step>=STEP_MAX) setStep(0);
+    playing=true; pBtn.textContent='⏸ ストップ'; playTimer=setTimeout(tick,600);
+  });
+  var wEl=document.getElementById('bWeight'), wVal=document.getElementById('bWeightVal');
+  wEl.addEventListener('input', function(){
+    weight=parseFloat(wEl.value);
+    wVal.textContent = weight<0.75 ? 'よわい' : (weight>1.15 ? 'つよすぎ' : 'ちょうどいい');
+    if(step>=6) updateMeta();
+    if(reduce) render();
+  });
+
+  updateMeta();
+  if(reduce){ setStep(STEP_MAX); render(); }
+  else { requestAnimationFrame(frame); }
+})();
+</script>
+</body>
+</html>

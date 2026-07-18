@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ja" data-session="10">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宇宙人はどこにいる? ─ フェルミのパラドックス｜これからの、はなし</title>
+<style>
+  :root{
+    --void:#070A1F; --panel:#0E1436; --panel-2:#141B44;
+    --ink:#EDEAFB; --muted:#8B93C2; --line:rgba(160,170,220,.14);
+    --origin:#FFB84D; --cosmos:#6C8FFF; --life:#3FD1A7; --mind:#E85D9B; --future:#B07BFF;
+    --font-sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,system-ui,sans-serif;
+    --font-serif:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    --font-mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--void); color:var(--ink); font-family:var(--font-sans); line-height:1.9; font-size:17px; overflow-x:hidden; -webkit-font-smoothing:antialiased}
+  ruby rt{font-size:.55em; color:var(--muted); font-weight:400}
+  .stars{position:fixed; inset:0; z-index:0; pointer-events:none}
+  .stars span{position:absolute; background:#fff; border-radius:50%; opacity:.5; animation:tw 4s infinite ease-in-out}
+  @keyframes tw{0%,100%{opacity:.2}50%{opacity:.9}}
+  .wrap{position:relative; z-index:1; max-width:720px; margin:0 auto; padding:0 22px}
+  .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.22em; color:var(--muted); text-transform:uppercase; margin-bottom:14px; display:block}
+  section{padding:72px 0}
+  h2{font-size:clamp(26px,5.5vw,38px); font-weight:800; line-height:1.2; margin-bottom:20px}
+  h2 .accent{color:var(--accent,var(--cosmos))}
+  p{margin-bottom:18px}
+  .muted{color:var(--muted)} .serif{font-family:var(--font-serif)}
+
+  .hero{min-height:92vh; display:flex; flex-direction:column; justify-content:center; padding:80px 0 60px}
+  .hero .kicker{font-family:var(--font-mono); font-size:13px; letter-spacing:.2em; color:var(--cosmos); margin-bottom:26px}
+  .hero h1{font-size:clamp(36px,8.4vw,70px); line-height:1.1; font-weight:800; letter-spacing:.01em; margin-bottom:8px}
+  .hero h1 small{display:block; font-size:.44em; font-weight:600; color:var(--muted); letter-spacing:.12em; margin-top:18px}
+  .hero .lead{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,25px); color:var(--ink); margin-top:34px; max-width:21em}
+  .scrollcue{margin-top:56px; font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted); animation:bob 2.4s infinite}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(8px);opacity:1}}
+
+  .recap{background:linear-gradient(180deg,rgba(108,143,255,.08),transparent); border:1px solid var(--line); border-left:3px solid var(--cosmos); border-radius:16px; padding:26px 24px}
+  .recap .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--cosmos)}
+  .recap .q{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,23px); margin:10px 0 14px}
+  .recap .a b{color:var(--cosmos)}
+
+  .do{background:linear-gradient(180deg,var(--panel),var(--void)); border:1px solid var(--line); border-radius:20px; padding:30px 26px}
+  .do h3{font-size:22px; margin-bottom:16px; color:var(--life)}
+  .steps{list-style:none; counter-reset:s}
+  .steps li{counter-increment:s; position:relative; padding:10px 0 10px 44px; border-top:1px solid var(--line)}
+  .steps li:first-child{border-top:0}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:10px; width:28px; height:28px; border-radius:50%; background:var(--life); color:var(--void); font-family:var(--font-mono); font-weight:700; display:grid; place-items:center; font-size:14px}
+
+  details{border:1px solid var(--line); border-radius:14px; margin:18px 0; background:var(--panel); overflow:hidden}
+  details summary{cursor:pointer; padding:16px 20px; font-weight:700; list-style:none; display:flex; align-items:center; gap:10px; user-select:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"＋"; font-family:var(--font-mono); color:var(--cosmos)}
+  details[open] summary::before{content:"−"}
+  details .body{padding:2px 20px 20px; color:var(--muted); font-size:15.5px; line-height:1.85}
+  details .body b{color:var(--ink)}
+  details.col-note summary{color:var(--life)} details.col-note summary::before{color:var(--life)}
+  details.col-adult summary::before{color:var(--origin)}
+
+  /* 署名要素:宇宙文明すごろく */
+  .bioviz{background:linear-gradient(180deg,#0A1030,#070A1F); border:1px solid var(--line); border-radius:18px; padding:18px 16px; box-shadow:0 20px 60px rgba(0,0,0,.4); margin:18px 0 6px}
+  .bioviz .lab{font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:var(--muted); margin-bottom:12px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+  .bioviz canvas{display:block; width:100%; height:auto; border-radius:12px; background:radial-gradient(ellipse at 50% 40%,#0a1240,#05081C); border:1px solid rgba(108,143,255,.15)}
+  .situation{margin-top:14px; background:#05081C; border:1px solid var(--line); border-radius:12px; padding:16px 18px; font-size:15.5px; line-height:1.8; min-height:4.5em}
+  .situation b{color:var(--cosmos)}
+  .choices{display:flex; flex-direction:column; gap:8px; margin-top:12px}
+  .cbtn{font:inherit; font-size:15px; font-weight:600; text-align:left; color:var(--ink); background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:12px 16px; cursor:pointer; transition:transform .12s, border-color .2s}
+  .cbtn:hover{transform:translateX(3px); border-color:var(--cosmos)}
+  .result{margin-top:12px; border-radius:12px; padding:16px 18px; display:none}
+  .result.show{display:block; animation:rise .4s}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .result.silence{background:linear-gradient(180deg,rgba(232,93,155,.1),transparent); border:1px solid rgba(232,93,155,.4)}
+  .result.stars{background:linear-gradient(180deg,rgba(255,184,77,.1),transparent); border:1px solid rgba(255,184,77,.4)}
+  .result .rt{font-weight:800; font-size:17px; margin-bottom:8px}
+  .result.silence .rt{color:var(--mind)} .result.stars .rt{color:var(--origin)}
+  .result p{margin:0; font-size:14.5px; color:var(--muted)} .result p b{color:var(--ink)}
+  .bioctl{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+  .btn2{font:inherit; font-weight:700; font-size:14px; color:var(--ink); background:var(--panel-2); border:1px solid var(--line); border-radius:999px; padding:10px 18px; cursor:pointer}
+  .btn2:hover{border-color:var(--cosmos)}
+
+  /* 加速の図(まつ時間がちぢむ) */
+  .accel{display:grid; gap:12px; margin:22px 0 10px}
+  .arow{display:grid; grid-template-columns:128px 1fr; gap:12px; align-items:center}
+  .arow .an{font-size:14.5px; font-weight:700; text-align:right; line-height:1.4}
+  .arow .track{position:relative}
+  .arow .bar{height:16px; border-radius:99px; background:linear-gradient(90deg,var(--cosmos),rgba(108,143,255,.12)); min-width:26px}
+  .arow.hot .bar{background:linear-gradient(90deg,var(--origin),rgba(255,184,77,.15))}
+  .arow .gap{font-family:var(--font-mono); font-size:12px; color:var(--muted); margin-top:4px; display:block}
+  .arow.hot .gap{color:var(--origin)}
+  @media (max-width:560px){ .arow{grid-template-columns:96px 1fr} .arow .an{font-size:13px} }
+
+  .timeline{padding:20px 0}
+  .ms{opacity:0; transform:translateY(28px); transition:opacity .7s, transform .7s; border-left:3px solid var(--c,var(--cosmos)); padding:6px 0 6px 22px; margin:0 0 20px}
+  .ms.in{opacity:1; transform:none}
+  .ms .when{font-family:var(--font-mono); font-size:14px; color:var(--c,var(--cosmos)); font-weight:700}
+  .ms h4{font-size:21px; margin:4px 0 6px}
+  .ms p{font-size:15.5px; color:var(--muted); margin:0} .ms p b{color:var(--ink)}
+
+  .quiz-grid{display:grid; gap:16px; margin-top:12px}
+  .flip{background:none; border:0; padding:0; text-align:left; width:100%; cursor:pointer; perspective:1200px; font:inherit; color:inherit}
+  .flip .inner{position:relative; transition:transform .6s; transform-style:preserve-3d; min-height:122px}
+  .flip[aria-expanded="true"] .inner{transform:rotateY(180deg)}
+  .flip .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; padding:20px 22px; border:1px solid var(--line); display:flex; flex-direction:column; justify-content:center; gap:8px}
+  .flip .front{background:var(--panel-2)}
+  .flip .back{background:linear-gradient(180deg,var(--panel-2),var(--panel)); transform:rotateY(180deg); border-color:rgba(108,143,255,.42)}
+  .flip .q{font-weight:700; font-size:17px}
+  .flip .hint{font-family:var(--font-mono); font-size:11px; letter-spacing:.15em; color:var(--muted)}
+  .flip .a{color:var(--cosmos); font-weight:700; font-size:16px}
+  .flip .a small{display:block; color:var(--muted); font-weight:400; font-size:14px; margin-top:6px}
+
+  .talk{border:1px dashed var(--line); border-radius:16px; padding:24px; margin-top:8px}
+  .talk .q{font-family:var(--font-serif); font-size:clamp(20px,4vw,26px); line-height:1.5}
+  .grow{border:1px solid rgba(176,123,255,.45); border-radius:16px; padding:24px; background:linear-gradient(180deg,rgba(176,123,255,.08),transparent)}
+  .grow .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .grow .q{font-family:var(--font-serif); font-size:22px; margin-top:10px}
+
+  .bridge{text-align:center; padding:80px 0 40px}
+  .bridge .thread{font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted)}
+  .bridge .node{display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin:22px 0; font-family:var(--font-mono); font-size:13px; color:var(--muted)}
+  .bridge .node b{color:var(--cosmos)}
+  .bridge .next{font-family:var(--font-serif); font-size:clamp(21px,4.5vw,28px); margin-top:14px}
+
+  footer{border-top:1px solid var(--line); padding:30px 0 50px; color:var(--muted); font-size:13px}
+  footer .mono{font-family:var(--font-mono)}
+  :focus-visible{outline:2px solid var(--cosmos); outline-offset:3px; border-radius:6px}
+  @media (max-width:560px){ body{font-size:16px} }
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} .stars span,.scrollcue{animation:none} .ms{transition:none; opacity:1; transform:none} .flip .inner{transition:none} .result.show{animation:none} }
+</style>
+</head>
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">第3幕 これからの私たち ／ 第10回</div>
+    <h1>宇宙人は、<br>どこにいる?<small>星は2兆個の銀河ぶん。なのに、なぜ静か?</small></h1>
+    <p class="lead">空を見上げると、数えきれない星。<br>その一つ一つに、惑星があるかもしれない。<br>なのに、だれも来ない。声も聞こえない。<br>──みんな、どこにいるの?</p>
+    <div class="scrollcue">SCROLL ↓ 宇宙のいちばん大きな謎へ</div>
+  </div>
+</header>
+
+<section id="recap">
+  <div class="wrap">
+    <span class="eyebrow">前回のつづき ／ 文明の、行き先</span>
+    <h2>力を持った文明は、<span class="accent">どこまで</span>行く?</h2>
+    <p>前回、AIという大きな力と、その危険を知った。じゃあ、その力をうまく使えた文明は、この先どこまで行けるんだろう? そして──<b>他の星の文明</b>は、もう、そこにいるんだろうか?</p>
+    <div class="recap">
+      <span class="tag">今日の問い</span>
+      <p class="q">これだけ星があるのに、<b>なぜ宇宙は静かなの?</b>(=フェルミのパラドックス)</p>
+      <p class="a">答えのヒントは、きみ自身が<b>ひとつの文明を育ててみる</b>とわかるかも。下のすごろくで、星まで行けるか、やってみよう。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 加速:未来はどんどん速く来る -->
+<section id="accel">
+  <div class="wrap">
+    <span class="eyebrow">物語・その0 ／ 第2回の“加速”のつづき</span>
+    <h2>未来は、<span class="accent">どんどん速く</span>やってくる</h2>
+    <p>第2回のロープを思い出して。宇宙の138億年の、<b>最後の1cm</b>に人類の技術がぜんぶ詰まっていた。あの“加速”は、いまも続いている ── たとえば「ものを運ぶ」の歴史を見てみよう。<b>次の大発明までの「まつ時間」</b>に注目。</p>
+
+    <div class="accel" aria-label="発明と発明のあいだの待ち時間が、どんどん短くなっていく図">
+      <div class="arow"><span class="an">🚶 じぶんの足で<br>はこぶ</span><span class="track"><span class="bar" style="width:100%"></span><span class="gap">── ここから、まつこと 数十万年</span></span></div>
+      <div class="arow"><span class="an">🐴 馬と、車輪</span><span class="track"><span class="bar" style="width:62%"></span><span class="gap">── まつこと 数千年</span></span></div>
+      <div class="arow"><span class="an">🚂 蒸気機関車</span><span class="track"><span class="bar" style="width:30%"></span><span class="gap">── まつこと 約60年</span></span></div>
+      <div class="arow"><span class="an">🚗 自動車</span><span class="track"><span class="bar" style="width:20%"></span><span class="gap">── まつこと 約20年</span></span></div>
+      <div class="arow"><span class="an">✈️ 飛行機</span><span class="track"><span class="bar" style="width:14%"></span><span class="gap">── まつこと 約60年で…</span></span></div>
+      <div class="arow hot"><span class="an">🚀 月に立つ</span><span class="track"><span class="bar" style="width:10%"></span><span class="gap">── 最初の飛行機から、たった66年!</span></span></div>
+    </div>
+    <p class="muted">最初の飛行機(1903年)から、人が月に立つ(1969年)まで、<b>66年</b>。人ひとりの一生のあいだに、「空を飛ぶのは夢」から「月面を歩く」まで進んだ。</p>
+
+    <p>ここで、想像テスト。電話もテレビもなかった<b>150年前の人</b>に、こう言ったら信じてもらえたかな?「未来ではね、<b>ポケットの中の板</b>で、地球の裏側の人の顔を見ながら話せるんだよ」──たぶん、笑われる。想像の<b>そと</b>だったから。じゃあ……いまの私たちは、<b>10年後</b>をちゃんと想像できているだろうか?</p>
+
+    <div class="talk">
+      <p class="q">AIの進化がこのまま続くと、<br><b>100年ぶんの変化が10年で、やがて1年で</b>おきるようになるかもしれない。<br>その世界を、想像してみよう。</p>
+    </div>
+    <p class="muted" style="margin-top:18px">…きみが大人になるころ、治らない病気はのこってる? 宿題は? 仕事は? 宇宙旅行は? ──「そんなのむり!」と思ったら、150年前の人がスマホを笑ったことを思い出して。</p>
+
+    <p style="margin-top:22px">さて。この加速をかかえた文明は、いったい<b>どこまで行く</b>んだろう。そして、もし他の星にも同じような文明があったなら、とっくに<b>ここまで来ていてもいい</b>はずじゃない? ── それが今日の謎だ。</p>
+  </div>
+</section>
+
+<!-- 署名要素:宇宙文明すごろく -->
+<section id="sim" style="padding-top:0">
+  <div class="wrap">
+    <span class="eyebrow">署名要素 ／ 文明を育てる</span>
+    <h2><span class="accent">きみの文明</span>は、星に届く?</h2>
+    <p class="muted">きみの星に、たった今、知的生命が生まれた。これから何回か「分かれ道」がくる。文明を、星の海まで導けるかな? ……多くの文明は、どこかで消えてしまうらしい。<b>予想しながら</b>選んでみて。</p>
+
+    <div class="bioviz" id="fermi">
+      <div class="lab"><span>GREAT FILTER ／ 宇宙文明すごろく</span><span id="fStage">たびの はじまり</span></div>
+      <canvas id="fCv" width="680" height="300" aria-label="文明が分かれ道を選びながら星の海を目指す旅の地図"></canvas>
+      <div class="situation" id="fSit"></div>
+      <div class="choices" id="fChoices"></div>
+      <div class="result" id="fResult"></div>
+      <div class="bioctl"><button class="btn2" id="fReset">↺ もういちど文明を育てる</button></div>
+    </div>
+
+    <details class="col-adult">
+      <summary>◆ おとなコラム：フェルミのパラドックスと「大沈黙」</summary>
+      <div class="body">
+        物理学者エンリコ・フェルミが「これだけ星があるなら、宇宙人がいてもいいはず。<b>なのに、なぜ誰もいない?</b>」と問うたのが始まり。観測できる宇宙には約<b>2兆個の銀河</b>があり、各銀河に数千億の星。にもかかわらず、確かな文明の証拠は一つも見つかっていません(=大沈黙)。この矛盾を「フェルミのパラドックス」と呼びます。すごろくの各“サイレンス”は、この謎に対して真剣に提案されている仮説そのものです。</div>
+    </details>
+  </div>
+</section>
+
+<!-- 体験 -->
+<section id="experience">
+  <div class="wrap">
+    <span class="eyebrow">体験 ／ Hands-on</span>
+    <h2><span class="accent">チーム対抗</span>・文明すごろく</h2>
+    <p>さっきの画面のすごろくを、こんどは<b>チーム対抗</b>でやろう。むずかしい準備はいらない ── <b>画面の文章を、そのまま読みあげるだけ</b>で進められる。読みあげ係も、子どもがやってOK。</p>
+    <div class="do">
+      <h3>やってみよう</h3>
+      <ol class="steps">
+        <li>2〜4チームに分かれる(1チーム=1つの文明)。すごろくを「↺」でリセット。</li>
+        <li>読みあげ係が、<b>画面の文章と選択肢を読む</b>。各チームは30秒相談して、「せーの」で選んだ道を指さす。</li>
+        <li>チームごとにじゅんばんに進める(1台しかなければ、チームの番ごとに↺リセットしてやり直せばOK)。消えたチームは<b>どの壁で消えたか</b>をおぼえておく。</li>
+        <li>全チーム終わったら発表:「星まで行けた? どこで消えた?」→「星まで行くのは、かんたん? むずかしい?」を話す。</li>
+      </ol>
+    </div>
+    <details class="col-note">
+      <summary>おうちの方へ ／ 進行メモ</summary>
+      <div class="body">
+        所要15分。<b>画面の文章がそのまま台本</b>になるよう書いてあるので、大人の仕事は2つだけ:①「30秒相談スタート」の合図を出す、②最後に「じゃあ私たち人類は、いま<b>どの分かれ道の手前</b>にいると思う?」と問いかけて、<b>自分ごと・前向き</b>に締める(第2回の宇宙カレンダーのロープを再登場させると効果的です)。多くのチームが星に届く前に消えますが、それこそが<b>グレートフィルター</b>の体感なので、失敗ではありません。</div>
+    </details>
+  </div>
+</section>
+
+<!-- 物語 -->
+<section id="story">
+  <div class="wrap">
+    <span class="eyebrow">物語 ／ 大きな沈黙のなぞ</span>
+    <h2>なぜ、宇宙は<span class="accent">こんなに静か</span>?</h2>
+    <div class="timeline">
+      <div class="ms" style="--c:var(--cosmos)">
+        <div class="when">その1</div>
+        <h4>フェルミのパラドックス</h4>
+        <p>星は数えきれない。惑星もたくさんある。時間もたっぷりあった(宇宙は138億歳)。なら、宇宙人がいてもおかしくない。<b>なのに、だれも見つからない</b>。この「いるはずなのに、いない」の謎を、フェルミという科学者が問いかけた。</p>
+      </div>
+      <div class="ms" style="--c:var(--mind)">
+        <div class="when">その2</div>
+        <h4>グレートフィルター(大きなフルイ)</h4>
+        <p>もしかしたら、生命→知性→星まで広がる文明、の<b>とちゅうに、通りぬけるのがすごく難しい「フルイ」</b>があるのかも。ほとんどの文明は、そこで消えてしまう。きみのすごろくで消えた場所が、そのフィルターだ。</p>
+      </div>
+      <div class="ms" style="--c:var(--life)">
+        <div class="when">その3</div>
+        <h4>だから見えない、いろんな理由</h4>
+        <p>もう滅びてしまった / まだ生まれていない / いるけど<b>静かで目立たない</b> / デジタルになって小さくまとまった / ただ<b>遠すぎて</b>光が届いていない…。どれも「ありえる答え」で、まだ<b>正解はわかっていない</b>。</p>
+      </div>
+      <div class="ms" style="--c:var(--future)">
+        <div class="when">その4</div>
+        <h4>進んだ文明は、“宇宙人っぽく”なる</h4>
+        <p>すごろくの選択肢を思い出して。うんと進んだ文明は、<b>星の光をあますことなく集めて使い</b>(太陽をつつむ、うちゅう発電所)、<b>森や海ごと入った回る街</b>で宇宙をわたり、体を情報にうつして旅しているかもしれない。じつは科学者たちが大まじめに設計図を考えていて、「ダイソン球」「オニールシリンダー」というかっこいい名前までついている(くわしくは下のコラム)。……そしてそれは、私たちが今AIと踏みだしはじめた道の、ずっと先の景色でもある。<b>私たちこそが、宇宙でいちばん進んだ文明</b>という可能性すらあるんだ。</p>
+      </div>
+      <div class="ms" style="--c:var(--origin)">
+        <div class="when">その5</div>
+        <h4>宇宙カレンダーの、続きを書く</h4>
+        <p>第2回で歩いた、138億年の<b>ロープ</b>を思い出して。その先っぽに、私たちはいる。人類+AIは、そのロープの<b>続き</b>をこれから書く。フィルターを、越えられるだろうか? それとも──。答えは、きみたちの世代がにぎっている。</p>
+      </div>
+    </div>
+
+    <details class="col-adult">
+      <summary>◆ もっと知りたい人へ：ドレイクの方程式／カルダシェフの文明レベル</summary>
+      <div class="body">
+        <b>ドレイクの方程式</b>:銀河にいる“交信できる文明の数”を、星の数・惑星の割合・生命が生まれる確率…とかけ算で見積もる式。数字の入れ方しだいで「たくさんいる」にも「ほぼゼロ」にもなり、答えは今も出ていません。<br>
+        <b>カルダシェフの文明レベル</b>:文明を使えるエネルギーの大きさで分類する考え。<b>Ⅰ型</b>=惑星ぶん、<b>Ⅱ型</b>=恒星まるごと(ダイソン球)、<b>Ⅲ型</b>=銀河まるごと。私たち人類は、まだⅠ型にも届いていない“0.7型”くらいと言われます。</div>
+    </details>
+  </div>
+</section>
+
+<!-- クイズ -->
+<section id="quiz">
+  <div class="wrap">
+    <span class="eyebrow">問い ／ まず予想してみよう</span>
+    <h2 style="--accent:var(--cosmos)"><span class="accent">当ててから</span>、めくってね</h2>
+    <div class="quiz-grid">
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">「フェルミのパラドックス」って、どんな謎?</span></div>
+        <div class="face back"><span class="a">星は無数にあるのに、宇宙人が見つからない矛盾。<small>「いてもおかしくないのに、なぜ静か?」。まだ答えは出ていない。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">「グレートフィルター」って何?</span></div>
+        <div class="face back"><span class="a">文明が星まで広がる前に立ちはだかる、通りぬけにくい壁。<small>多くの文明がそこで消えてしまうのかも。すごろくで消えた場所がそれ。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">太陽をまるごと包んでエネルギーを集める、想像上の建造物は?</span></div>
+        <div class="face back"><span class="a">ダイソン球。<small>進んだ文明が作るかも、と考えられている。人工の回転する街=オニールシリンダーもその仲間。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">私たち人類は、宇宙で最先端の文明かも?</span></div>
+        <div class="face back"><span class="a">その可能性もある。<small>まだ他のどんな文明も見つかっていない。私たち+AIが、宇宙の物語の最前線にいるのかもしれない。</small></span></div>
+      </div></button>
+    </div>
+  </div>
+</section>
+
+<!-- 討論・発展 -->
+<section id="discuss">
+  <div class="wrap">
+    <span class="eyebrow">討論 ／ ロープの続きを書く</span>
+    <div class="talk">
+      <p class="q">第2回で歩いた、138億年のロープ。<br>その先っぽにいる私たち+AIは、<br>この物語の<b>続き</b>を、どう書く?</p>
+    </div>
+    <p class="muted" style="margin-top:22px">…フィルターを越えて星に広がる? 地球で静かに幸せに暮らす? 消えてしまう? きみが書きたい「続き」は、どれ?</p>
+    <div class="grow" style="margin-top:16px">
+      <span class="tag">発展カード ／ 上級生・大人向け</span>
+      <p class="q">知的生命が“沈黙”している理由。<br>きみの<b>いちばんの仮説</b>は?</p>
+      <p class="muted" style="margin:12px 0 0">滅びた? 遠すぎる? 静かなだけ? 私たちが最初? ── どれも証拠はまだない。だからこそ、きみの考えにも価値がある。理由もつけて、みんなに話してみよう。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 次回への橋 -->
+<section>
+  <div class="wrap bridge">
+    <div class="thread">── 情報の物語 ──</div>
+    <div class="node">宇宙 → DNA → 脳 → AI → <b>これから(宇宙規模)</b></div>
+    <p class="muted">文明の未来を、宇宙のスケールでのぞいた。星の光をぜんぶ使う文明、情報になって旅する体、星の海…。</p>
+    <p class="next">でも、その未来は<b>きみ自身</b>にも起きる。<br>次回、もっと身近な未来へ。<b>サイボーグと、不老不死</b>の話。</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="mono">これからの、はなし ／ 第10回 宇宙人はどこにいる?</p>
+    <p style="margin-top:8px">※すごろくの分岐は、フェルミのパラドックスに対して実際に提案されている仮説をもとにした、考えるためのモデルです。この教材はAIと一緒に作りました。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sky=document.getElementById('stars');
+  if(sky && !reduce){ var n=window.innerWidth<560?40:80, html='';
+    for(var i=0;i<n;i++){ var s=(Math.random()*1.6+1).toFixed(1);
+      html+='<span style="left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;animation-delay:'+(Math.random()*4).toFixed(2)+'s;width:'+s+'px;height:'+s+'px"></span>'; }
+    sky.innerHTML=html; }
+  document.querySelectorAll('.flip').forEach(function(btn){
+    btn.addEventListener('click', function(){ btn.setAttribute('aria-expanded', btn.getAttribute('aria-expanded')==='true'?'false':'true'); });
+  });
+  var msList=document.querySelectorAll('.ms');
+  if('IntersectionObserver' in window && !reduce){
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); }); },{threshold:0.4});
+    msList.forEach(function(m){ io.observe(m); });
+  } else { msList.forEach(function(m){ m.classList.add('in'); }); }
+})();
+</script>
+<script>
+/* ═══ 宇宙文明すごろく(グレートフィルター) ═══ */
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cv=document.getElementById('fCv'); if(!cv) return;
+  var g=cv.getContext('2d'), W=cv.width, H=cv.height;
+
+  var NODES={
+    start:{d:0, sit:'きみの星に、知性が生まれた。道具を作り、言葉を持ち、空を見上げはじめた。さあ、最初の分かれ道。', c:[
+      {l:'その力を、戦いに使う', to:'war'},
+      {l:'その力を、みんなの協力に使う', to:'energy'} ]},
+    war:{d:1, type:'silence', rt:'🔇 サイレンス:じぶんをほろぼした', sit:'', txt:'強い武器を作りすぎて、文明はじぶんを滅ぼしてしまった…。<b>これはフェルミの謎の答えの一つ</b>:「多くの文明は、賢くなった力で自滅するのかも」。'},
+    energy:{d:1, sit:'文明はぐんぐん発展! でも、エネルギーが足りなくなってきた。どうする?', c:[
+      {l:'星の資源を、どんどん使いつくす', to:'drained'},
+      {l:'太陽の光を、まるごと集める“うちゅう発電所”を作る', to:'body'} ]},
+    drained:{d:2, type:'silence', rt:'🔇 サイレンス:資源をつかいはたした', sit:'', txt:'資源を使いきり、文明は静かに縮んでいった…。<b>答えの一つ</b>:「エネルギーや資源の壁を、越えられない文明が多いのかも」。'},
+    body:{d:2, sit:'無限に近い力を手に入れた! でも、体はもろく、宇宙はあまりに広くて遠い。星へ出るには?', c:[
+      {l:'あきらめて、自分の星で静かに暮らす', to:'home'},
+      {l:'体を情報(AI)にうつして、光の速さで旅立つ', to:'digital'},
+      {l:'森や海ごと入った“回る宇宙の街”を作って旅立つ', to:'oneill'} ]},
+    home:{d:3, type:'silence', rt:'🔇 サイレンス:星にこもった', sit:'', txt:'文明は自分の星で満足し、外に出なかった。だから、だれにも気づかれない…。<b>答えの一つ</b>:「いるけど、出てこないだけなのかも」。'},
+    digital:{d:3, sit:'体をAIにうつし、光の速さで考える存在になった。食べ物も空気もいらない。宇宙のどこへでも行ける!', c:[
+      {l:'目立たず、静かに広がっていく', to:'quiet'},
+      {l:'宇宙じゅうに「ここにいるよ!」と信号を送る', to:'loud'} ]},
+    oneill:{d:3, sit:'回転する人工の街をいくつも作り、中に森や海もこしらえた。街ごと宇宙を旅する文明になった!', c:[
+      {l:'目立たず、静かに広がっていく', to:'quiet'},
+      {l:'宇宙じゅうに信号を送る', to:'loud'} ]},
+    quiet:{d:4, type:'stars', rt:'🌟 星の海へ、到達!', sit:'', txt:'文明は星の海へ、静かに広がっていった。……もしかして、こういう文明が<b>あちこちにいて、ただ静かなだけ</b>なのかも? だから宇宙は静かに“見える”。'},
+    loud:{d:4, type:'stars', rt:'🌟 星の海へ、到達!', sit:'', txt:'文明は宇宙に声をあげた。返事は、あるだろうか? ……それはまだ、<b>だれも知らない</b>。きみの文明は、宇宙の物語の続きを書きはじめた。'}
+  };
+
+  var cur, terminal, path;
+  var stageEl=document.getElementById('fStage'), sitEl=document.getElementById('fSit'),
+      choicesEl=document.getElementById('fChoices'), resultEl=document.getElementById('fResult');
+
+  function reset(){
+    cur='start'; terminal=null; path=[0];
+    resultEl.className='result'; resultEl.innerHTML='';
+    render(); draw();
+  }
+  function go(to){
+    var n=NODES[to];
+    path.push(n.d);
+    if(n.type){ terminal=n.type; cur=to; render(); showResult(n); draw(); return; }
+    cur=to; render(); draw();
+  }
+  function render(){
+    var n=NODES[cur];
+    stageEl.textContent = terminal ? (terminal==='stars'?'星に とどいた!':'ぶんめい、しずかに…') : ('だんかい '+(n.d+1));
+    sitEl.innerHTML = n.sit || '';
+    choicesEl.innerHTML='';
+    if(n.c && !terminal){
+      n.c.forEach(function(ch){
+        var b=document.createElement('button'); b.className='cbtn'; b.textContent='▶ '+ch.l;
+        b.addEventListener('click', function(){ go(ch.to); });
+        choicesEl.appendChild(b);
+      });
+    }
+  }
+  function showResult(n){
+    resultEl.className='result show '+n.type;
+    resultEl.innerHTML='<div class="rt">'+n.rt+'</div><p>'+n.txt+'</p>';
+  }
+
+  // 星の背景(固定)
+  var bgStars=[];
+  (function(){ for(var i=0;i<160;i++){ bgStars.push({x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.4+0.3, a:Math.random()*0.6+0.2}); } })();
+
+  function draw(){
+    g.clearRect(0,0,W,H);
+    for(var i=0;i<bgStars.length;i++){ var s=bgStars[i];
+      g.fillStyle='rgba(200,215,255,'+s.a+')'; g.beginPath(); g.arc(s.x,s.y,s.r,0,7); g.fill(); }
+    // 旅の道:5つのウェイポイント
+    var N=5, pad=70, y=H/2;
+    var xs=[]; for(var i=0;i<N;i++) xs.push(pad + i*((W-2*pad)/(N-1)));
+    // 道の線
+    g.strokeStyle='rgba(108,143,255,.25)'; g.lineWidth=2; g.setLineDash([5,7]);
+    g.beginPath(); g.moveTo(xs[0], y); g.lineTo(xs[N-1], y); g.stroke(); g.setLineDash([]);
+    var reached = Math.min(NODES[cur].d, N-1);
+    for(var i=0;i<N;i++){
+      var x=xs[i], done=i<=reached;
+      var isEnd=(i===N-1);
+      if(terminal==='silence' && i===reached){
+        g.fillStyle='#E85D9B'; g.shadowColor='rgba(232,93,155,.9)'; g.shadowBlur=18;
+        g.beginPath(); g.arc(x,y,10,0,7); g.fill(); g.shadowBlur=0;
+        g.font='16px sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText('🔇', x, y-24);
+      } else if(terminal==='stars' && isEnd && reached>=N-1){
+        g.fillStyle='#FFB84D'; g.shadowColor='rgba(255,184,77,.9)'; g.shadowBlur=24;
+        g.beginPath(); g.arc(x,y,12,0,7); g.fill(); g.shadowBlur=0;
+        g.font='18px sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText('🌟', x, y-26);
+      } else {
+        g.fillStyle = done ? '#6C8FFF' : 'rgba(160,170,220,.3)';
+        if(i===reached && !terminal){ g.shadowColor='rgba(108,143,255,.9)'; g.shadowBlur=16; }
+        g.beginPath(); g.arc(x,y, i===reached?9:6, 0,7); g.fill(); g.shadowBlur=0;
+      }
+    }
+    // ラベル
+    g.font='11px ui-monospace,monospace'; g.textAlign='center'; g.textBaseline='alphabetic'; g.fillStyle='#8B93C2';
+    var labels=['たんじょう','道具','エネルギー','宇宙へ','星の海'];
+    for(var i=0;i<N;i++){ g.fillText(labels[i], xs[i], y+30); }
+    // 「2兆個の星、でも静か」
+    g.textAlign='left'; g.fillStyle='rgba(139,147,194,.8)'; g.fillText('★ 星は2兆個の銀河ぶん…でも、聞こえるのは沈黙', 16, 22);
+  }
+
+  document.getElementById('fReset').addEventListener('click', reset);
+  reset();
+})();
+</script>
+</body>
+</html>

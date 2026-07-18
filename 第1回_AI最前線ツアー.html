@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ja" data-session="1">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI最前線ツアー ─ きみはもう未来に住んでいる｜これからの、はなし</title>
+<style>
+  :root{
+    --void:#070A1F; --panel:#0E1436; --panel-2:#141B44;
+    --ink:#EDEAFB; --muted:#8B93C2; --line:rgba(160,170,220,.14);
+    --origin:#FFB84D; --cosmos:#6C8FFF; --life:#3FD1A7; --mind:#E85D9B; --future:#B07BFF;
+    --font-sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,system-ui,sans-serif;
+    --font-serif:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    --font-mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--void); color:var(--ink); font-family:var(--font-sans);
+    line-height:1.9; font-size:17px; overflow-x:hidden; -webkit-font-smoothing:antialiased}
+  ruby rt{font-size:.55em; color:var(--muted); font-weight:400}
+
+  .stars{position:fixed; inset:0; z-index:0; pointer-events:none}
+  .stars span{position:absolute; background:#fff; border-radius:50%; opacity:.5; animation:tw 4s infinite ease-in-out}
+  @keyframes tw{0%,100%{opacity:.15}50%{opacity:.85}}
+
+  .wrap{position:relative; z-index:1; max-width:720px; margin:0 auto; padding:0 22px}
+  .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.22em;
+    color:var(--muted); text-transform:uppercase; margin-bottom:14px; display:block}
+  section{padding:72px 0}
+  h2{font-size:clamp(26px,5.5vw,38px); font-weight:800; line-height:1.2; margin-bottom:20px}
+  h2 .accent{color:var(--accent,var(--mind))}
+  p{margin-bottom:18px}
+  .muted{color:var(--muted)}
+  .serif{font-family:var(--font-serif)}
+
+  /* ═══ 冷たいオープニング(二重スリット) ═══ */
+  .cold{min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:70px 0 40px}
+  .cold .whisper{font-family:var(--font-serif); font-size:clamp(15px,3vw,18px); color:var(--muted);
+    letter-spacing:.12em; margin-bottom:18px}
+  .cold h1{font-family:var(--font-serif); font-weight:600; font-size:clamp(30px,7.4vw,58px);
+    line-height:1.35; letter-spacing:.02em; margin-bottom:14px}
+  .cold h1 em{font-style:normal; color:var(--cosmos);
+    text-shadow:0 0 22px rgba(108,143,255,.55)}
+  .cold .sub{color:var(--muted); font-size:clamp(14px,2.8vw,16px); margin-bottom:34px}
+
+  .lab{background:linear-gradient(180deg,#0A0F2E,#070A1F); border:1px solid var(--line);
+    border-radius:20px; padding:18px 16px 16px; box-shadow:0 20px 60px rgba(0,0,0,.45)}
+  .lab .labhead{display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:0 6px 12px; flex-wrap:wrap}
+  .lab .labtitle{font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:var(--muted)}
+  .lab .count{font-family:var(--font-mono); font-size:12px; color:var(--cosmos)}
+  canvas{display:block; width:100%; height:auto; border-radius:12px; background:#05081C;
+    border:1px solid rgba(108,143,255,.15)}
+  .labctl{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
+  .btn{font:inherit; font-weight:700; font-size:14px; color:var(--ink); background:var(--panel-2);
+    border:1px solid var(--line); border-radius:999px; padding:10px 18px; cursor:pointer;
+    transition:transform .15s, border-color .2s}
+  .btn:hover{transform:translateY(-1px); border-color:var(--cosmos)}
+  .btn.primary{background:linear-gradient(135deg,#20306E,#141B44); border-color:rgba(108,143,255,.5)}
+  .btn.watch[aria-pressed="true"]{background:linear-gradient(135deg,#5A1F3E,#3A1430);
+    border-color:var(--mind); color:#FFD9EA}
+  .btn.watch[aria-pressed="true"]::before{content:"👁 "}
+  .labnote{font-size:13.5px; color:var(--muted); margin-top:12px; padding:0 6px}
+  .labnote b{color:var(--ink)}
+  .verdict{margin-top:10px; padding:0 6px; font-family:var(--font-serif);
+    font-size:clamp(15px,3vw,17px); color:var(--origin); min-height:1.9em}
+
+  .cold .drop{margin-top:46px; font-family:var(--font-serif);
+    font-size:clamp(18px,3.8vw,23px); line-height:2.1}
+  .cold .drop b{color:var(--mind)}
+  .scrollcue{margin-top:36px; font-family:var(--font-mono); font-size:12px;
+    letter-spacing:.2em; color:var(--muted); animation:bob 2.4s infinite}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(8px);opacity:1}}
+
+  /* ヒーロー第2部(回タイトル) */
+  .hero2{padding:60px 0 30px}
+  .hero2 .kicker{font-family:var(--font-mono); font-size:13px; letter-spacing:.2em; color:var(--mind); margin-bottom:22px}
+  .hero2 h1{font-size:clamp(36px,8.6vw,68px); line-height:1.1; font-weight:800; margin-bottom:8px}
+  .hero2 h1 small{display:block; font-size:.44em; font-weight:600; color:var(--muted); letter-spacing:.14em; margin-top:16px}
+  .hero2 .lead{font-family:var(--font-serif); font-size:clamp(18px,3.4vw,23px); margin-top:28px; max-width:22em}
+
+  /* 体験 */
+  .do{background:linear-gradient(180deg,var(--panel),var(--void));
+    border:1px solid var(--line); border-radius:20px; padding:30px 26px}
+  .do h3{font-size:22px; margin-bottom:16px; color:var(--life)}
+  .steps{list-style:none; counter-reset:s}
+  .steps li{counter-increment:s; position:relative; padding:10px 0 10px 44px; border-top:1px solid var(--line)}
+  .steps li:first-child{border-top:0}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:10px;
+    width:28px; height:28px; border-radius:50%; background:var(--life); color:var(--void);
+    font-family:var(--font-mono); font-weight:700; display:grid; place-items:center; font-size:14px}
+
+  details{border:1px solid var(--line); border-radius:14px; margin:18px 0; background:var(--panel); overflow:hidden}
+  details summary{cursor:pointer; padding:16px 20px; font-weight:700; list-style:none;
+    display:flex; align-items:center; gap:10px; user-select:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"＋"; font-family:var(--font-mono); color:var(--cosmos)}
+  details[open] summary::before{content:"−"}
+  details .body{padding:2px 20px 20px; color:var(--muted); font-size:15.5px; line-height:1.85}
+  details.col-note summary{color:var(--life)}
+  details.col-note summary::before{color:var(--life)}
+  details.col-adult summary::before{color:var(--origin)}
+
+  /* AI年表 */
+  .tl{border-left:3px solid var(--mind); margin:26px 0 0}
+  .tl .item{padding:14px 0 14px 22px; opacity:0; transform:translateY(24px); transition:opacity .6s, transform .6s}
+  .tl .item.in{opacity:1; transform:none}
+  .tl .yr{font-family:var(--font-mono); font-weight:700; font-size:15px; color:var(--mind)}
+  .tl h4{font-size:20px; margin:2px 0 4px}
+  .tl p{font-size:15.5px; color:var(--muted); margin:0}
+
+  /* フリップ・クイズ */
+  .quiz-grid{display:grid; gap:16px; margin-top:12px}
+  .flip{background:none; border:0; padding:0; text-align:left; width:100%; cursor:pointer;
+    perspective:1200px; font:inherit; color:inherit}
+  .flip .inner{position:relative; transition:transform .6s; transform-style:preserve-3d; min-height:112px}
+  .flip[aria-expanded="true"] .inner{transform:rotateY(180deg)}
+  .flip .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:16px;
+    padding:20px 22px; border:1px solid var(--line); display:flex; flex-direction:column; justify-content:center; gap:8px}
+  .flip .front{background:var(--panel-2)}
+  .flip .back{background:linear-gradient(180deg,var(--panel-2),var(--panel)); transform:rotateY(180deg);
+    border-color:rgba(232,93,155,.45)}
+  .flip .q{font-weight:700; font-size:17px}
+  .flip .hint{font-family:var(--font-mono); font-size:11px; letter-spacing:.15em; color:var(--muted)}
+  .flip .a{color:var(--mind); font-weight:700; font-size:16px}
+  .flip .a small{display:block; color:var(--muted); font-weight:400; font-size:14px; margin-top:6px}
+
+  .talk{border:1px dashed var(--line); border-radius:16px; padding:24px; margin-top:8px}
+  .talk .q{font-family:var(--font-serif); font-size:clamp(20px,4vw,26px); line-height:1.5}
+  .grow{border:1px solid rgba(176,123,255,.45); border-radius:16px; padding:24px;
+    background:linear-gradient(180deg,rgba(176,123,255,.08),transparent)}
+  .grow .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .grow .q{font-family:var(--font-serif); font-size:22px; margin-top:10px}
+
+  .bridge{text-align:center; padding:80px 0 40px}
+  .bridge .thread{font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted)}
+  .bridge .node{display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
+    margin:22px 0; font-family:var(--font-mono); font-size:13px; color:var(--muted)}
+  .bridge .node b{color:var(--mind)}
+  .bridge .next{font-family:var(--font-serif); font-size:clamp(21px,4.5vw,28px); margin-top:14px}
+
+  footer{border-top:1px solid var(--line); padding:30px 0 50px; color:var(--muted); font-size:13px}
+  footer .mono{font-family:var(--font-mono)}
+  :focus-visible{outline:2px solid var(--cosmos); outline-offset:3px; border-radius:6px}
+
+  @media (max-width:560px){ body{font-size:16px} }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .stars span,.scrollcue{animation:none}
+    .tl .item{transition:none; opacity:1; transform:none}
+    .flip .inner{transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+
+<!-- ═══════════ 冷たいオープニング:世界は、見ていないあいだ ═══════════ -->
+<header class="cold">
+  <div class="wrap">
+    <p class="whisper">── AIの話をはじめる前に、ひとつだけ。</p>
+    <h1>世界は、<br>見ていないあいだ、<br><em>波</em>でできている。</h1>
+    <p class="sub">きみの体も、この画面も、星も──世界のすべては「<b>素粒子</b>」という、これ以上分けられない小さな小さなつぶでできている。<b>電子</b>はその代表選手。<br>これは物語ではなく、100年前から何度やっても同じ結果になる本物の実験。この電子を、2本のすきまに向けて<b>1つぶずつ</b>撃ちます。</p>
+
+    <div class="lab">
+      <div class="labhead">
+        <span class="labtitle">DOUBLE-SLIT EXPERIMENT ／ 二重スリット実験</span>
+        <span class="count">landed: <span id="cnt">0</span></span>
+      </div>
+      <canvas id="slit" width="680" height="360" aria-label="二重スリット実験のシミュレーション"></canvas>
+      <div class="labctl">
+        <button class="btn primary" id="fire">▶ 電子を発射</button>
+        <button class="btn" id="burst">⏩ 1000つぶ一気に</button>
+        <button class="btn" id="slow" aria-pressed="false">🐢 スローモーション</button>
+        <button class="btn watch" id="watch" aria-pressed="false">スリットを観測する</button>
+        <button class="btn" id="clear">リセット</button>
+      </div>
+      <p class="labnote"><b>① まず予想:</b>電子がものすごく小さい「ボール」だとしたら、どこにたまる? ──ふつうに考えれば、すきまのまっすぐ先、<b>2カ所</b>のはず。<br>
+      <b>② 発射!(観測しない):</b>「▶発射」「⏩1000つぶ」でためしてみよう。……あれ? <b>しましま</b>になった!?<br>
+      <b>③ たねあかし:</b>「🐢スローモーション」を押して発射。電子は<b>波</b>として2つのすきまを<b>同時に</b>通り、2つの波紋が重なりあう。波の山と山がぶつかって<b>強めあう場所</b>にだけ届きやすい──だから、しましま。そして当たった<b>瞬間だけ、1点</b>に決まる。<br>
+      <b>④ 見張ってみる:</b>「スリットを観測する」を押すと……電子はボールにもどり、まっすぐ2カ所へ。<b>見ると、世界のふるまいが変わる。</b></p>
+      <p class="verdict" id="verdict"></p>
+    </div>
+
+    <p class="drop">1つぶずつ撃ったのに、たくさんたまると<b>しましま模様</b>(波の証拠)。<br>でも「どっちを通った?」と<b>見張ったとたん</b>、しましまは消える。<br>──世界は、見られると、ふるまいを変える。<span class="muted">まだ誰も、その理由を完全には説明できていない。</span></p>
+    <div class="scrollcue">SCROLL ↓ そんな世界に、新しい不思議が生まれた</div>
+  </div>
+</header>
+
+<!-- ═══════════ 回タイトル ═══════════ -->
+<section class="hero2">
+  <div class="wrap">
+    <div class="kicker">第1幕 世界の物語 ／ 第1回</div>
+    <h1>AI最前線ツアー<small>きみはもう、未来に住んでいる。</small></h1>
+    <p class="lead">見られると変わる世界。その世界に最近、<b>言葉を話す機械</b>が現れた。宇宙のだれも見たことがない、新しい不思議だ。今日はまず、その「今」を見に行こう。</p>
+  </div>
+</section>
+
+<!-- ═══════════ 体験:デモ大会 ═══════════ -->
+<section id="experience">
+  <div class="wrap">
+    <span class="eyebrow">体験 ／ Hands-on</span>
+    <h2 style="--accent:var(--life)"><span class="accent">AIデモ大会</span> ── ライブで見る、今のAI</h2>
+    <p>まずはアンケート。<b>AIを使ったことがある人?</b> どんなAIを知ってる? 何をさせたことがある? ──それを聞いてから、大きな画面でライブデモを見ます。</p>
+
+    <div class="do">
+      <h3>やってみよう</h3>
+      <ol class="steps">
+        <li><b>挙手アンケート:</b>「使ったことある?」「名前を知ってるAIは?」「AIにさせて一番おどろいたことは?」</li>
+        <li><b>声で話す:</b>AIと音声でおしゃべり。とちゅうでさえぎっても、ちゃんと聞いてくれる。</li>
+        <li><b>その場で絵を作る:</b>みんなが出したお題(「宇宙で運動会をするネコ」など)を、その場で画像に。</li>
+        <li><b>いっしょに物語を作る:</b>1人1文ずつつないで、AIも1人として参加するリレー小説。</li>
+        <li>スマホを持っているおうちの人がいたら、手元でも同じことを試してもらう。</li>
+      </ol>
+    </div>
+
+    <details class="col-note">
+      <summary>おうちの方へ ／ 進行メモ</summary>
+      <div class="body">
+        所要25〜30分。講師PC+プロジェクタ投影。ネット環境に依存するため、<b>フォールバック用に事前録画かスクリーンショットを1枚</b>用意しておくと安心。冒頭アンケートの回答は以降11回の難度調整の材料になるのでメモ推奨。デモは「すごい」で終わらせず「なんでできるんだと思う?」と1回だけ問い返しておくと、第4〜6回への種になります。
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══════════ 物語:AI年表 ═══════════ -->
+<section id="story">
+  <div class="wrap">
+    <span class="eyebrow">物語 ／ たった数年のできごと</span>
+    <h2 style="--accent:var(--mind)">AIは<span class="accent">いつから</span>こんなにすごい?</h2>
+    <p>実は、世界のほとんどの人がAIと「会話」したことがなかったのは、ほんの数年前。ここ数年で何が起きたのか、駆け足で見てみよう。</p>
+
+    <div class="tl">
+      <div class="item"><span class="yr">〜2021</span><h4>研究室の中のAI</h4><p>画像を見分けたり、<ruby>翻訳<rt>ほんやく</rt></ruby>したり。すごいけれど、ふつうの人が「話しかける」ものではなかった。</p></div>
+      <div class="item"><span class="yr">2022.11</span><h4>ChatGPT登場 ── 世界が変わった日</h4><p>だれでも、ふつうの言葉でAIと話せるようになった。たった2か月で1億人が使いはじめた。歴史上いちばん速く広がった道具のひとつ。</p></div>
+      <div class="item"><span class="yr">2023</span><h4>AIが「目」を持つ</h4><p>文章だけでなく、写真や図を見て答えられるように。テストの問題用紙を見せると解いてしまう。</p></div>
+      <div class="item"><span class="yr">2024</span><h4>AIが「声」と「まなざし」を持つ</h4><p>人間と同じ速さで音声会話ができるように。文章から動画まで作れるようになった。</p></div>
+      <div class="item"><span class="yr">2025</span><h4>AIが「手」を持つ</h4><p>話すだけでなく、自分でパソコンを操作して仕事を進める「エージェント」に。プログラムを書くのはもう得意技。</p></div>
+      <div class="item"><span class="yr">2026</span><h4>そして今 ── きみのとなりに</h4><p>いま世界中の大人が、AIと<b>いっしょに</b>働きはじめている。きみたちは、その最初の子ども世代だ。</p></div>
+    </div>
+
+    <details class="col-adult" style="margin-top:30px">
+      <summary>◆ おとなコラム：<ruby>指数関数<rt>しすうかんすう</rt></ruby> ── 紙を42回折ると月に届く</summary>
+      <div class="body">
+        厚さ0.1mmの紙を半分に折ると0.2mm。もう一度で0.4mm。たった42回くり返すと約44万km──月までの距離(約38万km)を超える。「毎回2倍」の成長は、最初はのろく見えて、あるとき突然爆発する。AIの性能向上も同じ型で進んでおり、「去年できなかったことが今年できる」が毎年続いているのは偶然ではない。人間の直感は足し算でできているので、この掛け算の変化をいつも見あやまる。
+      </div>
+    </details>
+
+    <details class="col-adult">
+      <summary>◆ おとなコラム：二重スリットと観測者問題 ── 少しだけ深く</summary>
+      <div class="body">
+        電子は観測されないあいだ「両方のすきまを同時に通る波(重ね合わせ)」としてふるまい、スクリーンに干渉縞を作る。ところがどちらを通ったか測定すると重ね合わせは失われ、縞は消える(「収縮」あるいは「デコヒーレンス」)。<b>なぜ観測が結果を変えるのか</b>は、コペンハーゲン解釈・多世界解釈など今も解釈が分かれる物理学最大の謎のひとつ。子どもへの伝え方は「世界の一番小さい部品は、見ていないあいだ“決まっていない”らしい」で十分です。なお「観測」は人間の意識ではなく、粒子との相互作用(測定装置)で起きる点は補足しておくと誤解を防げます。
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══════════ 問い:クイズ ═══════════ -->
+<section id="quiz">
+  <div class="wrap">
+    <span class="eyebrow">問い ／ まず予想してみよう</span>
+    <h2 style="--accent:var(--cosmos)"><span class="accent">当ててから</span>、めくってね</h2>
+
+    <div class="quiz-grid">
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front"><span class="hint">TAP TO FLIP</span>
+            <span class="q">ChatGPTが使う人1億人に届くまで、何か月かかった?</span></div>
+          <div class="face back"><span class="a">約2か月。<small>電話は75年、スマホのアプリでも1年以上かかったものがほとんど。歴史上まれに見る速さだった。</small></span></div>
+        </div>
+      </button>
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front"><span class="hint">TAP TO FLIP</span>
+            <span class="q">二重スリット実験で、電子を「1つぶずつ」撃ってもしましま模様ができるのはなぜ?</span></div>
+          <div class="face back"><span class="a">1つぶが、波のように「両方のすきま」を通るから。<small>信じられないけれど、何度実験しても同じ。世界の一番小さい部品は、見ていないあいだ“決まっていない”らしい。</small></span></div>
+        </div>
+      </button>
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front"><span class="hint">TAP TO FLIP</span>
+            <span class="q">今のAIは、どうやって答えを作っている?</span></div>
+          <div class="face back"><span class="a">「次にくる言葉」を予想している。<small>…と言われている。でも「それだけ」なのかは、実は大論争中。この謎は第6回でじっくりやる。</small></span></div>
+        </div>
+      </button>
+    </div>
+
+    <div class="talk" style="margin-top:30px">
+      <p class="q">きょう見たAIのなかで、いちばん「え、なんで?」と思ったのはどれ?<br>──その「なんで?」を、これから1年かけて解き明かしていく。</p>
+    </div>
+
+    <div class="grow" style="margin-top:18px">
+      <span class="tag">発展カード ／ 上級生・大人向け</span>
+      <p class="q">AIは「考えている」? それとも「計算している」?<br>そもそも、そのふたつは違うもの?</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 次回への橋 ═══════════ -->
+<section>
+  <div class="wrap bridge">
+    <div class="thread">── 情報の物語 ──</div>
+    <div class="node">宇宙のはじまり → DNA → 脳 → <b>AI(いまここ)</b> → これから</div>
+    <p class="muted">今日は物語の「いちばん最後」を先に見た。次からは、いちばん最初まで巻き戻す。</p>
+    <p class="next">次回、138億年を10メートルのロープで歩く。<br>「宇宙カレンダー」の旅へ。</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="mono">これからの、はなし ／ 第1回 AI最前線ツアー</p>
+    <p style="margin-top:8px">※年表はおおまかな流れを示すもので、講師が最新情報にあわせて補足します。この教材はAIと一緒に作りました。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 星空 */
+  var sky = document.getElementById('stars');
+  if(sky && !reduce){
+    var n = window.innerWidth < 560 ? 40 : 80, html='';
+    for(var i=0;i<n;i++){
+      var s=(Math.random()*1.6+1).toFixed(1);
+      html+='<span style="left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;animation-delay:'+(Math.random()*4).toFixed(2)+'s;width:'+s+'px;height:'+s+'px"></span>';
+    }
+    sky.innerHTML = html;
+  }
+
+  /* ═══ 二重スリット・シミュレーション v2 ═══
+     観測OFF: 波紋が銃から広がる → 2つのスリットから2つの波紋 → 重なって進む
+              → スクリーンに達した瞬間、1点にピカッと収縮
+     観測ON : ボールが一直線に飛ぶ(銃→スリット→フィルムが一本の直線) */
+  var cv = document.getElementById('slit'), ctx = cv.getContext('2d');
+  var W = cv.width, H = cv.height;
+  var GUN_X = 46, SLIT_X = 250, SCREEN_X = W - 60;
+  var CY = H/2, SLIT_GAP = 46, SLIT_H = 26;
+  var s1 = CY - SLIT_GAP/2, s2 = CY + SLIT_GAP/2;
+  var GX = GUN_X + 14;                                   // 銃口X
+  var RATIO = (SCREEN_X - GX) / (SLIT_X - GX);           // 直線を延長する倍率
+  var B1 = CY + (s1 - CY) * RATIO;                       // 直線延長上の着弾中心(上)
+  var B2 = CY + (s2 - CY) * RATIO;                       // 同(下)
+  var observing = false;
+  var hits = [], balls = [], waves = [], flashes = [];
+  var landed = 0, SPD = 0.3;   // SPD: 0.3=通常, 0.1=スローモーション
+  var cnt = document.getElementById('cnt');
+  var verdict = document.getElementById('verdict');
+  var LAMBDA = 30; // 波の山の間隔 = 縞の間隔
+
+  function clampY(y){ return Math.max(6, Math.min(H-6, y)); }
+
+  /* 波:干渉パターンからの棄却サンプリング */
+  function sampleInterference(){
+    for(var i=0;i<200;i++){
+      var y = Math.random()*H, d = y - CY;
+      var envelope = Math.exp(-d*d/(2*95*95));
+      var fringe = Math.pow(Math.cos(Math.PI*d/LAMBDA), 2);
+      if(Math.random() < envelope*fringe) return y;
+    }
+    return CY;
+  }
+  /* ボール:銃→スリットの直線の延長上、2本の帯 */
+  function sampleTwoBands(){
+    var c = Math.random()<.5 ? B1 : B2;
+    return clampY(c + (Math.random()+Math.random()+Math.random()-1.5)*2*6);
+  }
+
+  function drawStatic(){
+    ctx.clearRect(0,0,W,H);
+    /* 観測ONのとき:銃→スリット→フィルムの「一直線」ガイド(点線) */
+    if(observing){
+      ctx.save();
+      ctx.setLineDash([4,8]);
+      ctx.strokeStyle = 'rgba(232,93,155,.30)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(GX, CY); ctx.lineTo(SLIT_X, s1); ctx.lineTo(SCREEN_X, B1); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(GX, CY); ctx.lineTo(SLIT_X, s2); ctx.lineTo(SCREEN_X, B2); ctx.stroke();
+      ctx.restore();
+    }
+    /* 波紋 */
+    ctx.lineWidth = 2.2;
+    for(var i=0;i<waves.length;i++){
+      var wv = waves[i], k, rad, al;
+      if(wv.phase===0){
+        for(k=0;k<4;k++){
+          rad = wv.r - k*LAMBDA; if(rad<=0) continue;
+          ctx.strokeStyle = 'rgba(120,160,255,'+(0.60-k*0.12)+')';
+          ctx.beginPath(); ctx.arc(GX, CY, rad, -0.95, 0.95); ctx.stroke();
+        }
+      } else {
+        for(k=0;k<5;k++){
+          rad = wv.r2 - k*LAMBDA; if(rad<=0) continue;
+          al = 0.55 - k*0.09;
+          ctx.strokeStyle = 'rgba(120,160,255,'+al+')';
+          ctx.beginPath(); ctx.arc(SLIT_X+4, s1, rad, -1.15, 1.15); ctx.stroke();
+          ctx.beginPath(); ctx.arc(SLIT_X+4, s2, rad, -1.15, 1.15); ctx.stroke();
+        }
+      }
+    }
+    /* 電子銃 */
+    ctx.fillStyle = '#20306E';
+    ctx.fillRect(GUN_X-30, CY-16, 34, 32);
+    ctx.fillStyle = '#6C8FFF';
+    ctx.fillRect(GUN_X+2, CY-5, 10, 10);
+    ctx.font = '11px ui-monospace,monospace'; ctx.fillStyle = '#8B93C2';
+    ctx.fillText('電子銃', GUN_X-30, CY+34);
+    /* スリット板 */
+    ctx.fillStyle = '#2A3568';
+    ctx.fillRect(SLIT_X-4, 0, 8, s1-SLIT_H/2);
+    ctx.fillRect(SLIT_X-4, s1+SLIT_H/2, 8, (s2-SLIT_H/2)-(s1+SLIT_H/2));
+    ctx.fillRect(SLIT_X-4, s2+SLIT_H/2, 8, H-(s2+SLIT_H/2));
+    /* 観測の目 */
+    if(observing){
+      ctx.font = '16px sans-serif'; ctx.fillStyle = '#8B93C2';
+      ctx.fillText('👁', SLIT_X+12, s1+6);
+      ctx.fillText('👁', SLIT_X+12, s2+6);
+      ctx.strokeStyle = 'rgba(232,93,155,.5)'; ctx.lineWidth = 1;
+      ctx.strokeRect(SLIT_X-8, s1-SLIT_H/2-4, 40, SLIT_H+8);
+      ctx.strokeRect(SLIT_X-8, s2-SLIT_H/2-4, 40, SLIT_H+8);
+    }
+    /* スクリーン */
+    ctx.fillStyle = '#101740';
+    ctx.fillRect(SCREEN_X, 8, 10, H-16);
+    /* 着弾点(蓄積) */
+    for(var h,j=0;j<hits.length;j++){
+      h = hits[j];
+      ctx.fillStyle = h.obs ? 'rgba(232,93,155,.85)' : 'rgba(108,143,255,.85)';
+      ctx.fillRect(SCREEN_X-2, h.y, 3, 1.6);
+      ctx.fillRect(SCREEN_X-14 - h.tail, h.y, 2, 1.2); /* ヒストグラム風の尾 */
+    }
+    /* 飛行中のボール(観測ON) */
+    for(var b,m=0;m<balls.length;m++){
+      b = balls[m];
+      var y  = CY + b.slope*(b.x - GX);
+      var y2 = CY + b.slope*(b.x - 16 - GX);
+      ctx.strokeStyle = 'rgba(187,208,255,.35)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(b.x-16, y2); ctx.lineTo(b.x, y); ctx.stroke();
+      ctx.fillStyle = '#DCE6FF';
+      ctx.beginPath(); ctx.arc(b.x, y, 3, 0, 7); ctx.fill();
+    }
+    /* 収縮フラッシュ:「当たった瞬間、1点に」 */
+    for(var f,n=0;n<flashes.length;n++){
+      f = flashes[n];
+      var a = Math.max(0, 1 - f.t/26);
+      ctx.strokeStyle = 'rgba(255,214,120,'+(a*.9)+')'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(SCREEN_X+5, f.y, 3 + f.t*1.8, 0, 7); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,240,200,'+a+')';
+      ctx.beginPath(); ctx.arc(SCREEN_X+5, f.y, 3.2, 0, 7); ctx.fill();
+    }
+  }
+
+  function fireOne(instant){
+    if(instant || reduce){
+      land(observing ? sampleTwoBands() : sampleInterference());
+      return;
+    }
+    if(observing){
+      /* ボール:どちらか片方のスリットへ、一直線 */
+      var slitY = (Math.random()<.5 ? s1 : s2) + (Math.random()-.5)*10;
+      balls.push({x:GX, slope:(slitY - CY)/(SLIT_X - GX)});
+    } else {
+      /* 波:銃から波紋が広がる */
+      waves.push({phase:0, r:0, r2:0});
+    }
+  }
+  function land(ty){
+    hits.push({y:ty, obs:observing, tail:Math.min(120, densityAt(ty))});
+    landed++; cnt.textContent = landed;
+    if(hits.length > 2600) hits.splice(0, hits.length-2600);
+    updateVerdict();
+  }
+  function densityAt(y){
+    var c=0;
+    for(var i=Math.max(0,hits.length-800); i<hits.length; i++){
+      if(Math.abs(hits[i].y - y) < 4) c++;
+    }
+    return c*3;
+  }
+  function updateVerdict(){
+    if(landed < 40){ return; }
+    verdict.textContent = observing
+      ? '👁 ボールのふるまい:どちらか片方のすきまを、まっすぐ一直線に通過。2本の帯だけができる。'
+      : '波のふるまい:2つのすきまを同時に通って重なりあい……当たった瞬間だけ、1点に。たまると、しましま。';
+  }
+
+  function tick(){
+    /* ボール(直線運動) */
+    for(var i=balls.length-1;i>=0;i--){
+      var b = balls[i];
+      b.x += 9*SPD;
+      if(b.x >= SCREEN_X-3){
+        var ty = clampY(CY + b.slope*(SCREEN_X - GX));
+        flashes.push({y:ty, t:12});
+        land(ty);
+        balls.splice(i,1);
+      }
+    }
+    /* 波(広がり → スリットで2つに → スクリーンで収縮) */
+    for(var j=waves.length-1;j>=0;j--){
+      var wv = waves[j];
+      if(wv.phase===0){
+        wv.r += 7*SPD;
+        if(wv.r >= SLIT_X - GX - 4){ wv.phase = 1; wv.r2 = 0; }
+      } else {
+        wv.r2 += 7*SPD;
+        if(wv.r2 >= SCREEN_X - SLIT_X){
+          var y = sampleInterference();
+          flashes.push({y:y, t:0});
+          land(y);
+          waves.splice(j,1);
+        }
+      }
+    }
+    /* フラッシュ減衰 */
+    for(var n=flashes.length-1;n>=0;n--){
+      flashes[n].t += SPD;
+      if(flashes[n].t > 26) flashes.splice(n,1);
+    }
+    drawStatic();
+    requestAnimationFrame(tick);
+  }
+
+  document.getElementById('fire').addEventListener('click', function(){
+    if(reduce){ for(var i=0;i<12;i++) fireOne(true); drawStatic(); return; }
+    if(observing){ for(var i=0;i<12;i++) setTimeout(fireOne, i*80); }
+    else        { for(var j=0;j<4;j++)  setTimeout(fireOne, j*450); }
+  });
+  document.getElementById('burst').addEventListener('click', function(){
+    for(var i=0;i<1000;i++) fireOne(true);
+    drawStatic();
+  });
+  var slowBtn = document.getElementById('slow');
+  slowBtn.addEventListener('click', function(){
+    SPD = (SPD > 0.2) ? 0.1 : 0.3;
+    slowBtn.setAttribute('aria-pressed', SPD<0.2?'true':'false');
+    slowBtn.textContent = SPD<0.2 ? '▶ ふつうの速さにもどす' : '🐢 スローモーション';
+    /* スロー開始時、波が飛んでいなければ1発だけ自動発射して見せる */
+    if(SPD<0.2 && !observing && waves.length===0 && !reduce) fireOne();
+  });
+  var watchBtn = document.getElementById('watch');
+  watchBtn.addEventListener('click', function(){
+    observing = !observing;
+    watchBtn.setAttribute('aria-pressed', observing?'true':'false');
+    watchBtn.textContent = observing ? '観測をやめる' : 'スリットを観測する';
+    hits=[]; balls=[]; waves=[]; flashes=[]; landed=0; cnt.textContent=0;
+    verdict.textContent = observing
+      ? '👁 観測ON。電子は「つぶ(ボール)」として、まっすぐ飛びます。発射してみよう。'
+      : '観測OFF。誰も見ていません。電子は「波」として広がります。発射してみよう。';
+  });
+  document.getElementById('clear').addEventListener('click', function(){
+    hits=[]; balls=[]; waves=[]; flashes=[]; landed=0; cnt.textContent=0; verdict.textContent='';
+    drawStatic();
+  });
+
+  drawStatic();
+  if(!reduce) requestAnimationFrame(tick);
+  else setInterval(drawStatic, 400);
+
+  /* フリップカード */
+  document.querySelectorAll('.flip').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      btn.setAttribute('aria-expanded', btn.getAttribute('aria-expanded')==='true'?'false':'true');
+    });
+  });
+
+  /* 年表の出現 */
+  var items = document.querySelectorAll('.tl .item');
+  if('IntersectionObserver' in window && !reduce){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); });
+    }, {threshold:.4});
+    items.forEach(function(el){ io.observe(el); });
+  } else {
+    items.forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+</body>
+</html>

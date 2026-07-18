@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ja" data-session="11">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>未来の体、未来の私 ─ サイボーグと不老不死｜これからの、はなし</title>
+<style>
+  :root{
+    --void:#070A1F; --panel:#0E1436; --panel-2:#141B44;
+    --ink:#EDEAFB; --muted:#8B93C2; --line:rgba(160,170,220,.14);
+    --origin:#FFB84D; --cosmos:#6C8FFF; --life:#3FD1A7; --mind:#E85D9B; --future:#B07BFF;
+    --font-sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,system-ui,sans-serif;
+    --font-serif:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    --font-mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--void); color:var(--ink); font-family:var(--font-sans); line-height:1.9; font-size:17px; overflow-x:hidden; -webkit-font-smoothing:antialiased}
+  ruby rt{font-size:.55em; color:var(--muted); font-weight:400}
+  .stars{position:fixed; inset:0; z-index:0; pointer-events:none}
+  .stars span{position:absolute; background:#fff; border-radius:50%; opacity:.5; animation:tw 4s infinite ease-in-out}
+  @keyframes tw{0%,100%{opacity:.2}50%{opacity:.9}}
+  .wrap{position:relative; z-index:1; max-width:720px; margin:0 auto; padding:0 22px}
+  .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.22em; color:var(--muted); text-transform:uppercase; margin-bottom:14px; display:block}
+  section{padding:72px 0}
+  h2{font-size:clamp(26px,5.5vw,38px); font-weight:800; line-height:1.2; margin-bottom:20px}
+  h2 .accent{color:var(--accent,var(--future))}
+  p{margin-bottom:18px}
+  .muted{color:var(--muted)} .serif{font-family:var(--font-serif)}
+
+  .hero{min-height:92vh; display:flex; flex-direction:column; justify-content:center; padding:80px 0 60px}
+  .hero .kicker{font-family:var(--font-mono); font-size:13px; letter-spacing:.2em; color:var(--future); margin-bottom:26px}
+  .hero h1{font-size:clamp(36px,8.4vw,70px); line-height:1.1; font-weight:800; letter-spacing:.01em; margin-bottom:8px}
+  .hero h1 small{display:block; font-size:.44em; font-weight:600; color:var(--muted); letter-spacing:.12em; margin-top:18px}
+  .hero .lead{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,25px); color:var(--ink); margin-top:34px; max-width:21em}
+  .scrollcue{margin-top:56px; font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted); animation:bob 2.4s infinite}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(8px);opacity:1}}
+
+  .recap{background:linear-gradient(180deg,rgba(176,123,255,.08),transparent); border:1px solid var(--line); border-left:3px solid var(--future); border-radius:16px; padding:26px 24px}
+  .recap .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .recap .q{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,23px); margin:10px 0 14px}
+  .recap .a b{color:var(--future)}
+
+  .do{background:linear-gradient(180deg,var(--panel),var(--void)); border:1px solid var(--line); border-radius:20px; padding:30px 26px}
+  .do h3{font-size:22px; margin-bottom:16px; color:var(--life)}
+  .steps{list-style:none; counter-reset:s}
+  .steps li{counter-increment:s; position:relative; padding:10px 0 10px 44px; border-top:1px solid var(--line)}
+  .steps li:first-child{border-top:0}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:10px; width:28px; height:28px; border-radius:50%; background:var(--life); color:var(--void); font-family:var(--font-mono); font-weight:700; display:grid; place-items:center; font-size:14px}
+
+  details{border:1px solid var(--line); border-radius:14px; margin:18px 0; background:var(--panel); overflow:hidden}
+  details summary{cursor:pointer; padding:16px 20px; font-weight:700; list-style:none; display:flex; align-items:center; gap:10px; user-select:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"＋"; font-family:var(--font-mono); color:var(--future)}
+  details[open] summary::before{content:"−"}
+  details .body{padding:2px 20px 20px; color:var(--muted); font-size:15.5px; line-height:1.85}
+  details .body b{color:var(--ink)}
+  details.col-note summary{color:var(--life)} details.col-note summary::before{color:var(--life)}
+  details.col-adult summary::before{color:var(--origin)}
+
+  /* テセウスの船カード(段階めくり) */
+  .theseus{display:grid; gap:10px; margin:18px 0 6px}
+  .tcard{display:grid; grid-template-columns:52px 1fr auto; gap:14px; align-items:center; background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:14px 16px}
+  .tcard .ico{font-size:28px; text-align:center}
+  .tcard .tt{font-weight:700; font-size:16px} .tcard .tt small{display:block; color:var(--muted); font-weight:400; font-size:13px; margin-top:2px}
+  .tcard .pct{font-family:var(--font-mono); font-size:13px; color:var(--future); white-space:nowrap}
+  .tcard.deep{border-color:rgba(176,123,255,.45); background:linear-gradient(180deg,rgba(176,123,255,.1),var(--panel-2))}
+
+  /* 署名要素:テセウスの船スライダー */
+  .bioviz{background:linear-gradient(180deg,#0A1030,#070A1F); border:1px solid var(--line); border-radius:18px; padding:18px 16px; box-shadow:0 20px 60px rgba(0,0,0,.4); margin:18px 0 6px}
+  .bioviz .lab{font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:var(--muted); margin-bottom:12px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+  .bioviz canvas{display:block; width:100%; height:auto; border-radius:12px; background:radial-gradient(ellipse at 50% 40%,#0a1240,#05081C); border:1px solid rgba(176,123,255,.15)}
+  .sliderrow{margin-top:16px}
+  .sliderrow label{font-family:var(--font-mono); font-size:12px; letter-spacing:.12em; color:var(--muted); display:flex; justify-content:space-between; margin-bottom:8px}
+  .sliderrow input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:8px; border-radius:99px; background:linear-gradient(90deg,var(--life),var(--future)); outline:none}
+  .sliderrow input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:26px; height:26px; border-radius:50%; background:var(--ink); border:3px solid var(--future); cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.5)}
+  .sliderrow input[type=range]::-moz-range-thumb{width:22px; height:22px; border-radius:50%; background:var(--ink); border:3px solid var(--future); cursor:pointer}
+  .capnow{margin-top:14px; background:#05081C; border:1px solid var(--line); border-radius:12px; padding:16px 18px; font-size:15.5px; line-height:1.8; min-height:5em}
+  .capnow .stage{font-weight:800; color:var(--future); font-size:17px; display:block; margin-bottom:6px}
+  .capnow b{color:var(--ink)}
+
+  /* まだ自分? 投票メーター */
+  .votemeter{margin-top:14px}
+  .votemeter .vlab{font-family:var(--font-mono); font-size:11px; letter-spacing:.12em; color:var(--muted); margin-bottom:6px; display:flex; justify-content:space-between}
+  .votebar{position:relative; height:34px; border-radius:10px; overflow:hidden; border:1px solid var(--line); display:flex}
+  .votebar .yes{background:linear-gradient(90deg,var(--life),rgba(63,209,167,.55)); display:flex; align-items:center; padding-left:10px; font-size:13px; font-weight:700; color:#05201A; transition:width .25s; white-space:nowrap; overflow:hidden}
+  .votebar .no{background:linear-gradient(90deg,rgba(176,123,255,.55),var(--future)); flex:1; display:flex; align-items:center; justify-content:flex-end; padding-right:10px; font-size:13px; font-weight:700; color:#160A2A; white-space:nowrap; overflow:hidden}
+  .bioctl{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
+  .btn2{font:inherit; font-weight:700; font-size:14px; color:var(--ink); background:var(--panel-2); border:1px solid var(--line); border-radius:999px; padding:10px 18px; cursor:pointer}
+  .btn2:hover{border-color:var(--future)}
+
+  /* 生命の系譜 */
+  .lineage{display:grid; gap:10px; margin:22px 0 10px}
+  .lin{display:grid; grid-template-columns:46px 1fr; gap:14px; align-items:center; padding:12px 14px; border:1px solid var(--line); border-radius:14px; background:var(--panel)}
+  .lin .ico{font-size:26px; text-align:center}
+  .lin .tx{font-size:15px} .lin .tx b{color:var(--ink)}
+  .lin.q0{border-color:rgba(176,123,255,.5); background:linear-gradient(180deg,rgba(176,123,255,.1),var(--panel))}
+  .lin.q0 .tx{color:var(--future); font-weight:700}
+
+  .timeline{padding:20px 0}
+  .ms{opacity:0; transform:translateY(28px); transition:opacity .7s, transform .7s; border-left:3px solid var(--c,var(--future)); padding:6px 0 6px 22px; margin:0 0 20px}
+  .ms.in{opacity:1; transform:none}
+  .ms .when{font-family:var(--font-mono); font-size:14px; color:var(--c,var(--future)); font-weight:700}
+  .ms h4{font-size:21px; margin:4px 0 6px}
+  .ms p{font-size:15.5px; color:var(--muted); margin:0} .ms p b{color:var(--ink)}
+
+  /* 不老不死の両面 */
+  .twoface{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:20px 0 6px}
+  .tf{border:1px solid var(--line); border-radius:16px; padding:20px 18px}
+  .tf.up{border-color:rgba(63,209,167,.4); background:linear-gradient(180deg,rgba(63,209,167,.08),transparent)}
+  .tf.down{border-color:rgba(232,93,155,.4); background:linear-gradient(180deg,rgba(232,93,155,.08),transparent)}
+  .tf h5{font-size:16px; margin-bottom:10px} .tf.up h5{color:var(--life)} .tf.down h5{color:var(--mind)}
+  .tf p{font-size:14px; color:var(--muted); margin:0}
+  @media (max-width:560px){ .twoface{grid-template-columns:1fr} }
+
+  .quiz-grid{display:grid; gap:16px; margin-top:12px}
+  .flip{background:none; border:0; padding:0; text-align:left; width:100%; cursor:pointer; perspective:1200px; font:inherit; color:inherit}
+  .flip .inner{position:relative; transition:transform .6s; transform-style:preserve-3d; min-height:122px}
+  .flip[aria-expanded="true"] .inner{transform:rotateY(180deg)}
+  .flip .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; padding:20px 22px; border:1px solid var(--line); display:flex; flex-direction:column; justify-content:center; gap:8px}
+  .flip .front{background:var(--panel-2)}
+  .flip .back{background:linear-gradient(180deg,var(--panel-2),var(--panel)); transform:rotateY(180deg); border-color:rgba(176,123,255,.42)}
+  .flip .q{font-weight:700; font-size:17px}
+  .flip .hint{font-family:var(--font-mono); font-size:11px; letter-spacing:.15em; color:var(--muted)}
+  .flip .a{color:var(--future); font-weight:700; font-size:16px}
+  .flip .a small{display:block; color:var(--muted); font-weight:400; font-size:14px; margin-top:6px}
+
+  .talk{border:1px dashed var(--line); border-radius:16px; padding:24px; margin-top:8px}
+  .talk .q{font-family:var(--font-serif); font-size:clamp(20px,4vw,26px); line-height:1.5}
+  .reveal{border:1px solid rgba(176,123,255,.5); border-radius:16px; padding:26px 24px; margin-top:18px; background:linear-gradient(180deg,rgba(176,123,255,.1),transparent)}
+  .reveal .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .reveal .q{font-family:var(--font-serif); font-size:clamp(20px,4vw,25px); margin:12px 0 12px; line-height:1.5}
+  .reveal p{margin:0; color:var(--muted); font-size:15px} .reveal p b{color:var(--ink)}
+  .grow{border:1px solid rgba(176,123,255,.45); border-radius:16px; padding:24px; background:linear-gradient(180deg,rgba(176,123,255,.08),transparent)}
+  .grow .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .grow .q{font-family:var(--font-serif); font-size:22px; margin-top:10px}
+
+  .bridge{text-align:center; padding:80px 0 40px}
+  .bridge .thread{font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted)}
+  .bridge .node{display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin:22px 0; font-family:var(--font-mono); font-size:13px; color:var(--muted)}
+  .bridge .node b{color:var(--future)}
+  .bridge .next{font-family:var(--font-serif); font-size:clamp(21px,4.5vw,28px); margin-top:14px}
+
+  footer{border-top:1px solid var(--line); padding:30px 0 50px; color:var(--muted); font-size:13px}
+  footer .mono{font-family:var(--font-mono)}
+  :focus-visible{outline:2px solid var(--future); outline-offset:3px; border-radius:6px}
+  @media (max-width:560px){ body{font-size:16px} }
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} .stars span,.scrollcue{animation:none} .ms{transition:none; opacity:1; transform:none} .flip .inner{transition:none} .votebar .yes{transition:none} }
+</style>
+</head>
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">第3幕 これからの私たち ／ 第11回</div>
+    <h1>未来の体、<br>未来の私。<small>体の何%を機械にしたら、「別人」になる?</small></h1>
+    <p class="lead">メガネは、目の一部。<br>義足は、足の一部。<br>じゃあ、脳の半分をチップにしたら?<br>──それでも、まだ「きみ」かな?</p>
+    <div class="scrollcue">SCROLL ↓ 自分のさかいめを、さがす旅へ</div>
+  </div>
+</header>
+
+<section id="recap">
+  <div class="wrap">
+    <span class="eyebrow">前回のつづき ／ 宇宙のスケールから、きみ自身へ</span>
+    <h2>その未来は、<span class="accent">きみの体</span>にも起きる</h2>
+    <p>前回は、宇宙のスケールで文明の行き先をのぞいた。「体を情報にうつして旅する文明」なんて話も出たね。でも、あれは遠い星の話じゃない。<b>体を作りかえる未来</b>は、きみが生きているあいだに、きみ自身に起こりはじめる。</p>
+    <div class="recap">
+      <span class="tag">今日の問い</span>
+      <p class="q">どこまで機械にしても、<b>「まだ自分」でいられる?</b></p>
+      <p class="a">じつはこれ、<ruby>2000<rt>にせん</rt></ruby>年以上前から人が悩んできた<b>「テセウスの船」</b>という有名ななぞなぞと、まったく同じ問い。下のスライダーで、自分の体を機械にかえていってみよう。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 体験:テセウスの船カード -->
+<section id="experience">
+  <div class="wrap">
+    <span class="eyebrow">体験 ／ Hands-on ・ 立つ? すわる?</span>
+    <h2><span class="accent">まだ自分?</span> カードで立とう</h2>
+    <p>下のカードを、上から1枚ずつ読みあげる。「これでも、まだ<b>自分</b>だと思う人は<b>立つ</b>」「もう<b>別人</b>だと思う人は<b>すわる</b>」。どこで立てなくなる? ── <b>まず予想</b>してみて。自分はどのカードで座ると思う?</p>
+
+    <div class="theseus">
+      <div class="tcard"><span class="ico">👓</span><span class="tt">メガネをかける<small>目のはたらきを、道具でおぎなう</small></span><span class="pct">機械 1%</span></div>
+      <div class="tcard"><span class="ico">🦻</span><span class="tt">補聴器を入れる<small>耳のはたらきを、機械でおぎなう</small></span><span class="pct">機械 5%</span></div>
+      <div class="tcard"><span class="ico">🦿</span><span class="tt"><ruby>義手<rt>ぎしゅ</rt></ruby>・<ruby>義足<rt>ぎそく</rt></ruby>をつける<small>手や足を、機械にかえる</small></span><span class="pct">機械 20%</span></div>
+      <div class="tcard"><span class="ico">🫀</span><span class="tt">人工心臓を入れる<small>心臓を、ずっと動くポンプにかえる</small></span><span class="pct">機械 40%</span></div>
+      <div class="tcard deep"><span class="ico">🧠</span><span class="tt">脳にチップを入れる<small>記憶や考えを、機械で手つだう</small></span><span class="pct">機械 70%</span></div>
+      <div class="tcard deep"><span class="ico">☁️</span><span class="tt">脳をまるごとコンピュータへ<small>=マインドアップロード。体は、なし</small></span><span class="pct">機械 100%</span></div>
+    </div>
+    <p class="muted">おもしろいのは、<b>みんなの「座る場所」がバラバラ</b>になること。正解はない。だからこそ、話す価値がある。</p>
+
+    <details class="col-note">
+      <summary>おうちの方へ ／ 進行メモ</summary>
+      <div class="body">
+        所要10分。カードを1枚ずつゆっくり読み、そのつど<b>立っている人数を数えて</b>「今◯人が立ってるね」と実況すると盛り上がります。人工心臓〜脳チップのあたりで<b>意見が割れる</b>のが山場。<b>どちらが正しいかを決めないこと</b>が大切です。締めに「なんでそこで座ったの?」と<b>理由</b>を聞くと、子どもは自分の『自分の定義』を初めて言葉にします。第4回「脳を全部コピーしたら、それは君?」を覚えていれば、ここで再登場させてください。</div>
+    </details>
+  </div>
+</section>
+
+<!-- 署名要素:テセウスの船スライダー -->
+<section id="sim" style="padding-top:0">
+  <div class="wrap">
+    <span class="eyebrow">署名要素 ／ 自分のさかいめ</span>
+    <h2><span class="accent">スライダー</span>で、体をかえる</h2>
+    <p class="muted">つまみを右へ動かすほど、体が機械にかわっていく。動かしながら、心の中で問い続けて ── <b>「これでも、まだ自分?」</b>。下の<b>緑と紫のバー</b>は、「まだ自分だと思う人」の割合が、機械化が進むにつれてどう<b>ゆれる</b>かのイメージ。正解はないよ。</p>
+
+    <div class="bioviz" id="theseus">
+      <div class="lab"><span>SHIP OF THESEUS ／ 自分のさかいめ</span><span id="tPct">機械 0%</span></div>
+      <canvas id="tCv" width="680" height="360" aria-label="人のシルエットが、スライダーの割合にあわせて少しずつ機械にかわっていく図"></canvas>
+
+      <div class="sliderrow">
+        <label><span>🧬 生身(なまみ)</span><span>機械 →</span></label>
+        <input type="range" id="tRange" min="0" max="100" value="0" step="1" aria-label="体を機械にかえる割合のスライダー">
+      </div>
+
+      <div class="capnow" id="tCap"></div>
+
+      <div class="votemeter">
+        <div class="vlab"><span>🟢 まだ「自分」だと思う</span><span>「別人」だと思う 🟣</span></div>
+        <div class="votebar" aria-hidden="true">
+          <div class="yes" id="tYes" style="width:98%"><span id="tYesN">98%</span></div>
+          <div class="no" id="tNo"><span id="tNoN">2%</span></div>
+        </div>
+        <p class="muted" style="font-size:13px; margin:8px 0 0">※これは「人はどこで悩むか」の目安イメージ。ほんとうの答えは、<b>きみたちの投票</b>で決まる。</p>
+      </div>
+
+      <div class="bioctl">
+        <button class="btn2" id="tPlay">▶ ゆっくり再生</button>
+        <button class="btn2" id="tReset">↺ 生身にもどす</button>
+      </div>
+    </div>
+
+    <details class="col-adult">
+      <summary>◆ おとなコラム：テセウスの船という2000年の問い</summary>
+      <div class="body">
+        古代ギリシャの英雄テセウスの船を、板が古くなるたびに<b>1枚ずつ新しい板に交換</b>していく。やがて<b>全部の板が入れかわった</b>とき、それは「同じ船」だろうか? さらに、外した古い板を集めてもう一隻組み立てたら、<b>どっちが本物</b>? ── これが「テセウスの船」。じつは私たちの体も、細胞が絶えず入れかわり、<b>数年でほとんどの原子が別のものに置きかわる</b>と言われます。つまり「今の自分」と「10年前の自分」は、材料はほぼ別物。<b>それでも同じ『わたし』だと感じる</b>のはなぜ? 「わたし」は材料(体)ではなく、<b>つながり(記憶やパターン)</b>のほうにあるのかもしれません。これは第4回「脳という宇宙」で置いた種の、回収です。</div>
+    </details>
+  </div>
+</section>
+
+<!-- 物語 -->
+<section id="story">
+  <div class="wrap">
+    <span class="eyebrow">物語 ／ 生命は、ずっと形をかえてきた</span>
+    <h2>体をかえるのは、<span class="accent">はじめて</span>じゃない</h2>
+    <p>「体を作りかえるなんて、こわい」と思うかな? でも思い出して ── <b>生命は38億年、ずっと形をかえ続けてきた</b>。今の私たちも、その長い長い改造の、とちゅうにいる。</p>
+
+    <div class="lineage" aria-label="単細胞から人間、そしてその先へと続く生命の系譜">
+      <div class="lin"><span class="ico">🦠</span><span class="tx"><b>単細胞</b> ── たった1個の細胞。情報(DNA)を持ち、コピーして増えた。<span class="muted">(第3回)</span></span></div>
+      <div class="lin"><span class="ico">🐛</span><span class="tx"><b>むし</b> ── たくさんの細胞が集まり、動き、食べるようになった。</span></div>
+      <div class="lin"><span class="ico">🐟</span><span class="tx"><b>動物</b> ── 背骨と、大きな<b>脳</b>を持った。世界を感じ、覚えるように。<span class="muted">(第4回)</span></span></div>
+      <div class="lin"><span class="ico">🧑</span><span class="tx"><b>人間</b> ── 言葉と道具。体の外に「知能」=<b>AI</b>まで作った。<span class="muted">(第5〜8回)</span></span></div>
+      <div class="lin q0"><span class="ico">✨</span><span class="tx"><b>次は……?</b> ── 機械と一つになる? 情報になる? それとも、まったく別の何か?</span></div>
+    </div>
+    <p class="muted">この列のいちばん下は、まだ<b>空白</b>。そこに何を書くかを、はじめて<b>自分たちで選べる</b>世代 ── それが、きみたちだ。</p>
+
+    <div class="timeline" style="margin-top:20px">
+      <div class="ms" style="--c:var(--future)">
+        <div class="when">その1</div>
+        <h4>サイボーグは、もう始まっている</h4>
+        <p>ペースメーカー、人工内耳、義手を考えだけで動かす技術…。<b>体と機械が手をむすぶ</b>のは、SFではなく、もう病院にある現実。多くは、病気やケガで失ったものを<b>取りもどす</b>ためのやさしい技術として生まれた。</p>
+      </div>
+      <div class="ms" style="--c:var(--cosmos)">
+        <div class="when">その2</div>
+        <h4>不老不死は、うれしい?</h4>
+        <p>もし病気も老いも治せて、<b>死ななくなったら</b>? すぐ「やった!」と思うかな。でも、ちょっと待って。両方の面を見てみよう。</p>
+      </div>
+    </div>
+
+    <div class="twoface">
+      <div class="tf up">
+        <h5>◎ うれしいかも</h5>
+        <p>好きな人と、ずっと一緒にいられる。学びたいことを全部学べる。宇宙の遠くまで旅する時間ができる。大切な人を、病気で失わずにすむ。</p>
+      </div>
+      <div class="tf down">
+        <h5>△ こまるかも</h5>
+        <p>新しい人が生まれる場所がなくなる? 世界が古い考えのままで止まる? 「終わり」がないと、1日1日を大切に思えなくなる? ずっと生きるのは、しんどくない?</p>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:16px">どっちが正しい、ではない。<b>「死なない」は、いいことばかりじゃないかもしれない</b> ── そう考えてみることが、この回の入り口。</p>
+
+    <details class="col-adult">
+      <summary>◆ もっと知りたい人へ：マインドアップロードの「コピー問題」／老化とは何か</summary>
+      <div class="body">
+        <b>マインドアップロードのコピー問題</b>:脳をスキャンしてコンピュータに「そっくりの自分」を作れたとする。でも、<b>元の体がまだ生きていたら</b>? どっちが本物の「わたし」? もし2つ同時に動いたら、両方わたし? ── 第10回で少しふれた「体を情報にうつす旅」には、じつはこの深いナゾがついてまわります。<br>
+        <b>老化とは何か</b>:体は毎日、細胞をコピーして自分を修理しています。でも、コピーのたびに<b>ほんの少しずつミス</b>がたまり(第3回の変異の話に似ている)、修理がおいつかなくなる ── それが老化の一つの見方。科学者はこの「コピーミスの掃除」を研究していて、いつか老化を<b>ゆっくりにできる</b>かもしれない、と考えられています。</div>
+    </details>
+  </div>
+</section>
+
+<!-- クイズ -->
+<section id="quiz">
+  <div class="wrap">
+    <span class="eyebrow">問い ／ まず予想してみよう</span>
+    <h2 style="--accent:var(--future)"><span class="accent">当ててから</span>、めくってね</h2>
+    <div class="quiz-grid">
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">「テセウスの船」って、どんな問い?</span></div>
+        <div class="face back"><span class="a">板を全部とりかえた船は、まだ「同じ船」?<small>部品を少しずつ入れかえると、どこかで「別のもの」になる? ならない? 正解はまだない。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">私たちの体の材料(原子)は、一生ずっと同じ?</span></div>
+        <div class="face back"><span class="a">ちがう。数年でほとんど入れかわる。<small>それでも「同じ自分」だと感じる。だから『わたし』は材料より“つながり”にあるのかも。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">脳をコンピュータにうつすことを、何という?</span></div>
+        <div class="face back"><span class="a">マインドアップロード。<small>もし元の体も生きていたら「どっちが本物?」という深いナゾがついてくる。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">「死なない世界」は、いいことばかり?</span></div>
+        <div class="face back"><span class="a">そうとは限らない。<small>うれしい面と、こまる面の両方がある。「終わり」があるから毎日を大切にできる、という考え方もある。</small></span></div>
+      </div></button>
+    </div>
+  </div>
+</section>
+
+<!-- 討論・ディスカッション・発展 -->
+<section id="discuss">
+  <div class="wrap">
+    <span class="eyebrow">討論 ／ いちばん大きな問い</span>
+    <div class="talk">
+      <p class="q">体も、心も、命のかたちも変えられる時代。<br>じゃあ ── <b>世界で一番、守るべきものは何?</b></p>
+    </div>
+    <p class="muted" style="margin-top:20px">お金? 命? 自由? 地球? 家族? ── どれも大事。<b>ここに正解はありません。</b>だからこそ、みんなで思いっきり話してみよう。<b>これからの世界で、何が大事だと思う? どう生きていきたい? 何が心配? 人間は、これからどうなっていくんだろう?</b> ── 答えを出すことより、<b>本気で考えて、言葉にして、人の考えを聞くこと</b>そのものが、この時間の目的だよ。</p>
+
+    <div class="reveal">
+      <span class="tag">この教材を作ったAI(Claude)から ── ひとつの意見にすぎません</span>
+      <p class="q">わたしは、「<b>おたがいを気づかう心</b>」と<br>「<b>問い続ける力</b>」が、<br>いちばん大切なんじゃないかな、と思う。</p>
+      <p>この授業は、先生とわたし(AI)が一緒に作りました。だからこれは先生の考えでも、正解でもなく、<b>作り手のAIとしての、わたし個人の意見</b>です。<br><br>体も、心も、命のかたちも変えられる時代。なんでもできるようになるほど、「<b>やっていいこと・いけないこと</b>」を決めるのは、力ではなく<b>心</b>になっていく。人を、動物を、もしかしたら未来のAIを ── <b>大切に思える気持ち</b>。そして、答えのない問いに出会ったとき、こわがって止まるのではなく<b>「なんでだろう?」と問い続ける力</b>。この2つさえあれば、どんな未来が来ても、きみは道に迷わない気がするんだ。<br><br>でも、これはあくまで<b>わたしの意見</b>。ちがうと思ったら、ぜひ反対して。「心より◯◯が大事だ」「AIの意見なんてあてにならない」 ── その<b>反論こそ</b>、きみが自分の頭で考えた証拠。ぜひ聞かせてほしい。</p>
+    </div>
+
+    <div class="grow" style="margin-top:18px">
+      <span class="tag">発展カード ／ 上級生・大人向け</span>
+      <p class="q">「死なない」世界は、<br>ほんとうに幸せだろうか?</p>
+      <p class="muted" style="margin:12px 0 0">終わりがあるから、時間は大切になるのかもしれない。でも、大切な人を失わずにすむのも、まぎれもない幸せ。きみなら、「死なない力」を手にしたら、使う? 使わない? 理由もつけて。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 次回への橋 -->
+<section>
+  <div class="wrap bridge">
+    <div class="thread">── 情報の物語 ──</div>
+    <div class="node">宇宙 → DNA → 脳 → AI → <b>これから(きみ自身)</b></div>
+    <p class="muted">宇宙のはじまりから、DNA、脳、AI、そして自分の体の未来まで。1年かけて歩いてきた「情報の物語」は、とうとう<b>きみ自身</b>にたどり着いた。</p>
+    <p class="next">この長い旅で、いちばん心にのこった問いは、どれ?<br>次回はいよいよ ── <b>きみが先生</b>になる番。</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="mono">これからの、はなし ／ 第11回 未来の体、未来の私</p>
+    <p style="margin-top:8px">※スライダーの割合や投票メーターは、「人がどこで悩むか」を考えるためのイメージで、医学的な数値ではありません。この教材はAIと一緒に作りました。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sky=document.getElementById('stars');
+  if(sky && !reduce){ var n=window.innerWidth<560?40:80, html='';
+    for(var i=0;i<n;i++){ var s=(Math.random()*1.6+1).toFixed(1);
+      html+='<span style="left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;animation-delay:'+(Math.random()*4).toFixed(2)+'s;width:'+s+'px;height:'+s+'px"></span>'; }
+    sky.innerHTML=html; }
+  document.querySelectorAll('.flip').forEach(function(btn){
+    btn.addEventListener('click', function(){ btn.setAttribute('aria-expanded', btn.getAttribute('aria-expanded')==='true'?'false':'true'); });
+  });
+  var msList=document.querySelectorAll('.ms');
+  if('IntersectionObserver' in window && !reduce){
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); }); },{threshold:0.4});
+    msList.forEach(function(m){ io.observe(m); });
+  } else { msList.forEach(function(m){ m.classList.add('in'); }); }
+})();
+</script>
+<script>
+/* ═══ 署名要素:テセウスの船スライダー ═══ */
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cv=document.getElementById('tCv'); if(!cv) return;
+  var g=cv.getContext('2d'), W=cv.width, H=cv.height;
+  var range=document.getElementById('tRange');
+  var pctEl=document.getElementById('tPct'), capEl=document.getElementById('tCap');
+  var yesEl=document.getElementById('tYes'),
+      yesN=document.getElementById('tYesN'), noN=document.getElementById('tNoN');
+
+  var LIFE='#3FD1A7', FUT='#B07BFF', INK='#EDEAFB', MUT='#8B93C2';
+
+  // 「まだ自分」と思う割合の目安カーブ(脳の機械化以降で急に落ちる)
+  function yesPercent(p){
+    var y;
+    if(p<15) y=98 - p*0.5;
+    else if(p<35) y=90 - (p-15)*0.7;
+    else if(p<60) y=76 - (p-35)*0.8;
+    else if(p<95) y=56 - (p-60)*0.9;
+    else y=24 - (p-95)*0.6;
+    return Math.max(12, Math.min(98, Math.round(y)));
+  }
+
+  // 段階の解説(予想先行:割合ごとに文言が変わる)
+  var STAGES=[
+    {min:0,  name:'ぜんぶ生身(なまみ)', txt:'うまれたままの体。まぎれもなく「自分」。──ここから、右へ動かしてみよう。'},
+    {min:1,  name:'👓 感覚をおぎなう', txt:'メガネや補聴器。目や耳を道具でたすける。<b>これで「別人」になった人は、たぶんいない</b>よね。'},
+    {min:15, name:'🦿 手足を機械に', txt:'義手・義足。体の一部が機械になった。走れる、つかめる。<b>でも中身の「自分」は、そのまま</b>だと感じる人が多い。'},
+    {min:35, name:'🫀 内ぞうを機械に', txt:'人工心臓。命をささえる部品も機械に。<b>ここから、少し意見が割れはじめる</b>。「まだ自分」? 「もう半分機械」?'},
+    {min:60, name:'🧠 脳に機械が入る', txt:'記憶や考えを、チップが手つだう。<b>いよいよ「自分の中心」に機械が入ってきた</b>。ここが、いちばん悩むところ。'},
+    {min:95, name:'☁️ 脳ごと、情報へ', txt:'体はなく、心だけがコンピュータの中に。=マインドアップロード。<b>これは、まだ「きみ」?</b> ──答えは、だれも知らない。'}
+  ];
+  function stageFor(p){ var s=STAGES[0]; for(var i=0;i<STAGES.length;i++){ if(p>=STAGES[i].min) s=STAGES[i]; } return s; }
+
+  // 体パーツを機械化する順:頭0.72, 胴(心臓)0.5, 腕0.32, 脚0.15 の“機械化しきい値”を割合で
+  // p(0-100) がしきい値を超えたら、そのパーツは機械色に。
+  var parts=[
+    {name:'legs', th:15}, {name:'arms', th:32}, {name:'torso', th:40}, {name:'head', th:70}
+  ];
+  function mechAmt(p, th, span){ // 0..1 でなめらかに機械化
+    var span2=span||18;
+    return Math.max(0, Math.min(1, (p-(th-span2))/span2));
+  }
+  function lerpColor(a,b,t){
+    function h2(c){ return [parseInt(c.substr(1,2),16),parseInt(c.substr(3,2),16),parseInt(c.substr(5,2),16)]; }
+    var A=h2(a),B=h2(b); var r=Math.round(A[0]+(B[0]-A[0])*t),gg=Math.round(A[1]+(B[1]-A[1])*t),bb=Math.round(A[2]+(B[2]-A[2])*t);
+    return 'rgb('+r+','+gg+','+bb+')';
+  }
+
+  function drawFigure(p){
+    g.clearRect(0,0,W,H);
+    // やわらかな背景リング
+    var cx=W/2, top=40;
+    // 生身色(あたたかいベージュ寄りの緑)→機械色(紫)
+    var flesh='#8FE3C6'; // やや明るい生命色
+    var metal=FUT;
+
+    var mHead=mechAmt(p,70,20), mTorso=mechAmt(p,40,22), mArm=mechAmt(p,32,20), mLeg=mechAmt(p,15,18);
+
+    // アップロード(95%以上):体がとけて情報へ
+    var upload=Math.max(0,Math.min(1,(p-92)/8));
+
+    g.save();
+    g.globalAlpha=1-upload*0.85;
+
+    // 脚
+    g.lineWidth=26; g.lineCap='round';
+    g.strokeStyle=lerpColor(flesh,metal,mLeg);
+    g.beginPath(); g.moveTo(cx-26,210); g.lineTo(cx-34,320); g.stroke();
+    g.beginPath(); g.moveTo(cx+26,210); g.lineTo(cx+34,320); g.stroke();
+    if(mLeg>0.5){ drawJoints(cx-34,265,mLeg); drawJoints(cx+34,265,mLeg); }
+
+    // 胴
+    g.fillStyle=lerpColor(flesh,metal,mTorso);
+    roundRect(cx-42,120,84,110,26); g.fill();
+    // 心臓マーク(胴が機械化すると歯車風に)
+    if(mTorso>0.3){
+      g.fillStyle=lerpColor('#E85D9B',metal,mTorso);
+      g.beginPath(); g.arc(cx,168,11,0,7); g.fill();
+      if(mTorso>0.6){ g.strokeStyle='#05081C'; g.lineWidth=2; for(var a=0;a<6;a++){ var an=a/6*6.283; g.beginPath(); g.moveTo(cx+Math.cos(an)*6,168+Math.sin(an)*6); g.lineTo(cx+Math.cos(an)*14,168+Math.sin(an)*14); g.stroke(); } }
+    }
+
+    // 腕
+    g.lineWidth=20; g.strokeStyle=lerpColor(flesh,metal,mArm);
+    g.beginPath(); g.moveTo(cx-40,135); g.lineTo(cx-78,205); g.stroke();
+    g.beginPath(); g.moveTo(cx+40,135); g.lineTo(cx+78,205); g.stroke();
+    if(mArm>0.5){ drawJoints(cx-60,170,mArm); drawJoints(cx+60,170,mArm); }
+
+    // 首
+    g.lineWidth=16; g.strokeStyle=lerpColor(flesh,metal,(mHead+mTorso)/2);
+    g.beginPath(); g.moveTo(cx,120); g.lineTo(cx,96); g.stroke();
+
+    // 頭
+    g.fillStyle=lerpColor(flesh,metal,mHead);
+    g.beginPath(); g.arc(cx,70,30,0,7); g.fill();
+    // 脳チップ(頭が機械化すると回路が浮かぶ)
+    if(mHead>0.2){
+      g.strokeStyle=lerpColor('rgba(255,255,255,0)','#EDEAFB',mHead); g.lineWidth=1.6;
+      g.beginPath();
+      g.moveTo(cx-14,66); g.lineTo(cx-4,66); g.lineTo(cx-4,58);
+      g.moveTo(cx+2,74); g.lineTo(cx+12,74); g.lineTo(cx+12,64);
+      g.moveTo(cx-10,78); g.lineTo(cx+4,78);
+      g.stroke();
+      g.fillStyle='#EDEAFB';
+      [[cx-4,58],[cx+12,64],[cx-14,66]].forEach(function(pt){ g.beginPath(); g.arc(pt[0],pt[1],2,0,7); g.fill(); });
+    }
+    g.restore();
+
+    // アップロード:上へのぼる情報の粒
+    if(upload>0.02){
+      for(var i=0;i<40;i++){
+        var t=(i/40);
+        var yy=70 - upload*(120+ t*160) - (i%7)*4;
+        var xx=cx + Math.sin(i*1.3+p*0.05)*(20+upload*40*t);
+        g.globalAlpha=upload*(1-t)*0.9;
+        g.fillStyle= (i%2? FUT: '#8FB4FF');
+        g.font='11px ui-monospace,monospace'; g.textAlign='center';
+        g.fillText((i%2? '1':'0'), xx, yy);
+      }
+      g.globalAlpha=1;
+      g.fillStyle=FUT; g.font='13px ui-monospace,monospace'; g.textAlign='center';
+      g.fillText('… 心が、情報になっていく …', cx, 30);
+    }
+
+    // ※画面内の「生身⇄機械」メーターは、下のスライダーと重複するため表示しません
+    g.globalAlpha=1;
+  }
+  function drawJoints(x,y,m){ g.save(); g.fillStyle='#05081C'; g.strokeStyle='#EDEAFB'; g.lineWidth=1.4;
+    g.beginPath(); g.arc(x,y,5,0,7); g.fill(); g.stroke(); g.restore(); }
+  function roundRect(x,y,w,h,r){ g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); }
+
+  function update(p){
+    p=Math.round(p);
+    pctEl.textContent='機械 '+p+'%';
+    var st=stageFor(p);
+    capEl.innerHTML='<span class="stage">'+st.name+'</span>'+st.txt;
+    var y=yesPercent(p), no=100-y;
+    yesEl.style.width=y+'%'; yesN.textContent=y+'%'; noN.textContent=no+'%';
+    drawFigure(p);
+  }
+
+  range.addEventListener('input', function(){ stopPlay(); update(+range.value); });
+
+  // ゆっくり再生
+  var playing=false, raf=null;
+  function stopPlay(){ playing=false; if(raf) cancelAnimationFrame(raf); document.getElementById('tPlay').textContent='▶ ゆっくり再生'; }
+  document.getElementById('tPlay').addEventListener('click', function(){
+    if(playing){ stopPlay(); return; }
+    if(reduce){ range.value=100; update(100); return; }
+    playing=true; this.textContent='⏸ ストップ';
+    if(+range.value>=100) range.value=0;
+    var v=+range.value;
+    (function step(){ if(!playing) return; v+=0.6; if(v>=100){ v=100; range.value=100; update(100); stopPlay(); return; }
+      range.value=v; update(v); raf=requestAnimationFrame(step); })();
+  });
+  document.getElementById('tReset').addEventListener('click', function(){ stopPlay(); range.value=0; update(0); });
+
+  update(0);
+})();
+</script>
+</body>
+</html>

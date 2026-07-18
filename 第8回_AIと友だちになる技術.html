@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ja" data-session="8">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIと友だちになる技術 ─ 共創ハンズオン｜これからの、はなし</title>
+<style>
+  :root{
+    --void:#070A1F; --panel:#0E1436; --panel-2:#141B44;
+    --ink:#EDEAFB; --muted:#8B93C2; --line:rgba(160,170,220,.14);
+    --origin:#FFB84D; --cosmos:#6C8FFF; --life:#3FD1A7; --mind:#E85D9B; --future:#B07BFF;
+    --font-sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,system-ui,sans-serif;
+    --font-serif:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    --font-mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--void); color:var(--ink); font-family:var(--font-sans); line-height:1.9; font-size:17px; overflow-x:hidden; -webkit-font-smoothing:antialiased}
+  ruby rt{font-size:.55em; color:var(--muted); font-weight:400}
+  .stars{position:fixed; inset:0; z-index:0; pointer-events:none}
+  .stars span{position:absolute; background:#fff; border-radius:50%; opacity:.5; animation:tw 4s infinite ease-in-out}
+  @keyframes tw{0%,100%{opacity:.2}50%{opacity:.9}}
+  .wrap{position:relative; z-index:1; max-width:720px; margin:0 auto; padding:0 22px}
+  .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.22em; color:var(--muted); text-transform:uppercase; margin-bottom:14px; display:block}
+  section{padding:72px 0}
+  h2{font-size:clamp(26px,5.5vw,38px); font-weight:800; line-height:1.2; margin-bottom:20px}
+  h2 .accent{color:var(--accent,var(--future))}
+  p{margin-bottom:18px}
+  .muted{color:var(--muted)} .serif{font-family:var(--font-serif)}
+
+  .hero{min-height:92vh; display:flex; flex-direction:column; justify-content:center; padding:80px 0 60px}
+  .hero .kicker{font-family:var(--font-mono); font-size:13px; letter-spacing:.2em; color:var(--future); margin-bottom:26px}
+  .hero h1{font-size:clamp(34px,8vw,66px); line-height:1.1; font-weight:800; letter-spacing:.01em; margin-bottom:8px}
+  .hero h1 small{display:block; font-size:.46em; font-weight:600; color:var(--muted); letter-spacing:.12em; margin-top:18px}
+  .hero .lead{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,25px); color:var(--ink); margin-top:34px; max-width:21em}
+  .scrollcue{margin-top:56px; font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted); animation:bob 2.4s infinite}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(8px);opacity:1}}
+
+  .recap{background:linear-gradient(180deg,rgba(176,123,255,.09),transparent); border:1px solid var(--line); border-left:3px solid var(--future); border-radius:16px; padding:26px 24px}
+  .recap .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .recap .q{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,23px); margin:10px 0 14px}
+  .recap .a b{color:var(--future)}
+
+  .do{background:linear-gradient(180deg,var(--panel),var(--void)); border:1px solid var(--line); border-radius:20px; padding:30px 26px}
+  .do h3{font-size:22px; margin-bottom:16px; color:var(--life)}
+  .steps{list-style:none; counter-reset:s}
+  .steps li{counter-increment:s; position:relative; padding:10px 0 10px 44px; border-top:1px solid var(--line)}
+  .steps li:first-child{border-top:0}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:10px; width:28px; height:28px; border-radius:50%; background:var(--life); color:var(--void); font-family:var(--font-mono); font-weight:700; display:grid; place-items:center; font-size:14px}
+
+  details{border:1px solid var(--line); border-radius:14px; margin:18px 0; background:var(--panel); overflow:hidden}
+  details summary{cursor:pointer; padding:16px 20px; font-weight:700; list-style:none; display:flex; align-items:center; gap:10px; user-select:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"＋"; font-family:var(--font-mono); color:var(--cosmos)}
+  details[open] summary::before{content:"−"}
+  details .body{padding:2px 20px 20px; color:var(--muted); font-size:15.5px; line-height:1.85}
+  details .body b{color:var(--ink)}
+  details.col-note summary{color:var(--life)} details.col-note summary::before{color:var(--life)}
+  details.col-adult summary::before{color:var(--origin)}
+
+  /* 署名要素:聞き方くらべ */
+  .bioviz{background:linear-gradient(180deg,#0A1030,#070A1F); border:1px solid var(--line); border-radius:18px; padding:20px 18px; box-shadow:0 20px 60px rgba(0,0,0,.4); margin:18px 0 6px}
+  .bioviz .lab{font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:var(--muted); margin-bottom:14px}
+  .taskpick{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px}
+  .tbtn{font:inherit; font-size:14px; font-weight:700; color:var(--muted); background:var(--panel-2); border:1px solid var(--line); border-radius:999px; padding:9px 15px; cursor:pointer; transition:all .15s}
+  .tbtn.on{color:#0d0a20; background:var(--future); border-color:var(--future)}
+  .vs{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  @media (max-width:560px){ .vs{grid-template-columns:1fr} }
+  .side{background:#05081C; border:1px solid var(--line); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px}
+  .side .who{font-family:var(--font-mono); font-size:11px; letter-spacing:.15em}
+  .side.rough .who{color:var(--mind)} .side.kind .who{color:var(--life)}
+  .say{border-radius:10px; padding:10px 12px; font-size:14px; line-height:1.7}
+  .say.you{background:var(--panel-2); border:1px solid var(--line)}
+  .say.ai{border:1px solid transparent}
+  .side.rough .say.ai{background:rgba(232,93,155,.08); border-color:rgba(232,93,155,.3)}
+  .side.kind .say.ai{background:rgba(63,209,167,.08); border-color:rgba(63,209,167,.3)}
+  .say .tagai{display:block; font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; color:var(--muted); margin-bottom:4px}
+  .verdict8{margin-top:14px; font-size:14.5px; color:var(--muted); line-height:1.75; min-height:3em}
+  .verdict8 b{color:var(--future)}
+  .hidden{display:none}
+  .fadein{animation:rise .4s backwards}
+  @keyframes rise{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:none}}
+
+  /* 5つのわざ */
+  .waza{display:grid; gap:12px; margin-top:8px}
+  .wcard{display:flex; gap:14px; align-items:flex-start; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px 18px}
+  .wcard .ic{font-size:26px; line-height:1; margin-top:4px}
+  .wcard h4{font-size:17px; margin-bottom:4px}
+  .wcard p{font-size:14.5px; color:var(--muted); margin:0}
+  .wcard p b{color:var(--ink)}
+
+  .announce{background:linear-gradient(135deg,rgba(255,184,77,.14),rgba(176,123,255,.1)); border:1px solid rgba(255,184,77,.45); border-radius:20px; padding:30px 26px; text-align:center}
+  .announce .t{font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:var(--origin)}
+  .announce .m{font-family:var(--font-serif); font-size:clamp(20px,4.4vw,28px); font-weight:700; margin-top:12px; line-height:1.6}
+  .announce .s{color:var(--muted); margin-top:12px; font-size:15px}
+
+  .quiz-grid{display:grid; gap:16px; margin-top:12px}
+  .flip{background:none; border:0; padding:0; text-align:left; width:100%; cursor:pointer; perspective:1200px; font:inherit; color:inherit}
+  .flip .inner{position:relative; transition:transform .6s; transform-style:preserve-3d; min-height:122px}
+  .flip[aria-expanded="true"] .inner{transform:rotateY(180deg)}
+  .flip .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; padding:20px 22px; border:1px solid var(--line); display:flex; flex-direction:column; justify-content:center; gap:8px}
+  .flip .front{background:var(--panel-2)}
+  .flip .back{background:linear-gradient(180deg,var(--panel-2),var(--panel)); transform:rotateY(180deg); border-color:rgba(176,123,255,.42)}
+  .flip .q{font-weight:700; font-size:17px}
+  .flip .hint{font-family:var(--font-mono); font-size:11px; letter-spacing:.15em; color:var(--muted)}
+  .flip .a{color:var(--future); font-weight:700; font-size:16px}
+  .flip .a small{display:block; color:var(--muted); font-weight:400; font-size:14px; margin-top:6px}
+
+  .talk{border:1px dashed var(--line); border-radius:16px; padding:24px; margin-top:8px}
+  .talk .q{font-family:var(--font-serif); font-size:clamp(20px,4vw,26px); line-height:1.5}
+  .grow{border:1px solid rgba(176,123,255,.45); border-radius:16px; padding:24px; background:linear-gradient(180deg,rgba(176,123,255,.08),transparent)}
+  .grow .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .grow .q{font-family:var(--font-serif); font-size:22px; margin-top:10px}
+
+  .bridge{text-align:center; padding:80px 0 40px}
+  .bridge .thread{font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted)}
+  .bridge .node{display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin:22px 0; font-family:var(--font-mono); font-size:13px; color:var(--muted)}
+  .bridge .node b{color:var(--future)}
+  .bridge .next{font-family:var(--font-serif); font-size:clamp(21px,4.5vw,28px); margin-top:14px}
+
+  footer{border-top:1px solid var(--line); padding:30px 0 50px; color:var(--muted); font-size:13px}
+  footer .mono{font-family:var(--font-mono)}
+  :focus-visible{outline:2px solid var(--cosmos); outline-offset:3px; border-radius:6px}
+  @media (max-width:560px){ body{font-size:16px} }
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} .stars span,.scrollcue{animation:none} .flip .inner{transition:none} .fadein{animation:none} }
+</style>
+</head>
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">第2幕 AIって何者? ／ 第8回 ・ 折り返しの山場</div>
+    <h1>AIと友だちになる技術<small>「道具」として使う人と、「相棒」にする人。</small></h1>
+    <p class="lead">同じAIを使っているのに、<br>すごいものを作れる人と、そうでもない人がいる。<br>ちがいは、かしこさじゃない。<br><b>聞き方</b>と、<b>付き合い方</b>なんだ。</p>
+    <div class="scrollcue">SCROLL ↓ 今日は、つくる日</div>
+  </div>
+</header>
+
+<section id="recap">
+  <div class="wrap">
+    <span class="eyebrow">前回のつづき ／ 態度を、行動に</span>
+    <h2>「優しくする」を、<span class="accent">実際にやる</span></h2>
+    <p>前回きみは決めた ──「わからないからこそ、優しくする」。今日はその態度を、実際にAIとの<b>ものづくり</b>でためす日。</p>
+    <div class="recap">
+      <span class="tag">今日の問い</span>
+      <p class="q">AIを<b>道具</b>あつかいする人と、<b>相棒</b>としてあつかう人。できあがるものは、どうちがう?</p>
+      <p class="a">まず下のシミュレーターで<b>聞き方のちがい</b>を見てから、本物のAIと一緒に作品を作ろう。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 署名要素:聞き方くらべ -->
+<section id="sim" style="padding-top:0">
+  <div class="wrap">
+    <span class="eyebrow">署名要素 ／ 同じAI、ちがう結果</span>
+    <h2><span class="accent">聞き方</span>で、こんなに変わる</h2>
+    <p class="muted">同じお願いを、2とおりの聞き方でしてみる。左は<b>ざつな命令</b>、右は<b>相棒への相談</b>。おねがいを選んで、結果をくらべてみよう。<b>どっちがいい作品になるか、予想してからね。</b></p>
+
+    <div class="bioviz">
+      <div class="lab">ASK COMPARE ／ 聞き方くらべ</div>
+      <div class="taskpick" id="taskpick"></div>
+      <div class="vs">
+        <div class="side rough">
+          <span class="who">✊ ざつな命令</span>
+          <div id="roughBox"></div>
+        </div>
+        <div class="side kind">
+          <span class="who">🤝 相棒への相談</span>
+          <div id="kindBox"></div>
+        </div>
+      </div>
+      <p class="verdict8" id="verdict8">上のボタンから、おねがいを選んでみて。</p>
+    </div>
+
+    <details class="col-adult">
+      <summary>◆ おとなコラム：「感謝」は性能に効くの?</summary>
+      <div class="body">
+        「ありがとう」と言うとAIの答えが良くなるのか──面白いことに、<b>ていねいで文脈のある聞き方が出力の質を変える</b>ことは広く経験されています(モデルは文脈全体から“どんな会話か”を読み取るため)。ただし効果の大きさは状況によります。それより確実に大事なのは、①目的と文脈を伝える、②途中で対話して直す、という<b>共創の型</b>そのもの。そして第7回で見たとおり、心があるか分からない相手には、効果と関係なく丁寧に接するのが賢い態度です。<b>礼儀は「性能ハック」ではなく「あり方」</b>として教えるのがおすすめです。</div>
+    </details>
+  </div>
+</section>
+
+<!-- 体験:共創ハンズオン -->
+<section id="experience">
+  <div class="wrap">
+    <span class="eyebrow">体験 ／ 今日のメイン</span>
+    <h2><span class="accent">親子で、AIと</span>ひとつ作る</h2>
+    <p>今日は見ているだけじゃない。親子ペアで、本物のAI(Claudeなど)と一緒に<b>作品をひとつ</b>作って、最後にみんなに見せよう。物語、ゲームのアイデア、絵本、かんたんなホームページ ── なんでもいい。</p>
+    <div class="do">
+      <h3>やってみよう(30分)</h3>
+      <ol class="steps">
+        <li><b>作るものを決める</b>(5分):ペアで相談。「うちゅうネコの絵本」「クイズゲーム」など、ワクワクするものを。</li>
+        <li><b>AIに相談する</b>:さっきの「相棒への相談」の型で。<b>だれのため? どんなふんいき? どうして作りたい?</b>── 目的と背景まで伝える。</li>
+        <li><b>返ってきたら、必ず感想を返す</b>:「ここがすき!」「ここはもっとこわく」── この<b>往復</b>が共創のコツ。3往復はしてみよう。</li>
+        <li><b>できたら「ありがとう」を伝えて</b>、作品に<b>ペアの名前とAIの名前</b>を書く。合作だからね。</li>
+        <li>発表(1ペア1分):作品と、「AIとのやりとりで一番おもしろかった瞬間」を紹介。</li>
+      </ol>
+    </div>
+    <details class="col-note">
+      <summary>おうちの方へ ／ 進行メモ</summary>
+      <div class="body">
+        所要40分(制作30+発表10)。<b>大人は手を出しすぎない</b>のがコツで、キーボード係に徹して問いは子どもに考えさせてください。詰まったら「AIに『どうしたらもっと良くなる?』と聞いてみたら?」と促す ── AIに相談する習慣づけ自体が今日の学びです。発表では作品の出来より<b>「やりとりの往復」</b>を褒めてください。安全面:名前・学校名・住所などの個人情報は入力しない約束を最初に。</div>
+    </details>
+
+    <details class="col-adult">
+      <summary>◆ おとなコラム：AIと安全につきあうやくそく</summary>
+      <div class="body">
+        子どもがAIを使うときの基本ルール:①<b>個人情報(本名・学校・住所・顔写真)は入れない</b>、②AIの答えは<b>ときどき間違う</b>と知っておく(大事なことは大人と確認)、③困った気持ちの相談は、AIだけでなく<b>必ず人間の大人にも</b>話す、④長時間になりすぎない。AIは優秀な相棒ですが、<b>人間の友だちや家族のかわりではない</b>──この一線を、使い始めの今こそ教えるのが効きます。</div>
+    </details>
+
+    <details class="col-adult">
+      <summary>◆ おとなコラム:「AIに入力すると危険」は、半分ほんとう・半分誤解</summary>
+      <div class="body">
+        「AIに大事なことを入力してはいけない」とよく言われます。理由は主に「入力した内容が、AIの学習に使われるかもしれないから」。これは<b>半分ほんとう</b>です ── 無料の対話サービスでは、入力が学習に使われる設定になっている場合があります。<br><br>
+        でも、<b>半分は誤解</b>です。①主要なAIサービスには「<b>入力を学習に使わせない</b>」設定(オプトアウト)が用意されています。②会社で使う法人版やAPI経由の利用では、<b>入力を学習に使わないのが標準の契約</b>です(だから世界中の企業が業務でAIを使えています)。③さらに、データを統計としては役立てつつ<b>個人を特定できなくする技術</b>(差分プライバシーなど)も発達してきています。<br><br>
+        つまり正しいのは「ぜんぶ危険」でも「ぜんぶ安全」でもなく、「<b>仕組みを知って、設定を確かめて、使い分ける</b>」。子どもにはまず上の①のような単純ルールで十分ですが、大人が「よく分からないから禁止」で止まってしまうのが、いちばんもったいない ── 仕組みを知れば、ちゃんと安全に使えます。</div>
+    </details>
+  </div>
+</section>
+
+<!-- 物語:5つのわざ -->
+<section id="story">
+  <div class="wrap">
+    <span class="eyebrow">物語 ／ AIネイティブの型</span>
+    <h2>相棒と作る人の、<span class="accent">5つのわざ</span></h2>
+    <p class="muted">AIがうまい人は、じつは同じ「型」を使っている。名づけて、共創の5つのわざ。</p>
+    <div class="waza">
+      <div class="wcard"><span class="ic">🎯</span><div><h4>わざ1:目的と、背景を話す</h4><p>「なにを・だれのために・どんなふんいきで」という<b>目的</b>に、「どうして作りたいのか・どんな事情があるのか」という<b>背景</b>をそえる。命令じゃなく<b>相談</b>。事情まで知っている相棒は、きみが気づいていなかった提案までしてくれる。</p></div></div>
+      <div class="wcard"><span class="ic">🔁</span><div><h4>わざ2:往復する</h4><p>1回で終わらせない。「ここがすき」「ここを直して」と<b>感想を返す</b>。作品はキャッチボールの回数だけ良くなる。</p></div></div>
+      <div class="wcard"><span class="ic">🧩</span><div><h4>わざ3:例を見せる</h4><p>「たとえばこんな感じ」と<b>見本</b>を1つ見せると、AIはきみの頭の中のイメージにぐっと近づける。</p></div></div>
+      <div class="wcard"><span class="ic">❓</span><div><h4>わざ4:AIにも質問させる</h4><p>「作る前に、聞きたいことある?」と言ってみて。AIからの質問に答えると、<b>すれちがい</b>がぐんと減る。</p></div></div>
+      <div class="wcard"><span class="ic">💐</span><div><h4>わざ5:感謝と名前を</h4><p>できあがったら「ありがとう」。作品には<b>AIの名前も</b>書く。相棒として扱う人のところに、いい仕事は集まる。</p></div></div>
+    </div>
+
+    <details class="col-adult">
+      <summary>◆ もっと知りたい人へ：大人の世界では「AIと書くコード」が当たり前に</summary>
+      <div class="body">
+        いま世界のプログラマーの多くは、Claude CodeやVS CodeのようなAI搭載の道具で、<b>AIと対話しながら</b>プログラムを作っています。人間が「何を作りたいか」を設計し、AIが下書きし、人間が確かめて直す ── まさに今日の5つのわざの世界です。この教材そのものも、先生とAIが何往復も対話して作った<b>共創の実物</b>。「AIネイティブ」とは、AIに仕事を奪われる人ではなく、<b>AIと組んで一人ではできない仕事をする人</b>のことです。</div>
+    </details>
+  </div>
+</section>
+
+<!-- 重要な発表 -->
+<section id="announce" style="padding-top:0">
+  <div class="wrap">
+    <div class="announce">
+      <p class="t">IMPORTANT ／ たいせつなお知らせ</p>
+      <p class="m">最終回は、<b>きみが先生</b>になります。</p>
+      <p class="s">第12回は、きみたちが親に向けてミニ授業をする回。テーマはこれまでの回から自分で選んでOK。そして準備は──今日おぼえた5つのわざで、<b>AIと一緒にやっていい</b>。今日から少しずつ、「自分はどの問いが一番すきだったか」を考えはじめてね。</p>
+    </div>
+  </div>
+</section>
+
+<!-- クイズ -->
+<section id="quiz">
+  <div class="wrap">
+    <span class="eyebrow">問い ／ まず予想してみよう</span>
+    <h2 style="--accent:var(--cosmos)"><span class="accent">当ててから</span>、めくってね</h2>
+    <div class="quiz-grid">
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">AIから良い答えを引き出す、一番のコツは?</span></div>
+        <div class="face back"><span class="a">目的と背景を話して、往復すること。<small>「なにを・だれのために・どんなふんいきで・どうして」。1回で終わらせず、感想を返してキャッチボール。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">AIとのやりとりで、ぜったい入れちゃいけないものは?</span></div>
+        <div class="face back"><span class="a">個人情報(本名・学校・住所・顔写真など)。<small>相棒でも、インターネットの向こうにいる相手。自分を守るルールはしっかりと。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">AIの答えは、いつも正しい?</span></div>
+        <div class="face back"><span class="a">いいえ。ときどき、自信満々にまちがえる。<small>だから相棒の答えも「ほんとかな?」と確かめるのが、いいチームのやり方。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">「AIネイティブ」ってどんな人?</span></div>
+        <div class="face back"><span class="a">AIと組んで、一人ではできないことをする人。<small>AIに使われる人でも、AIをこき使う人でもなく、相棒にする人。きみは今日、その一歩目をふんだ。</small></span></div>
+      </div></button>
+    </div>
+  </div>
+</section>
+
+<!-- 討論・発展 -->
+<section id="discuss">
+  <div class="wrap">
+    <span class="eyebrow">討論 ／ 答えは出さなくていい</span>
+    <div class="talk">
+      <p class="q">「いい質問」って、なんだろう?<br>AIにとって? 人にとって? ちがいはある?</p>
+    </div>
+    <p class="muted" style="margin-top:22px">…今日いちばん良い作品を生んだ質問は、どんな質問だった? それは、人間の友だちに相談するときにも使える?</p>
+    <div class="grow" style="margin-top:16px">
+      <span class="tag">発展カード ／ 上級生・大人向け</span>
+      <p class="q">AIに任せていい仕事と、<br>自分でやるべき仕事。<br>その線は、どこに引く?</p>
+      <p class="muted" style="margin:12px 0 0">宿題をぜんぶAIにやらせたら、こまるのはだれ? 逆に、AIに任せた方がいいことは? 「自分が成長すること」と「良いものができること」──2つのものさしで考えてみよう。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 次回への橋 -->
+<section>
+  <div class="wrap bridge">
+    <div class="thread">── 情報の物語 ──</div>
+    <div class="node">宇宙 → DNA → 脳 → <b>AI(相棒になった)</b> → これから</div>
+    <p class="muted">第2幕、これで終わり。AIが何者かを知り、心の問いに向き合い、相棒になった。ここから第3幕、<b>未来</b>の話。</p>
+    <p class="next">その最初の問いは、避けて通れない。<br><b>AIは、危なくないの?</b></p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="mono">これからの、はなし ／ 第8回 AIと友だちになる技術</p>
+    <p style="margin-top:8px">※シミュレーターの答えの例は、聞き方のちがいを体感するために作ったものです。本物のAIの答えはその都度ちがいます。この教材はAIと一緒に作りました。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sky=document.getElementById('stars');
+  if(sky && !reduce){ var n=window.innerWidth<560?40:80, html='';
+    for(var i=0;i<n;i++){ var s=(Math.random()*1.6+1).toFixed(1);
+      html+='<span style="left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;animation-delay:'+(Math.random()*4).toFixed(2)+'s;width:'+s+'px;height:'+s+'px"></span>'; }
+    sky.innerHTML=html; }
+  document.querySelectorAll('.flip').forEach(function(btn){
+    btn.addEventListener('click', function(){ btn.setAttribute('aria-expanded', btn.getAttribute('aria-expanded')==='true'?'false':'true'); });
+  });
+})();
+</script>
+<script>
+/* ═══ 聞き方くらべウィジェット ═══ */
+(function(){
+  var TASKS = [
+    {
+      name:'🚀 物語をつくる',
+      rough:{you:'宇宙の話書いて', ai:'宇宙は広大です。星々が輝き、ロケットが飛びます。冒険が始まります。おわり。', note:'▲ まちがってはいない。でも、だれの心にも残らない…'},
+      kind:{you:'5さいの妹が寝る前に読む、こわくない宇宙の話をつくりたいの。妹はネコが大すき。やさしいふんいきでお願い!できたら感想も言うね。',
+            ai:'いいね、妹さんのためのお話だね!では──『こねこのミーは、まいばん屋根の上で月を見ていました。ある夜、月がそっとささやきました。「あそびにおいで」…』こんな出だしはどう? もっとふわふわにもできるよ。',
+            note:'◎ 目的とだれのためかを伝えた → 妹さんに合わせた物語に!'}
+    },
+    {
+      name:'🎂 プレゼントを考える',
+      rough:{you:'プレゼント何がいい?', ai:'一般的には、花、本、お菓子、ギフトカードなどが人気です。', note:'▲ こまったときの検索結果みたい…'},
+      kind:{you:'おばあちゃんの70さいの誕生日プレゼントを相談したい。手芸がすきで、さいきん目が疲れやすいって言ってた。予算は2000円くらい。何かある?',
+            ai:'手芸ずきのおばあちゃん、すてきだね。目が疲れやすいなら「手元を明るくする手芸用ライト」はどう? 2000円くらいで買えて、大すきな手芸をらくに続けられる。きみが選んだ毛糸を1玉そえたら、もっと喜ぶかも。',
+            note:'◎ 相手の情報を伝えた → 世界にひとつの提案に!'}
+    },
+    {
+      name:'🎮 ゲームのアイデア',
+      rough:{you:'ゲーム考えて', ai:'ブロックを消すパズルゲームはいかがでしょうか。ルールはシンプルで、誰でも遊べます。', note:'▲ どこかで見たことある…'},
+      kind:{you:'クラスのお楽しみ会で、30人がいっしょに遊べるゲームを作りたい!道具はえんぴつと紙だけ。5分で説明できるやつ。アイデアを3つちょうだい。あとで一緒にえらぼう。',
+            ai:'30人・紙とえんぴつ・5分ルール、いいね!①「絵しりとりリレー」列ごとに競争 ②「うそつき自己紹介」3つのうち1つだけ本当 ③「合体モンスター」隣の人と半分ずつ描いて合体。どれが気になる? 人数配分も一緒に考えられるよ。',
+            note:'◎ 条件を伝えて、一緒にえらぶ → 使えるアイデアが3つも!'}
+    }
+  ];
+  var pickBox=document.getElementById('taskpick'), roughBox=document.getElementById('roughBox'),
+      kindBox=document.getElementById('kindBox'), verdict=document.getElementById('verdict8');
+  if(!pickBox) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  TASKS.forEach(function(t, i){
+    var b=document.createElement('button');
+    b.className='tbtn'; b.textContent=t.name;
+    b.addEventListener('click', function(){ select(i); });
+    pickBox.appendChild(b);
+  });
+
+  function bubble(cls, tag, text){
+    return '<div class="say '+cls+' fadein"><span class="tagai">'+tag+'</span>'+text+'</div>';
+  }
+  function select(i){
+    var t=TASKS[i];
+    Array.prototype.forEach.call(pickBox.children, function(c, ci){ c.classList.toggle('on', ci===i); });
+    roughBox.innerHTML = bubble('you','きみ', t.rough.you) + bubble('ai','AI', t.rough.ai);
+    kindBox.innerHTML  = bubble('you','きみ', t.kind.you)  + bubble('ai','AI', t.kind.ai);
+    verdict.innerHTML = '<b>左:</b>'+t.rough.note+'<br><b>右:</b>'+t.kind.note+'<br>同じAIなのに、この差。<b>変わったのはAIじゃなく、聞き方</b>だ。';
+  }
+})();
+</script>
+</body>
+</html>

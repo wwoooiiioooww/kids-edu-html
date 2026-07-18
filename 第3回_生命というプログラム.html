@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ja" data-session="3">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生命というプログラム ─ DNAは4文字の言葉｜これからの、はなし</title>
+<style>
+  :root{
+    --void:#070A1F; --panel:#0E1436; --panel-2:#141B44;
+    --ink:#EDEAFB; --muted:#8B93C2; --line:rgba(160,170,220,.14);
+    --origin:#FFB84D; --cosmos:#6C8FFF; --life:#3FD1A7; --mind:#E85D9B; --future:#B07BFF;
+    --font-sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,system-ui,sans-serif;
+    --font-serif:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    --font-mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--void); color:var(--ink); font-family:var(--font-sans);
+    line-height:1.9; font-size:17px; overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ruby rt{font-size:.55em; color:var(--muted); font-weight:400}
+
+  /* 星空(背景・reduced-motionで停止) */
+  .stars{position:fixed; inset:0; z-index:0; pointer-events:none}
+  .stars span{position:absolute; background:#fff; border-radius:50%;
+    opacity:.5; animation:tw 4s infinite ease-in-out}
+  @keyframes tw{0%,100%{opacity:.2}50%{opacity:.9}}
+
+  .wrap{position:relative; z-index:1; max-width:720px; margin:0 auto; padding:0 22px}
+
+  .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.22em;
+    color:var(--muted); text-transform:uppercase; margin-bottom:14px; display:block}
+
+  /* ヒーロー */
+  .hero{min-height:92vh; display:flex; flex-direction:column; justify-content:center;
+    padding:80px 0 60px}
+  .hero .kicker{font-family:var(--font-mono); font-size:13px; letter-spacing:.2em;
+    color:var(--life); margin-bottom:26px}
+  .hero h1{font-size:clamp(38px,9vw,76px); line-height:1.08; font-weight:800;
+    letter-spacing:.01em; margin-bottom:8px}
+  .hero h1 small{display:block; font-size:.42em; font-weight:600; color:var(--muted);
+    letter-spacing:.14em; margin-top:18px}
+  .hero .lead{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,25px);
+    color:var(--ink); margin-top:34px; max-width:20em}
+  .scrollcue{margin-top:60px; font-family:var(--font-mono); font-size:12px;
+    letter-spacing:.2em; color:var(--muted); animation:bob 2.4s infinite}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(8px);opacity:1}}
+
+  section{padding:72px 0}
+  h2{font-size:clamp(26px,5.5vw,38px); font-weight:800; line-height:1.2; margin-bottom:20px}
+  h2 .accent{color:var(--accent,var(--life))}
+  p{margin-bottom:18px}
+  .muted{color:var(--muted)}
+  .serif{font-family:var(--font-serif)}
+
+  /* 前回の答え合わせ(リキャップ) */
+  .recap{background:linear-gradient(180deg,rgba(63,209,167,.08),transparent);
+    border:1px solid var(--line); border-left:3px solid var(--life);
+    border-radius:16px; padding:26px 24px}
+  .recap .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--life)}
+  .recap .q{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,23px); margin:10px 0 14px}
+  .recap .a{font-size:16px}
+  .recap .a b{color:var(--life)}
+
+  /* 体験ボックス */
+  .do{background:linear-gradient(180deg,var(--panel),var(--void));
+    border:1px solid var(--line); border-radius:20px; padding:30px 26px}
+  .do h3{font-size:22px; margin-bottom:16px; color:var(--life)}
+  .steps{list-style:none; counter-reset:s}
+  .steps li{counter-increment:s; position:relative; padding:10px 0 10px 44px; border-top:1px solid var(--line)}
+  .steps li:first-child{border-top:0}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:10px;
+    width:28px; height:28px; border-radius:50%; background:var(--life); color:var(--void);
+    font-family:var(--font-mono); font-weight:700; display:grid; place-items:center; font-size:14px}
+
+  /* コラム・進行メモ(details) */
+  details{border:1px solid var(--line); border-radius:14px; margin:18px 0;
+    background:var(--panel); overflow:hidden}
+  details summary{cursor:pointer; padding:16px 20px; font-weight:700; list-style:none;
+    display:flex; align-items:center; gap:10px; user-select:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"＋"; font-family:var(--font-mono); color:var(--cosmos)}
+  details[open] summary::before{content:"−"}
+  details .body{padding:2px 20px 20px; color:var(--muted); font-size:15.5px; line-height:1.85}
+  details .body b{color:var(--ink)}
+  details.col-note summary{color:var(--life)}
+  details.col-note summary::before{color:var(--life)}
+  details.col-adult summary::before{color:var(--origin)}
+
+  /* ═══ 署名要素:なまえ→DNA エンコーダー ═══ */
+  .dna{background:linear-gradient(180deg,#0A1030,#070A1F); border:1px solid var(--line);
+    border-radius:20px; padding:24px 22px; margin-top:22px; box-shadow:0 20px 60px rgba(0,0,0,.4)}
+  .dna .lab{font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:var(--muted); margin-bottom:16px}
+  .legend{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px}
+  .base{display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono);
+    font-size:13px; background:var(--panel-2); border:1px solid var(--line);
+    border-radius:999px; padding:6px 14px 6px 8px}
+  .dot{width:16px; height:16px; border-radius:50%; box-shadow:0 0 10px currentColor}
+  .b-A{color:var(--mind)} .b-T{color:var(--life)} .b-G{color:var(--cosmos)} .b-C{color:var(--origin)}
+  .field{margin:8px 0 6px}
+  .field label{display:block; font-size:13px; color:var(--muted); margin-bottom:8px; font-family:var(--font-mono); letter-spacing:.08em}
+  .row{display:flex; gap:10px; flex-wrap:wrap}
+  .in{flex:1; min-width:180px; font:inherit; font-size:16px; color:var(--ink);
+    background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:12px 16px}
+  .in::placeholder{color:var(--muted)}
+  .btn{font:inherit; font-weight:700; font-size:14px; color:var(--void);
+    background:var(--life); border:0; border-radius:12px; padding:12px 20px; cursor:pointer;
+    transition:transform .15s, filter .2s; white-space:nowrap}
+  .btn:hover{transform:translateY(-1px); filter:brightness(1.08)}
+  .btn.ghost{color:var(--ink); background:var(--panel-2); border:1px solid var(--line)}
+  .strand{margin-top:16px; min-height:44px; display:flex; flex-wrap:wrap; gap:5px; align-items:center}
+  .bead{width:22px; height:22px; border-radius:50%; display:inline-grid; place-items:center;
+    font-family:var(--font-mono); font-weight:700; font-size:11px; color:#07102a;
+    box-shadow:0 0 10px currentColor; animation:pop .35s backwards}
+  .bead.sep{width:8px; box-shadow:none; background:none !important}
+  .bd-A{background:var(--mind)} .bd-T{background:var(--life)} .bd-G{background:var(--cosmos)} .bd-C{background:var(--origin)}
+  @keyframes pop{from{transform:scale(0); opacity:0}to{transform:scale(1); opacity:1}}
+  .code-out{font-family:var(--font-mono); font-size:13px; color:var(--muted); margin-top:12px; word-break:break-all; letter-spacing:.06em}
+  .code-out b{color:var(--life)}
+  .decoded{font-family:var(--font-serif); font-size:clamp(18px,4vw,24px); color:var(--origin); min-height:1.6em; margin-top:14px}
+  hr.soft{border:0; border-top:1px solid var(--line); margin:22px 0}
+
+  /* 物語:マイルストーン・カード */
+  .timeline{padding:20px 0}
+  .ms{opacity:0; transform:translateY(28px); transition:opacity .7s, transform .7s;
+    border-left:3px solid var(--c,var(--life)); padding:6px 0 6px 22px; margin:0 0 20px}
+  .ms.in{opacity:1; transform:none}
+  .ms .when{font-family:var(--font-mono); font-size:14px; color:var(--c,var(--life)); font-weight:700}
+  .ms h4{font-size:21px; margin:4px 0 6px}
+  .ms p{font-size:15.5px; color:var(--muted); margin:0}
+  .ms p b{color:var(--ink)}
+
+  /* コドン・ミニ図解 */
+  .codon{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:14px 0;
+    font-family:var(--font-mono); font-size:13px; color:var(--muted)}
+  .codon .trip{display:inline-flex; gap:3px; padding:6px; border:1px solid var(--line); border-radius:10px; background:var(--panel)}
+  .codon .arw{color:var(--muted)}
+  .codon .aa{background:var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:6px 12px; color:var(--ink)}
+
+  /* フリップ・クイズカード */
+  .quiz-grid{display:grid; gap:16px; margin-top:12px}
+  .flip{background:none; border:0; padding:0; text-align:left; width:100%; cursor:pointer;
+    perspective:1200px; font:inherit; color:inherit}
+  .flip .inner{position:relative; transition:transform .6s; transform-style:preserve-3d;
+    min-height:118px}
+  .flip[aria-expanded="true"] .inner{transform:rotateY(180deg)}
+  .flip .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:16px;
+    padding:20px 22px; border:1px solid var(--line); display:flex; flex-direction:column;
+    justify-content:center; gap:8px}
+  .flip .front{background:var(--panel-2)}
+  .flip .back{background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    transform:rotateY(180deg); border-color:rgba(63,209,167,.42)}
+  .flip .q{font-weight:700; font-size:17px}
+  .flip .hint{font-family:var(--font-mono); font-size:11px; letter-spacing:.15em; color:var(--muted)}
+  .flip .a{color:var(--life); font-weight:700; font-size:16px}
+  .flip .a small{display:block; color:var(--muted); font-weight:400; font-size:14px; margin-top:6px}
+
+  /* 討論・発展 */
+  .talk{border:1px dashed var(--line); border-radius:16px; padding:24px; margin-top:8px}
+  .talk .q{font-family:var(--font-serif); font-size:clamp(20px,4vw,26px); line-height:1.5}
+  .grow{border:1px solid rgba(176,123,255,.45); border-radius:16px; padding:24px;
+    background:linear-gradient(180deg,rgba(176,123,255,.08),transparent)}
+  .grow .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .grow .q{font-family:var(--font-serif); font-size:22px; margin-top:10px}
+
+  /* 次回への橋 */
+  .bridge{text-align:center; padding:80px 0 40px}
+  .bridge .thread{font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted)}
+  .bridge .node{display:flex; align-items:center; justify-content:center; gap:10px;
+    flex-wrap:wrap; margin:22px 0; font-family:var(--font-mono); font-size:13px; color:var(--muted)}
+  .bridge .node b{color:var(--life)}
+  .bridge .next{font-family:var(--font-serif); font-size:clamp(21px,4.5vw,28px); margin-top:14px}
+
+  footer{border-top:1px solid var(--line); padding:30px 0 50px; color:var(--muted); font-size:13px}
+  footer .mono{font-family:var(--font-mono)}
+
+  :focus-visible{outline:2px solid var(--cosmos); outline-offset:3px; border-radius:6px}
+
+  @media (max-width:560px){ body{font-size:16px} }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .stars span{animation:none}
+    .scrollcue{animation:none}
+    .ms{transition:none; opacity:1; transform:none}
+    .flip .inner{transition:none}
+    .bead{animation:none}
+  }
+
+  /* ═══ 追加署名要素:二重らせん & セントラルドグマ ═══ */
+  .bioviz{background:linear-gradient(180deg,#0A1030,#070A1F); border:1px solid var(--line);
+    border-radius:18px; padding:18px 16px; box-shadow:0 20px 60px rgba(0,0,0,.4); margin:18px 0 6px}
+  .bioviz .lab{font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:var(--muted);
+    margin-bottom:12px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+  .bioviz canvas{display:block; width:100%; height:auto; border-radius:12px; background:#05081C;
+    border:1px solid rgba(63,209,167,.15)}
+  .bioviz .cap{font-size:14.5px; color:var(--muted); margin-top:12px; min-height:3.4em; line-height:1.75}
+  .bioviz .cap b{color:var(--life)}
+  .bioctl{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+  .bioctl .btn2{font:inherit; font-weight:700; font-size:14px; color:var(--ink); background:var(--panel-2);
+    border:1px solid var(--line); border-radius:999px; padding:10px 18px; cursor:pointer;
+    transition:transform .15s, border-color .2s}
+  .bioctl .btn2:hover{transform:translateY(-1px); border-color:var(--life)}
+  .bioctl .btn2.primary{background:linear-gradient(135deg,#12463A,#0E1436); border-color:rgba(63,209,167,.5)}
+  .aalegend{display:flex; gap:12px; flex-wrap:wrap; margin-top:12px; font-family:var(--font-mono); font-size:12px; color:var(--muted)}
+  .aalegend span{display:inline-flex; align-items:center; gap:6px}
+  .aalegend i{width:12px; height:12px; border-radius:50%; display:inline-block}
+</style>
+</head>
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+
+<!-- ═══════════ ヒーロー ═══════════ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">第1幕 世界の物語 ／ 第3回</div>
+    <h1>生命というプログラム<small>DNAは、たった4文字の言葉。</small></h1>
+    <p class="lead">犬も、花も、きみも。<br>ぜんぶ「A・T・G・C」という4つの文字だけで書かれた、<br>長い長い<ruby>設計図<rt>せっけいず</rt></ruby>からできている。</p>
+    <div class="scrollcue">SCROLL ↓ 4文字の言葉を、読みにいく</div>
+  </div>
+</header>
+
+<!-- ═══════════ 前回の答え合わせ ═══════════ -->
+<section id="recap">
+  <div class="wrap">
+    <span class="eyebrow">前回のつづき ／ 宿題の答え</span>
+    <h2 style="--accent:var(--life)"><span class="accent">石ころ</span>と、きみのちがい</h2>
+    <p>前回の宿題、おぼえてる? 「道ばたの石ころと、きみ。いったい何がちがうんだろう?」</p>
+    <div class="recap">
+      <span class="tag">こたえ</span>
+      <p class="q">石ころは、コピーされない。ふえない。<br>でも、きみは──<b>情報</b>を持っていて、それを<b>コピーして、ふえる</b>。</p>
+      <p class="a">生き物と、ただの物のいちばんのちがいは、じつは「材料」じゃない。<b>情報を持っているかどうか</b>なんだ。生き物の正体は、石やてつのような“物”じゃなくて、<b>情報</b>。そして今日は、その情報が、どんな「文字」で書かれているのかを見にいく。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 体験:名前をDNAにする ═══════════ -->
+<section id="experience">
+  <div class="wrap">
+    <span class="eyebrow">体験 ／ Hands-on</span>
+    <h2 style="--accent:var(--life)"><span class="accent">きみの名前</span>を、DNAに翻訳しよう</h2>
+    <p>生き物の設計図(DNA)は、たった<b>4つの文字</b>でできている。<b>A・T・G・C</b>。この4色のビーズだけで、世界中のどんな生き物も書ける。じゃあ、きみの名前も書けるかな? やってみよう。</p>
+
+    <div class="do">
+      <h3>やってみよう</h3>
+      <ol class="steps">
+        <li>A・T・G・C の<b>4色ビーズ</b>を用意する(赤むらさき・緑・青・金の4色)。</li>
+        <li>下の「なまえをDNAにする」に自分の名前を入れて、出てきた<b>色の順番どおり</b>にビーズを<ruby>紐<rt>ひも</rt></ruby>に通す。それがきみだけの“DNAブレスレット”。</li>
+        <li>できたブレスレットを友だちと<b>こうかん</b>。「かいどく」らんに色(A/T/G/C)を入れて、だれの名前か当てっこしよう。</li>
+        <li>気づいたことは? たった4色でも、<b>ならべる順番</b>を変えるだけで、どんな名前も作れる。DNAも、まったく同じしくみで「生き物ぜんぶ」を書いている。</li>
+      </ol>
+    </div>
+
+    <!-- 署名要素:エンコーダー -->
+    <div class="dna" id="encoder">
+      <div class="lab">DNA ENCODER ／ なまえ → 4文字のことば</div>
+
+      <div class="legend" aria-hidden="true">
+        <span class="base b-A"><span class="dot" style="background:currentColor"></span>A</span>
+        <span class="base b-T"><span class="dot" style="background:currentColor"></span>T</span>
+        <span class="base b-G"><span class="dot" style="background:currentColor"></span>G</span>
+        <span class="base b-C"><span class="dot" style="background:currentColor"></span>C</span>
+      </div>
+
+      <div class="field">
+        <label for="nameIn">▶ なまえを入れてね(ひらがな・ローマ字・なんでもOK)</label>
+        <div class="row">
+          <input class="in" id="nameIn" type="text" placeholder="れい：はな" autocomplete="off">
+          <button class="btn" id="encBtn">DNAにする</button>
+        </div>
+      </div>
+      <div class="strand" id="strand" aria-live="polite"></div>
+      <p class="code-out" id="codeOut"></p>
+
+      <hr class="soft">
+
+      <div class="field">
+        <label for="codeIn">◀ かいどく：もらったビーズの色(A T G C)を入れてみよう</label>
+        <div class="row">
+          <input class="in" id="codeIn" type="text" placeholder="れい：ACAG TCAC …" autocomplete="off">
+          <button class="btn ghost" id="decBtn">なまえに<ruby>戻<rt>もど</rt></ruby>す</button>
+        </div>
+      </div>
+      <p class="decoded" id="decoded"></p>
+    </div>
+
+    <details class="col-note">
+      <summary>おうちの方へ ／ 進行メモ</summary>
+      <div class="body">
+        所要15〜20分。<b>4色ビーズ(A/T/G/C)とひも</b>を人数分。ねらいは「4文字の組み合わせだけで無限の情報が書ける」を手で体感すること。エンコーダーは1文字を8個のビーズ(色)に変換して表示します(左のビーズが並んだ通りに通せばOK)。交換して「かいどく」に色を打ち込めば元の名前に戻るので、当てっこが成立します。<b>大事な問いかけは「なんで4文字だけで、こんなにいろんな生き物ができるんだろう?」</b>──答えは急がず、次の「物語」で明かします。ビーズが無ければ、色鉛筆で4色のマスを塗るだけでも可。</div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══════════ 物語:4文字 → タンパク質 → 細胞 → 進化 ═══════════ -->
+<section id="story">
+  <div class="wrap">
+    <span class="eyebrow">物語 ／ 4文字の言葉が、生き物になるまで</span>
+    <h2 style="--accent:var(--life)">4文字が、<span class="accent">きみになる</span>まで</h2>
+    <p class="muted">たった4文字が、どうやって「生きているもの」になるんだろう? 下にスクロールすると、その旅がはじまる。</p>
+
+    <div class="bioviz">
+      <div class="lab"><span>DNA DOUBLE HELIX ／ 二重らせん</span><span>ぐるぐる回転中</span></div>
+      <canvas id="helixCv" width="680" height="220" aria-label="DNAの二重らせんが回転するアニメーション"></canvas>
+      <p class="cap">これが、生き物の設計図「DNA」のかたち。2本のひもが<b>らせん</b>にねじれ、<b>A–T</b>・<b>G–C</b> がいつも決まったペアで手をつないでいる。だから片方の文字を見れば、もう片方は必ずわかる。<b>コピーがまちがえにくい、うまい形</b>なんだ。</p>
+    </div>
+
+    <div class="timeline">
+      <div class="ms" style="--c:var(--life)">
+        <div class="when">STEP 1</div>
+        <h4>4つの文字 ── A・T・G・C</h4>
+        <p>DNAは、この4つの文字が、ものすごーく長くならんだ「ひも」。きみの体の細胞1つに入っているDNAをぜんぶのばすと、<b>約2メートル</b>。それが小さな細胞にたたみこまれている。文字の数にすると、なんと<b>30億文字以上</b>。</p>
+      </div>
+
+      <div class="ms" style="--c:var(--cosmos)">
+        <div class="when">STEP 2</div>
+        <h4>3文字ずつ、意味のかたまりになる</h4>
+        <p>文字は<b>3つずつ</b>で1つの「意味のかたまり」になる。これを<ruby>暗号<rt>あんごう</rt></ruby>という意味で<b>コドン</b>とよぶ。3文字の組み合わせは 4×4×4＝<b>64通り</b>。この暗号が「どの部品を作れ」という命令になっている。</p>
+        <div class="codon" aria-hidden="true">
+          <span class="trip"><span class="bead bd-A">A</span><span class="bead bd-T">T</span><span class="bead bd-G">G</span></span>
+          <span class="arw">→</span><span class="aa">「ここから作りはじめ！」</span>
+        </div>
+        <div class="codon" aria-hidden="true">
+          <span class="trip"><span class="bead bd-G">G</span><span class="bead bd-C">C</span><span class="bead bd-A">A</span></span>
+          <span class="arw">→</span><span class="aa">アミノ酸(部品)を1つ</span>
+        </div>
+      </div>
+
+      <div class="ms" style="--c:var(--origin)">
+        <div class="when">STEP 3</div>
+        <h4>部品がつながって「タンパク質」になる</h4>
+        <p>コドンの命令どおりに、小さな部品(<ruby>アミノ酸<rt>さん</rt></ruby>)がつながって、<b>タンパク質</b>ができる。タンパク質は、体を作るブロックであり、体をうごかす小さな<b>機械</b>でもある。髪も、爪も、筋肉も、食べ物をこなす酵素も、ぜんぶタンパク質。</p>
+      </div>
+
+      <div class="ms" style="--c:var(--life)">
+        <div class="when">STEP 4</div>
+        <h4>タンパク質が集まって「細胞」になる</h4>
+        <p>たくさんのタンパク質が集まって、生き物のいちばん小さな“部屋”<b>細胞</b>ができる。きみの体は、この細胞が<b>約37兆個</b>も集まってできている。1個1個が、あの2メートルのDNA(設計図)を、まるまる1セットずつ持っている。</p>
+      </div>
+
+      <div class="ms" style="--c:var(--mind)">
+        <div class="when">STEP 5</div>
+        <h4>設計図はコピーされ、少しずつ変わっていく</h4>
+        <p>生き物は、自分のDNAを<b>コピー</b>して子どもにわたす。でもたまーに、写しまちがい(<b>変異</b>)が起きる。ほとんどは何も起きないけれど、まれに「ちょっと便利な変化」が生まれる。それが何億年もつみ重なって、魚が、恐竜が、鳥が、きみが生まれた。これが<b>進化</b>だ。</p>
+      </div>
+
+      <div class="ms" style="--c:var(--future)">
+        <div class="when">そして…</div>
+        <h4>4文字の言葉が、38億年つづいてきた</h4>
+        <p>いちばん最初の小さな生き物から今のきみまで、<b>1度もとぎれずに</b>、このDNAの言葉はコピーされ続けてきた。きみは、38億年ぶんの“ことば”を受けついだ、最新のページなんだ。</p>
+      </div>
+    </div>
+
+    <div class="bioviz" id="dogma">
+      <div class="lab"><span>CENTRAL DOGMA ／ 4文字が、タンパク質になるまで</span><span id="dogmaStep">STEP 0 / 6</span></div>
+      <canvas id="transCv" width="680" height="360" aria-label="DNAからRNAを経てタンパク質ができるまでのアニメーション"></canvas>
+      <div class="bioctl">
+        <button class="btn2 primary" id="dogmaPlay">▶ 再生</button>
+        <button class="btn2" id="dogmaStepBtn">⏭ 1ステップ</button>
+        <button class="btn2" id="dogmaReset">↺ リセット</button>
+      </div>
+      <div class="aalegend" aria-hidden="true">
+        <span><i style="background:var(--origin)"></i>スタート</span>
+        <span><i style="background:var(--life)"></i>グリシン</span>
+        <span><i style="background:var(--cosmos)"></i>アラニン</span>
+        <span><i style="background:var(--mind)"></i>リシン</span>
+      </div>
+      <p class="cap" id="dogmaCap">「▶再生」を押すと、DNAの4文字が“コピー”されて <b>mRNA</b> になり、<b>リボソーム</b>が3文字ずつ読んで、部品(アミノ酸)をつなげ、<b>タンパク質</b>を組み立てます。「⏭1ステップ」で1コマずつ進めることもできます。</p>
+    </div>
+
+    <details class="col-adult">
+      <summary>◆ おとなコラム：AIも、実は「文字を数字にして」考えている</summary>
+      <div class="body">
+        生き物は、A/T/G/C という<b>4文字</b>の並びで、あらゆる情報(設計図)を書く。じつは、次回以降に出てくる<b>AI</b>も、同じ発想でできている。AIはまず、言葉や絵を<b>数字の並び</b>に置きかえる(コンピュータの中は 0 と 1 の<b>2文字</b>だけ)。少ない種類の記号でも、<b>並べる順番と組み合わせ</b>があれば、いくらでも豊かな情報を表せる──これは生命もAIも共通の“魔法”です。今日の「名前をDNAにする」体験は、そのまま「AIが言葉を数字にする」体験の予行練習になっています。</div>
+    </details>
+
+    <details class="col-adult">
+      <summary>◆ もっと知りたい人へ：ウイルスは「生きている」の?</summary>
+      <div class="body">
+        ウイルスは設計図(遺伝情報)を持っているのに、<b>自分だけではコピーできない</b>。ほかの生き物の細胞に入りこんで、その細胞の機械を借りて、はじめてふえる。だから「生きている」とも「生きていない」とも言いきれない、ふしぎな<b>さかいめ</b>の存在。──「生きているって、そもそも何?」という問いは、じつは科学者でもきれいに決着していません。今日の発展カードにつながります。</div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══════════ 問い:クイズ ═══════════ -->
+<section id="quiz">
+  <div class="wrap">
+    <span class="eyebrow">問い ／ まず予想してみよう</span>
+    <h2 style="--accent:var(--cosmos)"><span class="accent">当ててから</span>、めくってね</h2>
+    <p class="muted">カードをタップ(またはEnterキー)すると、答えがめくれます。先に予想するのがコツ。</p>
+
+    <div class="quiz-grid">
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front">
+            <span class="hint">TAP TO FLIP</span>
+            <span class="q">生き物の設計図(DNA)は、なん種類の文字で書かれている?</span>
+          </div>
+          <div class="face back">
+            <span class="a">たった4種類(A・T・G・C)。<small>この4文字の並べ方だけで、犬も、桜も、人間も書き分けている。</small></span>
+          </div>
+        </div>
+      </button>
+
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front">
+            <span class="hint">TAP TO FLIP</span>
+            <span class="q">きみの細胞1個のDNAを、まっすぐのばすと何メートル?</span>
+          </div>
+          <div class="face back">
+            <span class="a">およそ2メートル。<small>それが目に見えないほど小さな細胞1個に、ぎゅっとたたまれている。全部つなぐと太陽まで何十往復もする長さ。</small></span>
+          </div>
+        </div>
+      </button>
+
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front">
+            <span class="hint">TAP TO FLIP</span>
+            <span class="q">きみの体は、細胞が何個くらい集まってできている?</span>
+          </div>
+          <div class="face back">
+            <span class="a">約37兆個。<small>その1個ずつが、あの2メートルの設計図を、まるごと1セット持っている。すごい保存力!</small></span>
+          </div>
+        </div>
+      </button>
+
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front">
+            <span class="hint">TAP TO FLIP</span>
+            <span class="q">もし、コピーミス(変異)が一度も起きなかったら?</span>
+          </div>
+          <div class="face back">
+            <span class="a">進化が起きず、最初の小さな生き物のままだったかも。<small>「まちがい」があったからこそ、いろんな生き物が生まれた。まちがいは、悪いことばかりじゃない。</small></span>
+          </div>
+        </div>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 討論・発展 ═══════════ -->
+<section id="discuss">
+  <div class="wrap">
+    <span class="eyebrow">討論 ／ 答えは出さなくていい</span>
+    <div class="talk">
+      <p class="q">コピーミス(まちがい)がなかったら、進化は起きなかった。<br>じゃあ「まちがい」って、いつも悪いことなのかな?</p>
+    </div>
+    <p class="muted" style="margin-top:22px">…テストのまちがいと、DNAのまちがい。何がちがって、何が同じだろう。話してみよう。</p>
+
+    <div class="grow" style="margin-top:16px">
+      <span class="tag">発展カード ／ 上級生・大人向け</span>
+      <p class="q">「生きている」の定義を、<br>きみが決めるなら?</p>
+      <p class="muted" style="margin:12px 0 0">ウイルスは生きてる? 火は「食べて・ふえて・動く」けど生き物じゃない。ロボットは? もし将来のAIが自分をコピーして“ふえる”ようになったら?──この問いは、この先の回(AIに心はある?)でもう一度、きみをたずねてくる。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 次回への橋 ═══════════ -->
+<section>
+  <div class="wrap bridge">
+    <div class="thread">── 情報の物語 ──</div>
+    <div class="node">
+      宇宙のはじまり → <b>情報の誕生(DNA)</b> → <span style="color:var(--mind)">脳</span> → AI → これから
+    </div>
+    <p class="muted">きみは今、「情報が生まれた瞬間」に立った。4文字の言葉が、生き物になった。</p>
+    <p class="next">次回は、その情報を“<b>考える</b>”ために生まれた器官へ。<br>おでこの<ruby>裏<rt>うら</rt></ruby>にある、<b>860億個</b>の宇宙──脳の話。</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="mono">これからの、はなし ／ 第3回 生命というプログラム</p>
+    <p style="margin-top:8px">※数字(30億文字・約2メートル・約37兆個など)は、わかりやすくするための代表的な目安です(諸説あり)。この教材はAIと一緒に作りました。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 星空
+  var sky = document.getElementById('stars');
+  if(sky && !reduce){
+    var n = window.innerWidth < 560 ? 40 : 80, html='';
+    for(var i=0;i<n;i++){
+      var x=Math.random()*100, y=Math.random()*100, d=(Math.random()*4).toFixed(2), s=(Math.random()*1.6+1).toFixed(1);
+      html+='<span style="left:'+x+'%;top:'+y+'%;animation-delay:'+d+'s;width:'+s+'px;height:'+s+'px"></span>';
+    }
+    sky.innerHTML = html;
+  }
+
+  // フリップカード(クリック+キーボード)
+  document.querySelectorAll('.flip').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+    });
+  });
+
+  // 物語カードの出現
+  var msList = document.querySelectorAll('.ms');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); } });
+    }, {threshold:0.4});
+    msList.forEach(function(m){ io.observe(m); });
+  } else {
+    msList.forEach(function(m){ m.classList.add('in'); });
+  }
+
+  // ── DNAエンコーダー(1文字=16bit=8塩基, 可逆) ──
+  var BASES = ['A','C','G','T']; // 0,1,2,3
+  var IDX = {A:0,C:1,G:2,T:3};
+
+  function encodeChar(code){
+    // 0..65535 を4進数8桁へ
+    var s = '';
+    for(var i=7;i>=0;i--){ s += BASES[(code >> (i*2)) & 3]; }
+    return s;
+  }
+  function encode(str){
+    var out = [];
+    for(var i=0;i<str.length;i++){ out.push(encodeChar(str.charCodeAt(i))); }
+    return out; // 文字ごとの8塩基文字列の配列
+  }
+  function decode(bases){
+    var clean = (bases||'').toUpperCase().replace(/[^ACGT]/g,'');
+    var txt = '';
+    for(var i=0;i+8<=clean.length;i+=8){
+      var code = 0;
+      for(var j=0;j<8;j++){ code = code*4 + IDX[clean.charAt(i+j)]; }
+      txt += String.fromCharCode(code);
+    }
+    return txt;
+  }
+
+  var strand = document.getElementById('strand');
+  var codeOut = document.getElementById('codeOut');
+  function renderStrand(str){
+    strand.innerHTML=''; codeOut.innerHTML='';
+    if(!str){ return; }
+    var groups = encode(str);
+    var flat = '';
+    var delay = 0;
+    groups.forEach(function(g, gi){
+      for(var k=0;k<g.length;k++){
+        var ch = g.charAt(k);
+        var b = document.createElement('span');
+        b.className = 'bead bd-'+ch;
+        b.textContent = ch;
+        b.style.animationDelay = (reduce?0:delay)+'s';
+        delay += 0.03;
+        strand.appendChild(b);
+      }
+      flat += g + (gi<groups.length-1 ? ' ' : '');
+      if(gi<groups.length-1){
+        var sep = document.createElement('span');
+        sep.className='bead sep'; strand.appendChild(sep);
+      }
+    });
+    codeOut.innerHTML = '4文字コード: <b>'+flat+'</b>　（'+str.length+'文字 → '+(str.length*8)+'つぶ）';
+  }
+
+  var nameIn = document.getElementById('nameIn');
+  document.getElementById('encBtn').addEventListener('click', function(){ renderStrand(nameIn.value.trim()); });
+  nameIn.addEventListener('keydown', function(e){ if(e.key==='Enter'){ renderStrand(nameIn.value.trim()); } });
+
+  var codeIn = document.getElementById('codeIn');
+  var decoded = document.getElementById('decoded');
+  function runDecode(){
+    var t = decode(codeIn.value);
+    decoded.textContent = t ? ('→ 「'+t+'」') : '（A・T・G・C を8つぶ以上入れてね）';
+  }
+  document.getElementById('decBtn').addEventListener('click', runDecode);
+  codeIn.addEventListener('keydown', function(e){ if(e.key==='Enter'){ runDecode(); } });
+})();
+</script>
+<script>
+/* ═══ 追加:二重らせん & セントラルドグマ・シミュレーター ═══ */
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── 二重らせん(横軸・回転) ── */
+  var hc = document.getElementById('helixCv');
+  if(hc){
+    var hx = hc.getContext('2d'), HW = hc.width, HH = hc.height;
+    var pairCol = [['#E85D9B','#3FD1A7'], ['#6C8FFF','#FFB84D']]; // A-T, G-C
+    function drawHelix(t){
+      hx.clearRect(0,0,HW,HH);
+      var N=72, amp=HH*0.34, p1=[], p2=[];
+      for(var i=0;i<=N;i++){
+        var f=i/N, x=f*HW, ph=f*3.2*Math.PI*2 + t;
+        p1.push({x:x, y:HH/2+Math.sin(ph)*amp,        d:Math.cos(ph)});
+        p2.push({x:x, y:HH/2+Math.sin(ph+Math.PI)*amp, d:Math.cos(ph+Math.PI)});
+      }
+      hx.lineWidth=3; hx.lineJoin='round';
+      hx.strokeStyle='rgba(120,160,255,.5)';
+      hx.beginPath(); p1.forEach(function(p,i){ i?hx.lineTo(p.x,p.y):hx.moveTo(p.x,p.y); }); hx.stroke();
+      hx.strokeStyle='rgba(63,209,167,.45)';
+      hx.beginPath(); p2.forEach(function(p,i){ i?hx.lineTo(p.x,p.y):hx.moveTo(p.x,p.y); }); hx.stroke();
+      for(var i=0;i<=N;i+=4){
+        var a=p1[i], b=p2[i], depth=(a.d+1)/2, pc=pairCol[(i/4)%2];
+        var grad=hx.createLinearGradient(a.x,a.y,b.x,b.y);
+        grad.addColorStop(0,pc[0]); grad.addColorStop(1,pc[1]);
+        hx.globalAlpha=0.22+depth*0.6; hx.lineWidth=1.5+depth*2.5; hx.strokeStyle=grad;
+        hx.beginPath(); hx.moveTo(a.x,a.y); hx.lineTo(b.x,b.y); hx.stroke();
+        hx.globalAlpha=0.5+depth*0.5;
+        hx.fillStyle=pc[0]; hx.beginPath(); hx.arc(a.x,a.y,3+depth*2,0,7); hx.fill();
+        hx.fillStyle=pc[1]; hx.beginPath(); hx.arc(b.x,b.y,3+depth*2,0,7); hx.fill();
+      }
+      hx.globalAlpha=1;
+    }
+    if(reduce){ drawHelix(0.6); }
+    else{ var ht=0; (function loop(){ ht+=0.02; drawHelix(ht); requestAnimationFrame(loop); })(); }
+  }
+
+  /* ── セントラルドグマ:DNA → mRNA → タンパク質 ── */
+  var tc = document.getElementById('transCv');
+  if(tc){
+    var g=tc.getContext('2d'), TW=tc.width, TH=tc.height;
+    var codons=[
+      {dna:'ATG', rna:'AUG', col:'#FFB84D', stop:false},
+      {dna:'GGT', rna:'GGU', col:'#3FD1A7', stop:false},
+      {dna:'GCT', rna:'GCU', col:'#6C8FFF', stop:false},
+      {dna:'AAA', rna:'AAA', col:'#E85D9B', stop:false},
+      {dna:'TAG', rna:'UAG', col:'#8B93C2', stop:true}
+    ];
+    var caps=[
+      'これは、あるタンパク質の<b>設計図(DNA)</b>。ATGCの4文字で書かれている。まず「▶再生」してみよう。',
+      'DNAをコピーして <b>mRNA</b> という“持ち出しメモ”を作る。このとき <b>T が U にかわる</b>(金色の文字)。',
+      '<b>リボソーム</b>(紫の機械)が、mRNAを左から<b>3文字ずつ</b>読みはじめた。最初の3文字は「作りはじめ」の合図。',
+      '3文字読むごとに、部品(<b>アミノ酸</b>)が1つ運ばれてきて、鎖のようにつながっていく。',
+      'また3文字。ちがう3文字は、ちがう部品。<b>並ぶ順番</b>が、できるタンパク質を決める。',
+      'どんどんつながる。たった4種類の文字の<b>組み合わせ</b>だけで、無数の部品ならびが作れる。',
+      '「<b>ストップ</b>」の合図で完成! つながった部品が<b>折りたたまれて、タンパク質</b>になった。これが体を作り、動かす“小さな機械”だ。'
+    ];
+    var step=0, fold=0, playing=false, timer=0;
+    var stepEl=document.getElementById('dogmaStep'), capEl=document.getElementById('dogmaCap');
+
+    function roundRect(c,x,y,w,h,r){ c.beginPath();
+      c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r);
+      c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
+    function codonX(ci){ return 46 + ci*((TW-92)/5); }
+
+    function updateMeta(){
+      stepEl.textContent='STEP '+step+' / 6';
+      capEl.innerHTML=caps[step];
+    }
+
+    function draw(){
+      g.clearRect(0,0,TW,TH);
+      g.textAlign='left'; g.font='12px ui-monospace,monospace'; g.fillStyle='#8B93C2';
+      g.fillText('DNA（せっけいず）', 20, 26);
+      g.textAlign='center'; g.font='bold 19px ui-monospace,monospace';
+      for(var ci=0;ci<codons.length;ci++) for(var k=0;k<3;k++){
+        g.fillStyle='#EDEAFB';
+        g.fillText(codons[ci].dna.charAt(k), codonX(ci)+16+k*24, 50);
+      }
+      // mRNA
+      if(step>=1){
+        g.textAlign='left'; g.font='12px ui-monospace,monospace'; g.fillStyle='#3FD1A7';
+        g.fillText('mRNA（コピー：T→U）', 20, 90);
+        g.textAlign='center'; g.font='bold 19px ui-monospace,monospace';
+        for(var ci=0;ci<codons.length;ci++) for(var k=0;k<3;k++){
+          var d=codons[ci].dna.charAt(k), r=codons[ci].rna.charAt(k);
+          g.fillStyle = (d!==r) ? '#FFB84D' : '#EDEAFB';
+          g.fillText(r, codonX(ci)+16+k*24, 116);
+        }
+      }
+      // ribosome
+      if(step>=2){
+        var ci=Math.min(step-2,4), rx=codonX(ci);
+        g.fillStyle='rgba(176,123,255,.16)'; g.strokeStyle='rgba(176,123,255,.85)'; g.lineWidth=2;
+        roundRect(g, rx-4, 95, ((TW-92)/5)-8, 40, 12); g.fill(); g.stroke();
+        g.fillStyle='#C6A8FF'; g.font='11px ui-monospace,monospace'; g.textAlign='center';
+        g.fillText('リボソーム', rx+((TW-92)/5)/2-4, 152);
+      }
+      // protein chain (+ fold)
+      var beads=[];
+      for(var ci=0; ci<=Math.min(step-2,4); ci++){ if(!codons[ci].stop) beads.push(codons[ci]); }
+      var n=beads.length;
+      if(n>0){
+        var pos=[], cx0=TW/2-(n-1)*26;
+        for(var i=0;i<n;i++){
+          var bx=cx0+i*52, by=212;
+          if(fold>0.01){
+            var ang=i/Math.max(1,n)*Math.PI*2, R=40*(1-fold*0.35);
+            var tx=TW/2+Math.cos(ang)*R, ty=278+Math.sin(ang)*R*0.8;
+            bx+= (tx-bx)*fold; by+= (ty-by)*fold;
+          }
+          pos.push({x:bx,y:by,c:beads[i].col});
+        }
+        g.strokeStyle='rgba(200,210,255,.35)'; g.lineWidth=4;
+        for(var i=1;i<n;i++){ g.beginPath(); g.moveTo(pos[i-1].x,pos[i-1].y); g.lineTo(pos[i].x,pos[i].y); g.stroke(); }
+        for(var i=0;i<n;i++){
+          g.fillStyle=pos[i].c; g.beginPath(); g.arc(pos[i].x,pos[i].y,14,0,7); g.fill();
+          g.strokeStyle='rgba(255,255,255,.25)'; g.lineWidth=1.5; g.stroke();
+        }
+        g.textAlign='left'; g.font='12px ui-monospace,monospace'; g.fillStyle='#8B93C2';
+        g.fillText(fold>0.6?'タンパク質（できあがり）':'アミノ酸の鎖（タンパク質になる途中）', 20, 190);
+      }
+    }
+
+    function loop(){
+      if(playing && step<6){ if(++timer>75){ timer=0; step++; updateMeta(); if(step===6) playing=false; } }
+      var target=(step===6)?1:0; fold += (target-fold)*0.06;
+      draw(); requestAnimationFrame(loop);
+    }
+
+    document.getElementById('dogmaPlay').addEventListener('click', function(){
+      if(step>=6){ step=0; fold=0; updateMeta(); }
+      playing=true; timer=60;
+    });
+    document.getElementById('dogmaStepBtn').addEventListener('click', function(){
+      playing=false; if(step<6){ step++; updateMeta(); }
+    });
+    document.getElementById('dogmaReset').addEventListener('click', function(){
+      playing=false; step=0; fold=0; timer=0; updateMeta();
+    });
+
+    updateMeta();
+    if(reduce){ step=6; fold=1; updateMeta(); draw(); }
+    else requestAnimationFrame(loop);
+  }
+})();
+</script>
+</body>
+</html>

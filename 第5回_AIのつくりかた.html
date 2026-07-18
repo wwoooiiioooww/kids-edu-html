@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ja" data-session="5">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIのつくりかた ─ 猫を1000回見せると｜これからの、はなし</title>
+<style>
+  :root{
+    --void:#070A1F; --panel:#0E1436; --panel-2:#141B44;
+    --ink:#EDEAFB; --muted:#8B93C2; --line:rgba(160,170,220,.14);
+    --origin:#FFB84D; --cosmos:#6C8FFF; --life:#3FD1A7; --mind:#E85D9B; --future:#B07BFF;
+    --font-sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,system-ui,sans-serif;
+    --font-serif:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    --font-mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--void); color:var(--ink); font-family:var(--font-sans);
+    line-height:1.9; font-size:17px; overflow-x:hidden; -webkit-font-smoothing:antialiased}
+  ruby rt{font-size:.55em; color:var(--muted); font-weight:400}
+
+  .stars{position:fixed; inset:0; z-index:0; pointer-events:none}
+  .stars span{position:absolute; background:#fff; border-radius:50%; opacity:.5; animation:tw 4s infinite ease-in-out}
+  @keyframes tw{0%,100%{opacity:.2}50%{opacity:.9}}
+
+  .wrap{position:relative; z-index:1; max-width:720px; margin:0 auto; padding:0 22px}
+  .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.22em; color:var(--muted); text-transform:uppercase; margin-bottom:14px; display:block}
+  section{padding:72px 0}
+  h2{font-size:clamp(26px,5.5vw,38px); font-weight:800; line-height:1.2; margin-bottom:20px}
+  h2 .accent{color:var(--accent,var(--cosmos))}
+  p{margin-bottom:18px}
+  .muted{color:var(--muted)}
+  .serif{font-family:var(--font-serif)}
+
+  .hero{min-height:92vh; display:flex; flex-direction:column; justify-content:center; padding:80px 0 60px}
+  .hero .kicker{font-family:var(--font-mono); font-size:13px; letter-spacing:.2em; color:var(--cosmos); margin-bottom:26px}
+  .hero h1{font-size:clamp(38px,9vw,76px); line-height:1.08; font-weight:800; letter-spacing:.01em; margin-bottom:8px}
+  .hero h1 small{display:block; font-size:.42em; font-weight:600; color:var(--muted); letter-spacing:.14em; margin-top:18px}
+  .hero .lead{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,25px); color:var(--ink); margin-top:34px; max-width:20em}
+  .scrollcue{margin-top:60px; font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted); animation:bob 2.4s infinite}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(8px);opacity:1}}
+
+  .recap{background:linear-gradient(180deg,rgba(108,143,255,.08),transparent); border:1px solid var(--line); border-left:3px solid var(--cosmos); border-radius:16px; padding:26px 24px}
+  .recap .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--cosmos)}
+  .recap .q{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,23px); margin:10px 0 14px}
+  .recap .a b{color:var(--cosmos)}
+
+  .do{background:linear-gradient(180deg,var(--panel),var(--void)); border:1px solid var(--line); border-radius:20px; padding:30px 26px}
+  .do h3{font-size:22px; margin-bottom:16px; color:var(--life)}
+  .steps{list-style:none; counter-reset:s}
+  .steps li{counter-increment:s; position:relative; padding:10px 0 10px 44px; border-top:1px solid var(--line)}
+  .steps li:first-child{border-top:0}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:10px; width:28px; height:28px; border-radius:50%; background:var(--life); color:var(--void); font-family:var(--font-mono); font-weight:700; display:grid; place-items:center; font-size:14px}
+
+  details{border:1px solid var(--line); border-radius:14px; margin:18px 0; background:var(--panel); overflow:hidden}
+  details summary{cursor:pointer; padding:16px 20px; font-weight:700; list-style:none; display:flex; align-items:center; gap:10px; user-select:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"＋"; font-family:var(--font-mono); color:var(--cosmos)}
+  details[open] summary::before{content:"−"}
+  details .body{padding:2px 20px 20px; color:var(--muted); font-size:15.5px; line-height:1.85}
+  details .body b{color:var(--ink)}
+  details.col-note summary{color:var(--life)}
+  details.col-note summary::before{color:var(--life)}
+  details.col-adult summary::before{color:var(--origin)}
+
+  /* ルールはんてい機(むかしのAIごっこ) */
+  .rulebox{background:linear-gradient(180deg,#0A1030,#070A1F); border:1px solid var(--line); border-radius:18px; padding:18px 16px; margin:18px 0 6px}
+  .rulebox .lab{font-family:var(--font-mono); font-size:11px; letter-spacing:.14em; color:var(--muted); margin-bottom:12px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+  .rulechips{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px}
+  .rulechips label{cursor:pointer; position:relative}
+  .rulechips input{position:absolute; opacity:0; pointer-events:none}
+  .rulechips span{display:inline-block; font-weight:700; font-size:14px; color:var(--muted); background:var(--panel-2); border:1px solid var(--line); border-radius:999px; padding:9px 15px; transition:transform .15s}
+  .rulechips input:checked+span{background:var(--cosmos); color:#07102a; border-color:transparent}
+  .rulechips input:focus-visible+span{outline:2px solid var(--cosmos); outline-offset:3px}
+  .rulechips label:hover span{transform:translateY(-1px)}
+  .zoo{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+  .zoo .an{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:12px 8px; text-align:center}
+  .zoo .an.bad{border-color:rgba(255,82,82,.55)}
+  .zoo .an .em{font-size:32px; line-height:1.3}
+  .zoo .an .nm{font-size:12.5px; font-weight:700; margin-top:2px}
+  .zoo .an .ft{font-family:var(--font-mono); font-size:10px; color:var(--muted); margin-top:4px; line-height:1.6}
+  .zoo .an .say{font-size:12px; margin-top:6px; color:var(--cosmos); font-weight:700}
+  .zoo .an .vd{font-size:13px; font-weight:800; margin-top:2px}
+  .zoo .an .vd.ok{color:var(--life)} .zoo .an .vd.ng{color:#FF5252}
+  .rulebox .cap{font-size:14.5px; color:var(--muted); margin-top:12px; line-height:1.75}
+  .rulebox .cap b{color:var(--cosmos)}
+  @media (max-width:560px){ .zoo{grid-template-columns:repeat(2,1fr)} }
+
+  /* 署名要素:学習する境界線 */
+  .bioviz{background:linear-gradient(180deg,#0A1030,#070A1F); border:1px solid var(--line); border-radius:18px; padding:18px 16px; box-shadow:0 20px 60px rgba(0,0,0,.4); margin:18px 0 6px}
+  .bioviz .lab{font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:var(--muted); margin-bottom:12px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+  .bioviz canvas{display:block; width:100%; height:auto; border-radius:12px; background:#05081C; border:1px solid rgba(108,143,255,.15); cursor:crosshair; touch-action:manipulation}
+  .bioviz .cap{font-size:14.5px; color:var(--muted); margin-top:12px; min-height:3.4em; line-height:1.75}
+  .bioviz .cap b{color:var(--cosmos)}
+  .bioctl{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; align-items:center}
+  .bioctl .btn2{font:inherit; font-weight:700; font-size:14px; color:var(--ink); background:var(--panel-2); border:1px solid var(--line); border-radius:999px; padding:10px 16px; cursor:pointer; transition:transform .15s, border-color .2s}
+  .bioctl .btn2:hover{transform:translateY(-1px); border-color:var(--cosmos)}
+  .toggle{display:inline-flex; border:1px solid var(--line); border-radius:999px; overflow:hidden}
+  .toggle button{font:inherit; font-weight:700; font-size:14px; border:0; padding:10px 16px; cursor:pointer; background:var(--panel-2); color:var(--muted)}
+  .toggle button.on.cat{background:var(--cosmos); color:#07102a}
+  .toggle button.on.dog{background:var(--mind); color:#07102a}
+
+  .timeline{padding:20px 0}
+  .ms{opacity:0; transform:translateY(28px); transition:opacity .7s, transform .7s; border-left:3px solid var(--c,var(--cosmos)); padding:6px 0 6px 22px; margin:0 0 20px}
+  .ms.in{opacity:1; transform:none}
+  .ms .when{font-family:var(--font-mono); font-size:14px; color:var(--c,var(--cosmos)); font-weight:700}
+  .ms h4{font-size:21px; margin:4px 0 6px}
+  .ms p{font-size:15.5px; color:var(--muted); margin:0}
+  .ms p b{color:var(--ink)}
+
+  .quiz-grid{display:grid; gap:16px; margin-top:12px}
+  .flip{background:none; border:0; padding:0; text-align:left; width:100%; cursor:pointer; perspective:1200px; font:inherit; color:inherit}
+  .flip .inner{position:relative; transition:transform .6s; transform-style:preserve-3d; min-height:118px}
+  .flip[aria-expanded="true"] .inner{transform:rotateY(180deg)}
+  .flip .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; padding:20px 22px; border:1px solid var(--line); display:flex; flex-direction:column; justify-content:center; gap:8px}
+  .flip .front{background:var(--panel-2)}
+  .flip .back{background:linear-gradient(180deg,var(--panel-2),var(--panel)); transform:rotateY(180deg); border-color:rgba(108,143,255,.42)}
+  .flip .q{font-weight:700; font-size:17px}
+  .flip .hint{font-family:var(--font-mono); font-size:11px; letter-spacing:.15em; color:var(--muted)}
+  .flip .a{color:var(--cosmos); font-weight:700; font-size:16px}
+  .flip .a small{display:block; color:var(--muted); font-weight:400; font-size:14px; margin-top:6px}
+
+  .talk{border:1px dashed var(--line); border-radius:16px; padding:24px; margin-top:8px}
+  .talk .q{font-family:var(--font-serif); font-size:clamp(20px,4vw,26px); line-height:1.5}
+  .grow{border:1px solid rgba(176,123,255,.45); border-radius:16px; padding:24px; background:linear-gradient(180deg,rgba(176,123,255,.08),transparent)}
+  .grow .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .grow .q{font-family:var(--font-serif); font-size:22px; margin-top:10px}
+
+  .bridge{text-align:center; padding:80px 0 40px}
+  .bridge .thread{font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted)}
+  .bridge .node{display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin:22px 0; font-family:var(--font-mono); font-size:13px; color:var(--muted)}
+  .bridge .node b{color:var(--cosmos)}
+  .bridge .next{font-family:var(--font-serif); font-size:clamp(21px,4.5vw,28px); margin-top:14px}
+
+  footer{border-top:1px solid var(--line); padding:30px 0 50px; color:var(--muted); font-size:13px}
+  footer .mono{font-family:var(--font-mono)}
+  :focus-visible{outline:2px solid var(--cosmos); outline-offset:3px; border-radius:6px}
+
+  @media (max-width:560px){ body{font-size:16px} }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .stars span,.scrollcue{animation:none}
+    .ms{transition:none; opacity:1; transform:none}
+    .flip .inner{transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+
+<!-- ヒーロー -->
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">第2幕 AIって何者? ／ 第5回</div>
+    <h1>AIのつくりかた<small>猫を1000回見せると、猫がわかる。</small></h1>
+    <p class="lead">だれもAIに「猫とはこういうものだ」と<br>教えていない。<br>なのに、AIは猫をわかる。<br>いったい、どうやって?</p>
+    <div class="scrollcue">SCROLL ↓ AIの「学ぶ」を、のぞく</div>
+  </div>
+</header>
+
+<!-- 前回の回収 -->
+<section id="recap">
+  <div class="wrap">
+    <span class="eyebrow">前回のつづき ／ 第2幕へ</span>
+    <h2>脳を、<span class="accent">人間が作ったら</span>?</h2>
+    <p>前回わかったこと ── 脳は「単純なニューロンが、たくさんつながったネットワーク」だった。合図が重なると発火して、次へ伝わる。そして最後に、ふしぎな置きみやげがあった ── ニューロン1個は何もできないのに、860億個あつまると「わたし」になる。</p>
+    <div class="recap">
+      <span class="tag">今日のスタート</span>
+      <p class="q">じゃあ、その<b>同じしくみ</b>を、人間がコンピュータの中に作ったら?</p>
+      <p class="a">それが<b>AI(ニューラルネットワーク)</b>。前回さわった発火の図を、そっくりそのまま数字で作ったもの。今日は「そのAIが、どうやって自分で<b>学ぶ</b>のか」を、実際にさわって確かめる。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 体験:Teachable Machine -->
+<section id="experience">
+  <div class="wrap">
+    <span class="eyebrow">体験 ／ Hands-on</span>
+    <h2><span class="accent">きみのAI</span>を、その場で育てる</h2>
+    <p>ブラウザだけで、自分だけのAIを数十秒で育てられる道具がある(Teachable Machine)。カメラに向かって「グー・チョキ・パー」を見せて、AIに<b>じゃんけん</b>をおぼえさせよう。</p>
+    <div class="do">
+      <h3>やってみよう</h3>
+      <ol class="steps">
+        <li>カメラの前で「グー」を見せながら、<b>例をたくさん登録</b>(いろんな角度・手で)。「チョキ」「パー」も同じように。</li>
+        <li>登録できたら、AIに新しい手を見せてみる。<b>ちゃんと当てられる?</b></li>
+        <li>わざと<b>いじわる</b>してみよう。暗いところ、手を傾ける、別の人の手 ── どんなときに間違える?</li>
+        <li>「グー」の例を<b>3枚しか</b>おぼえさせなかったら? たくさんおぼえさせたときと、<b>あたりぐあい</b>はどうちがう?</li>
+      </ol>
+    </div>
+    <details class="col-note">
+      <summary>おうちの方へ ／ 進行メモ</summary>
+      <div class="body">
+        所要20分。Teachable Machine はGoogleの無料ツールで、インストール不要・カメラとブラウザだけ・アカウント登録なしで動きます。ねらいは「AIはルールを教わるのではなく、<b>例(データ)から自分で学ぶ</b>」を手で体感すること。ステップ3・4の“わざと間違えさせる”が最重要で、この後のシミュレーターと討論(バイアス)に直結します。Wi-Fi環境だけ事前確認を。</div>
+    </details>
+  </div>
+</section>
+
+<!-- 物語・その1:むかしのAIごっこ(ルールはんてい機) -->
+<section id="rules">
+  <div class="wrap">
+    <span class="eyebrow">物語・その1 ／ むかしのAIごっこ</span>
+    <h2>ルールで<span class="accent">「ネコはんてい機」</span>、作れる?</h2>
+    <p class="muted">Teachable Machineは「例を見せる」だけでおぼえた。でも、むかしのコンピュータは、まったくちがう作り方だった ── <b>人間が「見分け方のルール」を、ぜんぶ書いておく</b>。電卓も、自動販売機も、ゲームも、ぜんぶこの作り方でできている。</p>
+    <p>じゃあ、きみがむかしのプログラマーだ。手がかりを組み合わせて、8ひき全員に正解できる「ネコはんてい機」を作ってみよう。<b>ぜんもん正解できる組み合わせは、あると思う? まず予想してから!</b></p>
+
+    <div class="rulebox">
+      <div class="lab"><span>ルールをえらぶ ── 1つでも当てはまったら「ネコ!」と言う機械</span><span id="ruleScore">せいかい: —</span></div>
+      <div class="rulechips" id="ruleChips">
+        <label><input type="checkbox" data-f="mimi"><span>👂 耳がとがっている</span></label>
+        <label><input type="checkbox" data-f="hige"><span>ひげがある</span></label>
+        <label><input type="checkbox" data-f="nya"><span>🔊 「ニャー」となく</span></label>
+        <label><input type="checkbox" data-f="sippo"><span>➰ しっぽがある</span></label>
+      </div>
+      <div class="zoo" id="zoo" aria-live="polite"></div>
+      <p class="cap" id="ruleCap">ルールをえらぶと、はんてい機が8ひきを見分けるよ。</p>
+    </div>
+
+    <p style="margin-top:18px">…どうがんばっても、<b>ぜんもん正解にならない</b>。たれ耳のネコがいる。ねていて鳴かないネコがいる。ネコの鳴きまねをするオウムまでいる。手がかりを増やしても増やしても、<b>かならず例外</b>が見つかる。しかも、きみの頭は8ひきを<b>ひと目で</b>見分けたのに、そのやり方をルールに書き出せない。むかしのプログラマーは、ここで<b>50年ちかく行きづまった</b>。</p>
+    <p>そこで、発想をひっくりかえした。<b>見分け方を教えるのを、やめる</b>。かわりに例をどっさりわたして、見分け方は<b>AIじしんに見つけさせる</b> ── そう、きみがさっきTeachable Machineでやった、あれだ。つぎは、AIが見分け方を「見つけていくしゅんかん」を、スローでのぞいてみよう。</p>
+
+    <details class="col-adult">
+      <summary>◆ おとなコラム:これは本当にあった50年の行きづまり</summary>
+      <div class="body">
+        初期のAI(1950〜80年代)は「ルールを書き尽くす」路線でした。チェスのように<b>ルールが言葉にできる世界</b>では強くなれた一方、「猫を見分ける」「自然に話す」は、人間が無意識にやっているため<b>ルールに書き出せず</b>、研究は何度も冬の時代を迎えます。転機は2010年代、例から学ぶ<b>深層学習</b>が画像認識コンテストで人間なみの精度に到達したこと。「答えの出し方を人間が設計する機械」から「<b>答えの見つけ方を自分で獲得する機械</b>」へ ── コンピュータ史上でも最大級の発想の転換でした。</div>
+    </details>
+  </div>
+</section>
+
+<!-- 署名要素:学習する境界線 -->
+<section id="sim" style="padding-top:0">
+  <div class="wrap">
+    <span class="eyebrow">署名要素 ／ AIが学ぶ瞬間を見る</span>
+    <h2>おしえるたびに、AIの<span class="accent">カン</span>がそだつ</h2>
+    <p class="muted">こんどは、きみが先生。画面をタップして「ここにネコがいたよ(青)」「イヌがいたよ(ピンク)」と<b>例</b>を教えよう。AIは教わるたびに、じぶんの<b>カン</b>=「このあたりはネコっぽいはず」という予想を、画面の色でぬりかえていく。<b>色がこいほど、自信まんまん</b>。まちがえている子には❌のわがつく。</p>
+
+    <div class="bioviz" id="ml">
+      <div class="lab"><span>きみが先生 ／ AIのカンは、色で見える</span><span id="mlAcc">せいかい: —</span></div>
+      <canvas id="mlCv" width="680" height="360" aria-label="点を置くとAIが分類の境界線を学習するシミュレーション"></canvas>
+      <div class="bioctl">
+        <span class="toggle" role="group" aria-label="置く点の種類">
+          <button id="btnCat" class="on cat">🐱 ネコを置く</button>
+          <button id="btnDog" class="dog">🐶 イヌを置く</button>
+        </span>
+        <button class="btn2" id="mlSample">🎲 サンプルを置く</button>
+        <button class="btn2" id="mlReset">↺ リセット</button>
+      </div>
+      <p class="cap" id="mlCap"><b>①</b> まずネコを2〜3こ、きりかえてイヌも2〜3こタップ。さいしょはうすかった色が、どんどん<b>こく</b>なっていく=AIのカンが育っている! <b>②</b> ❌のわ(AIのまちがい)は、教えるほど<b>へっていく</b>。右上の「せいかい」の数字にも注目。<b>③</b> こんどはわざと、ネコを<b>ぜんぶ同じ場所</b>にかためたら? 2〜3こしか教えなかったら? ── Teachable Machineでやった「いじわる」と同じことが起きるか、<b>予想してから</b>ためして。</p>
+    </div>
+
+    <details class="col-adult">
+      <summary>◆ おとなコラム：これは第4回の「発火の図」と同じ仲間</summary>
+      <div class="body">
+        画面の色分け(と白い点線=カンのさかいめ)は、いちばん小さなニューラルネット(ニューロン1個ぶん)が学習する様子です。点を1つ見るたびに、AIは「今のカンでこの点を正しく分けられた?」を確かめ、まちがっていたら<b>重み(カンの向き)をほんの少し直す</b>。これを何千回もくり返す──前回の「シナプスの強さを調整する」と、まったく同じことをしています。<b>脳もAIも、学ぶとは“つなぎめの強さを少しずつ直すこと”</b>。さっきの「ルールはんてい機」との違いに注目してください:ここでは<b>誰も見分け方を書いていない</b>のに、見分け方(さかいめ)が例から勝手に生まれています。本物のAIは、この小さなニューロンを何十億個も重ねているだけです。</div>
+    </details>
+  </div>
+</section>
+
+<!-- 物語・その2 -->
+<section id="story">
+  <div class="wrap">
+    <span class="eyebrow">物語・その2 ／ 「教える」から「学ぶ」へ</span>
+    <h2>ルールを書くのを、<span class="accent">やめた</span></h2>
+    <p class="muted">きみが今日やったことを、ならべて整理しよう。じつはこれが、コンピュータの歴史でいちばん大きな発想の転換なんだ。</p>
+    <div class="timeline">
+      <div class="ms" style="--c:var(--muted)">
+        <div class="when">むかしのやり方</div>
+        <h4>人間が、答えの出し方を全部書く</h4>
+        <p>電卓も自動販売機もゲームも、<b>人間が「こうなったら、こうしろ」を先回りして書いた</b>とおりに動く。書いた人より賢くはなれない。そして「ネコはんてい機」できみが体験したとおり、<b>ルールに書ききれないこと</b>の前では、お手あげだった。</p>
+      </div>
+      <div class="ms" style="--c:var(--cosmos)">
+        <div class="when">いまのやり方</div>
+        <h4>ルールを書かず、例を見せる</h4>
+        <p>そこで、やり方をぎゃくにした。ルールは書かない。かわりに<b>ネコの写真を何千枚も見せる</b>。するとAIは、自分で「ネコっぽさ」の<b>見分け方</b>を見つけ出す。これが<b>機械学習</b>=「教える」んじゃなくて「たくさん見せて、じぶんで気づかせる」やり方。作った人間にも、AIが何に気づいたのかは<b>ぜんぶは説明できない</b>。</p>
+      </div>
+      <div class="ms" style="--c:var(--mind)">
+        <div class="when">中身は</div>
+        <h4>おぼえる=つなぎめを、少しずつ直す</h4>
+        <p>AIの中身は、前回さわった<b>発火の網</b>。つなぎめ1本1本に「<b>強さ</b>」がある(むずかしい言葉で“重み”という)。AIはまちがえるたびに、その強さを<b>ほんの少しだけ直す</b>。これは脳が「れんしゅうすると上手になる(つなぎめが強くなる)」のと、まったく<b>同じこと</b>なんだ。</p>
+      </div>
+      <div class="ms" style="--c:var(--origin)">
+        <div class="when">だから</div>
+        <h4>「猫を1000回見せる」</h4>
+        <p>見せる例が多いほど、<b>さかいめの線</b>はぴったりになる。だからAIには<b>たくさんの例(データ)</b>がいる。ぎゃくに、例が<b>少なかったり、かたよっていたり</b>すると、まちがったさかいめを引いてしまう。データは、AIの“ごはん”なんだ。</p>
+      </div>
+      <div class="ms" style="--c:var(--future)">
+        <div class="when">つまり</div>
+        <h4>魔法じゃなく、小さな調整のつみ重ね</h4>
+        <p>AIのすごさは、魔法でも天才でもない。<b>「まちがえる→ちょっと直す」を、何十億回もくり返した</b>結果なんだ。きみがさっきうごかした<b>さかいめの線</b>と、やっていることは同じ。ただ、けたちがいに大きいだけ。</p>
+      </div>
+    </div>
+
+    <details class="col-adult">
+      <summary>◆ もっと知りたい人へ：機械学習と、ふつうのプログラムのちがい</summary>
+      <div class="body">
+        ふつうのプログラムは「<b>入力 → (人が書いたルール) → 答え</b>」。機械学習は逆で、「<b>入力と答えの例をたくさん → AIがルール(重み)を自分で作る</b>」。だから、人間がうまく言葉にできないこと(「猫っぽさ」「自然な文章」)も、例さえあれば学べる。反面、<b>なぜそう判断したのか人間にも説明しづらい</b>という新しい難しさが生まれました(これは第7回以降のテーマにつながります)。「設計した通りに動く機械」と「何を身につけたか作者にも分からない機械」── 私たちが今つき合っているAIは、人類にとって<b>はじめての後者</b>です。</div>
+    </details>
+    <details class="col-adult">
+      <summary>◆ おとなコラム：データの“かたより(バイアス)”</summary>
+      <div class="body">
+        もし学習させた猫の写真が<b>すべて「屋内・明るい・白い猫」</b>だったら、AIは外にいる黒猫を「猫じゃない」と間違えるかもしれません。AIは見せられた例の世界しか知らない。だから<b>どんなデータを食べさせるかで、AIの“考え方”がかたよる</b>。これは人間の思いこみとそっくりで、AIを公平に使ううえで世界中で問題になっています。「AIが間違えたとき、それはAIのせい? データを選んだ人のせい?」──討論してみてください。</div>
+    </details>
+  </div>
+</section>
+
+<!-- 物語・その3:のこされた謎 -->
+<section id="why">
+  <div class="wrap">
+    <span class="eyebrow">物語・その3 ／ のこされた謎</span>
+    <h2>で、なんで<span class="accent">こんなにかしこい</span>の?</h2>
+    <p>ここまでの話で、グーチョキパーやネコの見分けは説明がつく。でも、きみは思わない? きみのそばにいるAI(Claudeなど)は、<b>会話して、相談にのって、物語まで書く</b>。「例から学ぶ」だけで、ほんとうにそこまでいく?</p>
+    <p class="muted">いい質問。カギは2つある。</p>
+    <div class="timeline">
+      <div class="ms" style="--c:var(--mind)">
+        <div class="when">カギ① 量が、質に変わる</div>
+        <h4>ニューロン1個 →「わたし」</h4>
+        <p>思い出して、第4回。ニューロン<b>1個</b>は、ほとんど何もできない(きみがさっき動かした、あの点のなかまだ)。でも<b>860億個</b>あつまると──「わたし」が生まれる。AIでも<b>同じこと</b>が起きた。網をけたちがいに大きくして、データをけたちがいに増やしたら、<b>だれも教えていない力</b>(翻訳、計算、じょうだん…)が、とちゅうから突然あらわれはじめたんだ。学者はこれを<b>創発(そうはつ)</b>とよぶ。そして正直に言うと──<b>なぜそうなるのか、まだ完全にはだれも説明できていない</b>。</p>
+      </div>
+      <div class="ms" style="--c:var(--cosmos)">
+        <div class="when">カギ② 宿題は、たった1つだった</div>
+        <h4>「次の言葉を、当てなさい」</h4>
+        <p>おどろくかもしれないけど、会話するAIが学習でといていた宿題は、じつは<b>たった1つ</b>。「文のつづきの、<b>次の言葉を当てる</b>」──それだけ。<br>…え、それだけ? それだけで、なんでなやみ相談にのれるの?<br>──それが、<b>次回の話</b>。今日は「なんか変だぞ」と思ったまま、帰ってほしい。</p>
+      </div>
+    </div>
+    <details class="col-adult">
+      <summary>◆ おとなコラム:スケーリング則と創発 ── AIが急に賢くなった理由(の現在地)</summary>
+      <div class="body">
+        2020年前後、「モデルの大きさ・データ量・計算量を増やすと、性能が<b>数式で予測できるほど規則正しく</b>伸びる」という<b>スケーリング則</b>が発見され、世界的な巨大化競争が始まりました。さらに、ある規模を超えると、小さいモデルでは全くできなかった課題(多段階の推論など)が<b>急にできるようになる</b>現象が次々に報告され、<b>創発</b>と呼ばれています。つまり「予測できる成長」と「予測できない飛躍」が同居しているのが現在地。なぜ規模が質を生むのか、脳の860億個とどこまで同じ話なのか──その完全な説明は、いまも世界中の研究者の宿題のままです。<b>「作った本人たちにも、賢くなった理由が説明しきれない」</b>──ここが、AIという存在のいちばん不思議なところです。</div>
+    </details>
+  </div>
+</section>
+
+<!-- クイズ -->
+<section id="quiz">
+  <div class="wrap">
+    <span class="eyebrow">問い ／ まず予想してみよう</span>
+    <h2 style="--accent:var(--cosmos)"><span class="accent">当ててから</span>、めくってね</h2>
+    <div class="quiz-grid">
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">むかしのAIと今のAI、いちばんのちがいは?</span></div>
+        <div class="face back"><span class="a">むかし=人が答えの出し方を全部書く／今=例から自分で見つける。<small>だから今のAIは、作った人にも中身がぜんぶは説明できない。「設計」から「知性」への大転換。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">AIが賢くなるのに、いちばん大事なものは?</span></div>
+        <div class="face back"><span class="a">データ(例)の量と質。<small>いい例をたくさん見せるほど賢くなる。だから「猫を1000回見せる」。データはAIの食べもの。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">見せた猫の写真が全部「白い猫」だったら?</span></div>
+        <div class="face back"><span class="a">黒い猫を「猫じゃない」と間違えるかも。<small>これがデータのかたより(バイアス)。AIは見せられた例の世界しか知らない。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">AIの「学ぶ」と、脳の「おぼえる」。似てる?</span></div>
+        <div class="face back"><span class="a">とても似てる。どちらも“つなぎめの強さ”を少しずつ直す。<small>脳=シナプス、AI=重み。名前がちがうだけで、やっていることは同じ。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">AIのかしこさは、ぜんぶ人間が設計したもの?</span></div>
+        <div class="face back"><span class="a">いいえ。大きくしたら「教えていない力」が突然あらわれた(創発)。<small>なぜかは、まだ完全にはだれも説明できていない。作った本人たちも、おどろいている。</small></span></div>
+      </div></button>
+    </div>
+  </div>
+</section>
+
+<!-- 討論・発展 -->
+<section id="discuss">
+  <div class="wrap">
+    <span class="eyebrow">討論 ／ 答えは出さなくていい</span>
+    <div class="talk">
+      <p class="q">AIが間違えるのは、どんなとき?<br>それは、人間が間違えるときと似ている? ちがう?</p>
+    </div>
+    <p class="muted" style="margin-top:22px">…人も、見たことのないものは苦手。思いこみもある。AIのまちがいと、どこが同じで、どこがちがうだろう。</p>
+    <div class="grow" style="margin-top:16px">
+      <span class="tag">発展カード ／ 上級生・大人向け</span>
+      <p class="q">もし、AIにわざと<br>“うそのデータ”を教えたら、<br>どうなると思う?</p>
+      <p class="muted" style="margin:12px 0 0">「これは全部ネコだよ」とイヌの写真を教え込んだら? AIは疑わずに信じてしまう。じゃあ、AIに何を学ばせるかを決める人には、どんな責任があるだろう?</p>
+    </div>
+  </div>
+</section>
+
+<!-- 次回への橋 -->
+<section>
+  <div class="wrap bridge">
+    <div class="thread">── 情報の物語 ──</div>
+    <div class="node">宇宙 → DNA → 脳 → <b>AI(つくりかた)</b> → これから</div>
+    <p class="muted">人工の脳が、例から学べるようになった。そして、けたはずれに大きくしたら、だれも教えていない力が目をさましはじめた。</p>
+    <p class="next">その力の宿題は、たった1つ──<b>「次の言葉を、当てなさい」</b>。<br>それだけで、なんで会話ができるの?<br>次回、AIは言葉を“わかって”いるのか?</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="mono">これからの、はなし ／ 第5回 AIのつくりかた</p>
+    <p style="margin-top:8px">※シミュレーターは、いちばん単純なAI(ニューロン1個)の学習を再現したものです。本物のAIはこれを何十億個も重ねています。この教材はAIと一緒に作りました。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sky = document.getElementById('stars');
+  if(sky && !reduce){
+    var n = window.innerWidth < 560 ? 40 : 80, html='';
+    for(var i=0;i<n;i++){ var s=(Math.random()*1.6+1).toFixed(1);
+      html+='<span style="left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;animation-delay:'+(Math.random()*4).toFixed(2)+'s;width:'+s+'px;height:'+s+'px"></span>'; }
+    sky.innerHTML = html;
+  }
+  document.querySelectorAll('.flip').forEach(function(btn){
+    btn.addEventListener('click', function(){ btn.setAttribute('aria-expanded', btn.getAttribute('aria-expanded')==='true'?'false':'true'); });
+  });
+  var msList = document.querySelectorAll('.ms');
+  if('IntersectionObserver' in window && !reduce){
+    var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); }); }, {threshold:0.4});
+    msList.forEach(function(m){ io.observe(m); });
+  } else { msList.forEach(function(m){ m.classList.add('in'); }); }
+})();
+</script>
+<script>
+/* ═══ 学習する境界線(ロジスティック回帰・1ニューロン) ═══ */
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cv = document.getElementById('mlCv'); if(!cv) return;
+  var g = cv.getContext('2d'), W=cv.width, H=cv.height;
+  var pts = [];               // {x,y,label}  label:0=cat(青),1=dog(ピンク)
+  var w = [0,0,0];            // [bias, wx, wy]
+  var cur = 0;                // 現在置くラベル
+  var accEl = document.getElementById('mlAcc');
+
+  function nx(x){ return (x/W)*2-1; }
+  function ny(y){ return (y/H)*2-1; }
+  function sig(z){ return 1/(1+Math.exp(-z)); }
+  function pred(px,py){ return sig(w[0] + w[1]*nx(px) + w[2]*ny(py)); }
+
+  function train(iter){
+    var cats=0,dogs=0; for(var i=0;i<pts.length;i++){ pts[i].label?dogs++:cats++; }
+    if(cats===0 || dogs===0) return;   // 両方の例がないと学べない
+    var lr=0.28;
+    for(var it=0; it<iter; it++){
+      var g0=0,g1=0,g2=0;
+      for(var i=0;i<pts.length;i++){
+        var X1=nx(pts[i].x), X2=ny(pts[i].y);
+        var p=sig(w[0]+w[1]*X1+w[2]*X2), d=p-pts[i].label;
+        g0+=d; g1+=d*X1; g2+=d*X2;
+      }
+      var N=pts.length;
+      w[0]-=lr*g0/N; w[1]-=lr*g1/N; w[2]-=lr*g2/N;
+    }
+  }
+
+  function accuracy(){
+    if(pts.length===0) return null;
+    var ok=0; for(var i=0;i<pts.length;i++){ var p=pred(pts[i].x,pts[i].y); if((p>=0.5?1:0)===pts[i].label) ok++; }
+    return Math.round(ok/pts.length*100);
+  }
+
+  function draw(){
+    g.clearRect(0,0,W,H);
+    // 予測ヒートマップ(粗いグリッド)
+    var cw=20, ch=20;
+    for(var gx=0; gx<W; gx+=cw) for(var gy=0; gy<H; gy+=ch){
+      var p=pred(gx+cw/2, gy+ch/2);
+      var conf=Math.abs(p-0.5)*2; // 0..1
+      if(p<0.5) g.fillStyle='rgba(108,143,255,'+(0.05+conf*0.28)+')'; // cat 青
+      else      g.fillStyle='rgba(232,93,155,'+(0.05+conf*0.28)+')'; // dog ピンク
+      g.fillRect(gx,gy,cw,ch);
+    }
+    // 境界線 w0+w1*nx+w2*ny=0
+    var cats=0,dogs=0; for(var i=0;i<pts.length;i++){ pts[i].label?dogs++:cats++; }
+    if(cats>0 && dogs>0 && Math.abs(w[2])>1e-4){
+      var xa=0, xb=W;
+      function lineY(px){ var X1=nx(px); var Yn=-(w[0]+w[1]*X1)/w[2]; return (Yn+1)/2*H; }
+      g.strokeStyle='rgba(237,234,251,.85)'; g.lineWidth=2.5; g.setLineDash([8,6]);
+      g.beginPath(); g.moveTo(xa,lineY(xa)); g.lineTo(xb,lineY(xb)); g.stroke(); g.setLineDash([]);
+    }
+    // 点
+    for(var i=0;i<pts.length;i++){
+      var pt=pts[i], correct = ((pred(pt.x,pt.y)>=0.5?1:0)===pt.label);
+      g.beginPath(); g.arc(pt.x,pt.y,8,0,7);
+      g.fillStyle = pt.label ? '#E85D9B' : '#6C8FFF'; g.fill();
+      g.lineWidth=2; g.strokeStyle='rgba(255,255,255,.7)'; g.stroke();
+      if(!correct && cats>0 && dogs>0){
+        g.strokeStyle='#FF5252'; g.lineWidth=2; g.setLineDash([3,3]);
+        g.beginPath(); g.arc(pt.x,pt.y,13,0,7); g.stroke(); g.setLineDash([]);
+      }
+    }
+    // ラベル
+    g.font='12px ui-monospace,monospace'; g.fillStyle='rgba(108,143,255,.9)'; g.textAlign='left';
+    g.fillText('◀ ネコのなわばり', 12, H-14);
+    g.fillStyle='rgba(232,93,155,.9)'; g.textAlign='right'; g.fillText('イヌのなわばり ▶', W-12, H-14);
+    // せいかい:あたった数/ぜんぶ
+    if(accEl){
+      if(pts.length===0){ accEl.textContent='せいかい: —'; }
+      else {
+        var ok=0, cats2=0, dogs2=0;
+        for(var qi=0;qi<pts.length;qi++){ pts[qi].label?dogs2++:cats2++; }
+        if(cats2>0 && dogs2>0){
+          for(var qj=0;qj<pts.length;qj++){ if((pred(pts[qj].x,pts[qj].y)>=0.5?1:0)===pts[qj].label) ok++; }
+          accEl.textContent='せいかい: '+ok+'/'+pts.length+'こ';
+        } else { accEl.textContent='せいかい: —（りょうほう おいてね）'; }
+      }
+    }
+  }
+
+  function loop(){ train(3); draw(); requestAnimationFrame(loop); }
+
+  function add(clientX, clientY){
+    var rect=cv.getBoundingClientRect();
+    var x=(clientX-rect.left)*(W/rect.width), y=(clientY-rect.top)*(H/rect.height);
+    if(x<0||x>W||y<0||y>H) return;
+    pts.push({x:x,y:y,label:cur});
+    if(reduce){ train(400); draw(); }
+  }
+  cv.addEventListener('click', function(e){ add(e.clientX,e.clientY); });
+
+  var bCat=document.getElementById('btnCat'), bDog=document.getElementById('btnDog');
+  bCat.addEventListener('click', function(){ cur=0; bCat.classList.add('on'); bDog.classList.remove('on'); });
+  bDog.addEventListener('click', function(){ cur=1; bDog.classList.add('on'); bCat.classList.remove('on'); });
+
+  document.getElementById('mlReset').addEventListener('click', function(){
+    pts.length=0; w=[0,0,0]; if(accEl) accEl.textContent='せいかい: —'; if(reduce) draw();
+  });
+  document.getElementById('mlSample').addEventListener('click', function(){
+    pts.length=0; w=[0,0,0];
+    for(var i=0;i<7;i++){ pts.push({x:120+Math.random()*160, y:60+Math.random()*240, label:0}); }
+    for(var i=0;i<7;i++){ pts.push({x:400+Math.random()*160, y:60+Math.random()*240, label:1}); }
+    if(reduce){ train(500); draw(); }
+  });
+
+  draw();
+  if(!reduce) requestAnimationFrame(loop);
+})();
+</script>
+<script>
+/* ═══ ルールはんてい機(むかしのAIごっこ・シンボリックAI体験) ═══ */
+(function(){
+  var zoo = document.getElementById('zoo'); if(!zoo) return;
+  var chips = document.getElementById('ruleChips');
+  var scoreEl = document.getElementById('ruleScore');
+  var capEl = document.getElementById('ruleCap');
+
+  var ANIMALS = [
+    {em:'🐱',  nm:'みけねこ',        cat:true,  f:{mimi:1,hige:1,nya:1,sippo:1}},
+    {em:'🐈',  nm:'たれ耳のねこ',    cat:true,  f:{mimi:0,hige:1,nya:1,sippo:1}},
+    {em:'🐱',  nm:'ねてるねこ 💤',   cat:true,  f:{mimi:1,hige:1,nya:0,sippo:1}},
+    {em:'🐈',  nm:'しっぽのないねこ',cat:true,  f:{mimi:1,hige:1,nya:1,sippo:0}},
+    {em:'🦊',  nm:'きつね',          cat:false, f:{mimi:1,hige:1,nya:0,sippo:1}},
+    {em:'🐶',  nm:'こいぬ',          cat:false, f:{mimi:0,hige:0,nya:0,sippo:1}},
+    {em:'🦜',  nm:'ものまねオウム',  cat:false, f:{mimi:0,hige:0,nya:1,sippo:1}},
+    {em:'🐰',  nm:'うさぎ',          cat:false, f:{mimi:1,hige:1,nya:0,sippo:1}}
+  ];
+
+  function selected(){
+    var out = [];
+    chips.querySelectorAll('input:checked').forEach(function(c){ out.push(c.getAttribute('data-f')); });
+    return out;
+  }
+
+  function render(){
+    var rules = selected();
+    var html = '', ok = 0, wrongNames = [];
+    for(var i=0;i<ANIMALS.length;i++){
+      var a = ANIMALS[i];
+      var saysCat = false;
+      for(var r=0;r<rules.length;r++){ if(a.f[rules[r]]) { saysCat = true; break; } }
+      var correct = (saysCat === a.cat);
+      if(correct) ok++; else wrongNames.push(a.nm.replace(' 💤',''));
+      var ft = '耳'+(a.f.mimi?'○':'×')+' ひげ'+(a.f.hige?'○':'×')+'<br>ニャー'+(a.f.nya?'○':'×')+' しっぽ'+(a.f.sippo?'○':'×');
+      html += '<div class="an'+(correct?'':' bad')+'">'
+        + '<div class="em">'+a.em+'</div>'
+        + '<div class="nm">'+a.nm+'</div>'
+        + '<div class="ft">'+ft+'</div>'
+        + '<div class="say">「'+(saysCat?'ネコ!':'ネコじゃない')+'」</div>'
+        + '<div class="vd '+(correct?'ok':'ng')+'">'+(correct?'○ せいかい':'❌ まちがい')+'</div>'
+        + '</div>';
+    }
+    zoo.innerHTML = html;
+    scoreEl.textContent = 'せいかい: '+ok+'/8';
+    if(rules.length === 0){
+      capEl.innerHTML = 'まだルールがないので、はんてい機は8ひき<b>ぜんぶ「ネコじゃない」</b>と言うしかない。ネコたちが❌に…。上のルールをえらんでみよう。';
+    } else if(ok >= 7){
+      capEl.innerHTML = 'すごい、あと一歩!? …でも、ざんねん。<b>どう組み合わせても8/8にはならない</b>ようにこの世界はできている。❌の子をよく見てみて。';
+    } else if(ok >= 6){
+      capEl.innerHTML = 'おしい! でも <b>'+wrongNames.join('、')+'</b> でしっぱい。手がかりを変えたら…? いろいろためして、<b>8/8にできるか</b>たしかめてみて。';
+    } else {
+      capEl.innerHTML = 'せいかい '+ok+'/8。❌がついたのは <b>'+wrongNames.join('、')+'</b>。ルールの組み合わせを変えて、もっと当てられるかな?';
+    }
+  }
+
+  chips.addEventListener('change', render);
+  render();
+})();
+</script>
+</body>
+</html>

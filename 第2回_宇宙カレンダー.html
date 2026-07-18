@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ja" data-session="2">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宇宙カレンダー ─ 138億年を歩く｜これからの、はなし</title>
+<style>
+  :root{
+    --void:#070A1F; --panel:#0E1436; --panel-2:#141B44;
+    --ink:#EDEAFB; --muted:#8B93C2; --line:rgba(160,170,220,.14);
+    --origin:#FFB84D; --cosmos:#6C8FFF; --life:#3FD1A7; --mind:#E85D9B; --future:#B07BFF;
+    --font-sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,system-ui,sans-serif;
+    --font-serif:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    --font-mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--void); color:var(--ink); font-family:var(--font-sans);
+    line-height:1.9; font-size:17px; overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ruby rt{font-size:.55em; color:var(--muted); font-weight:400}
+
+  /* 星空(背景・reduced-motionで停止) */
+  .stars{position:fixed; inset:0; z-index:0; pointer-events:none}
+  .stars span{position:absolute; width:2px; height:2px; background:#fff; border-radius:50%;
+    opacity:.5; animation:tw 4s infinite ease-in-out}
+  @keyframes tw{0%,100%{opacity:.2}50%{opacity:.9}}
+
+  .wrap{position:relative; z-index:1; max-width:720px; margin:0 auto; padding:0 22px}
+
+  /* エピブロウ(セクションの小ラベル・等幅) */
+  .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.22em;
+    color:var(--muted); text-transform:uppercase; margin-bottom:14px; display:block}
+
+  /* ヒーロー */
+  .hero{min-height:92vh; display:flex; flex-direction:column; justify-content:center;
+    padding:80px 0 60px}
+  .hero .kicker{font-family:var(--font-mono); font-size:13px; letter-spacing:.2em;
+    color:var(--origin); margin-bottom:26px}
+  .hero h1{font-size:clamp(38px,9vw,76px); line-height:1.08; font-weight:800;
+    letter-spacing:.01em; margin-bottom:8px}
+  .hero h1 small{display:block; font-size:.42em; font-weight:600; color:var(--muted);
+    letter-spacing:.14em; margin-top:18px}
+  .hero .lead{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,25px);
+    color:var(--ink); margin-top:34px; max-width:20em}
+  .scrollcue{margin-top:60px; font-family:var(--font-mono); font-size:12px;
+    letter-spacing:.2em; color:var(--muted); animation:bob 2.4s infinite}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(8px);opacity:1}}
+
+  section{padding:72px 0}
+  h2{font-size:clamp(26px,5.5vw,38px); font-weight:800; line-height:1.2; margin-bottom:20px}
+  h2 .accent{color:var(--accent,var(--origin))}
+  p{margin-bottom:18px}
+  .muted{color:var(--muted)}
+  .serif{font-family:var(--font-serif)}
+
+  /* 体験ボックス */
+  .do{background:linear-gradient(180deg,var(--panel),var(--void));
+    border:1px solid var(--line); border-radius:20px; padding:30px 26px}
+  .do h3{font-size:22px; margin-bottom:16px; color:var(--life)}
+  .steps{list-style:none; counter-reset:s}
+  .steps li{counter-increment:s; position:relative; padding:10px 0 10px 44px; border-top:1px solid var(--line)}
+  .steps li:first-child{border-top:0}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:10px;
+    width:28px; height:28px; border-radius:50%; background:var(--life); color:var(--void);
+    font-family:var(--font-mono); font-weight:700; display:grid; place-items:center; font-size:14px}
+
+  /* コラム・進行メモ(details) */
+  details{border:1px solid var(--line); border-radius:14px; margin:18px 0;
+    background:var(--panel); overflow:hidden}
+  details summary{cursor:pointer; padding:16px 20px; font-weight:700; list-style:none;
+    display:flex; align-items:center; gap:10px; user-select:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"＋"; font-family:var(--font-mono); color:var(--cosmos)}
+  details[open] summary::before{content:"−"}
+  details .body{padding:2px 20px 20px; color:var(--muted); font-size:15.5px; line-height:1.85}
+  details.col-note summary{color:var(--life)}
+  details.col-note summary::before{color:var(--life)}
+  details.col-adult summary::before{color:var(--origin)}
+
+  /* 宇宙カレンダー:固定サイドレール */
+  #calendar{position:relative}
+  .rail{position:sticky; top:0; z-index:5; background:rgba(7,10,31,.82);
+    backdrop-filter:blur(8px); border-bottom:1px solid var(--line); padding:14px 22px;
+    display:flex; align-items:center; gap:16px}
+  .rail .date{font-family:var(--font-mono); font-size:clamp(20px,5vw,30px); font-weight:700;
+    color:var(--origin); min-width:5.6em; transition:color .4s}
+  .rail .bar{flex:1; height:4px; background:var(--line); border-radius:4px; overflow:hidden}
+  .rail .bar i{display:block; height:100%; width:0;
+    background:linear-gradient(90deg,var(--origin),var(--cosmos),var(--life),var(--mind));
+    transition:width .5s ease}
+  .rail .cap{font-family:var(--font-mono); font-size:11px; color:var(--muted); white-space:nowrap}
+
+  .timeline{padding:40px 0}
+  /* マイルストーン・カード */
+  .ms{opacity:0; transform:translateY(28px); transition:opacity .7s, transform .7s;
+    border-left:3px solid var(--c,var(--cosmos)); padding:6px 0 6px 22px; margin:0 0 18px}
+  .ms.in{opacity:1; transform:none}
+  .ms .when{font-family:var(--font-mono); font-size:14px; color:var(--c,var(--cosmos)); font-weight:700}
+  .ms h4{font-size:21px; margin:4px 0 6px}
+  .ms p{font-size:15.5px; color:var(--muted); margin:0}
+  /* 空白の広がり(間) */
+  .gap{text-align:center; color:var(--muted); font-family:var(--font-serif);
+    font-size:16px; padding:56px 0; opacity:.7}
+  .gap::before,.gap::after{content:"·　·　·"; display:block; letter-spacing:.5em; opacity:.5; margin:10px 0}
+  .finale{background:linear-gradient(180deg,rgba(232,93,155,.08),rgba(176,123,255,.05));
+    border:1px solid var(--line); border-radius:20px; padding:30px 24px; margin-top:20px}
+  .finale .when{color:var(--mind)}
+
+  /* フリップ・クイズカード */
+  .quiz-grid{display:grid; gap:16px; margin-top:12px}
+  .flip{background:none; border:0; padding:0; text-align:left; width:100%; cursor:pointer;
+    perspective:1200px; font:inherit; color:inherit}
+  .flip .inner{position:relative; transition:transform .6s; transform-style:preserve-3d;
+    min-height:112px}
+  .flip[aria-expanded="true"] .inner{transform:rotateY(180deg)}
+  .flip .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:16px;
+    padding:20px 22px; border:1px solid var(--line); display:flex; flex-direction:column;
+    justify-content:center; gap:8px}
+  .flip .front{background:var(--panel-2)}
+  .flip .back{background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    transform:rotateY(180deg); border-color:rgba(255,184,77,.4)}
+  .flip .q{font-weight:700; font-size:17px}
+  .flip .hint{font-family:var(--font-mono); font-size:11px; letter-spacing:.15em; color:var(--muted)}
+  .flip .a{color:var(--origin); font-weight:700; font-size:16px}
+  .flip .a small{display:block; color:var(--muted); font-weight:400; font-size:14px; margin-top:6px}
+
+  /* 討論・発展 */
+  .talk{border:1px dashed var(--line); border-radius:16px; padding:24px; margin-top:8px}
+  .talk .q{font-family:var(--font-serif); font-size:clamp(20px,4vw,26px); line-height:1.5}
+  .grow{border:1px solid rgba(176,123,255,.45); border-radius:16px; padding:24px;
+    background:linear-gradient(180deg,rgba(176,123,255,.08),transparent)}
+  .grow .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .grow .q{font-family:var(--font-serif); font-size:22px; margin-top:10px}
+
+  /* 次回への橋 */
+  .bridge{text-align:center; padding:80px 0 40px}
+  .bridge .thread{font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted)}
+  .bridge .node{display:flex; align-items:center; justify-content:center; gap:10px;
+    flex-wrap:wrap; margin:22px 0; font-family:var(--font-mono); font-size:13px; color:var(--muted)}
+  .bridge .node b{color:var(--origin)}
+  .bridge .next{font-family:var(--font-serif); font-size:clamp(21px,4.5vw,28px); margin-top:14px}
+
+  footer{border-top:1px solid var(--line); padding:30px 0 50px; color:var(--muted); font-size:13px}
+  footer .mono{font-family:var(--font-mono)}
+
+  :focus-visible{outline:2px solid var(--cosmos); outline-offset:3px; border-radius:6px}
+
+  @media (max-width:560px){
+    body{font-size:16px}
+    .rail .cap{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .stars span{animation:none}
+    .scrollcue{animation:none}
+    .ms{transition:none; opacity:1; transform:none}
+    .flip .inner{transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+
+<!-- ═══════════ ヒーロー ═══════════ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">第1幕 世界の物語 ／ 第2回</div>
+    <h1>宇宙カレンダー<small>138億年を、1年のカレンダーにしてみたら。</small></h1>
+    <p class="lead">ビッグバンを1月1日、今日を12月31日の夜。<br>その1年の中で、きみが生まれたのは、いつだろう?</p>
+    <div class="scrollcue">SCROLL ↓ 時間を旅する</div>
+  </div>
+</header>
+
+<!-- ═══════════ 体験 ═══════════ -->
+<section id="experience">
+  <div class="wrap">
+    <span class="eyebrow">体験 ／ Hands-on</span>
+    <h2 style="--accent:var(--life)"><span class="accent">10メートルの宇宙</span>を、歩いてみよう</h2>
+    <p>数字だけだと、138<ruby>億<rt>おく</rt></ruby>年はピンとこない。だから、<b>体で</b>感じてみる。教室にロープを1本、まっすぐ10メートル。この10メートルが、宇宙のはじまりから今日までの、ぜんぶの時間だ。</p>
+
+    <div class="do">
+      <h3>やってみよう</h3>
+      <ol class="steps">
+        <li>ロープのはしっこ(スタート)が<b>ビッグバン</b>。反対のはしっこが<b>今日</b>。</li>
+        <li>「生命が生まれたのはどこ?」「<ruby>恐竜<rt>きょうりゅう</rt></ruby>は?」「人間は?」──みんなで予想して、その場所に立ってみる。</li>
+        <li>正解の場所に<ruby>付箋<rt>ふせん</rt></ruby>を貼っていく。予想と、どれくらいズレた?</li>
+        <li>最後に、ロープのいちばん端の<b>1センチ</b>を<ruby>虫<rt>むし</rt></ruby>めがねで見るつもりで、床に「技術カルタ」(火・文字・蒸気機関・電気・インターネット・AI)を並べる。人間のすごい発明は、ぜんぶこの1センチの中で起きた。</li>
+      </ol>
+    </div>
+
+    <details class="col-note">
+      <summary>おうちの方へ ／ 進行メモ</summary>
+      <div class="body">
+        所要15〜20分。ロープ10m・付箋・技術カルタ・虫めがねを用意。ねらいは「加速」を体で入れること(以降12回の座標軸になります)。正解位置の目安はこの後の年表と同じ。<b>技術カルタは間隔もわざと本物に近づけて</b>並べると、発明が終盤に密集する“爆発”が体で見えます。答えを急がず、まず全員に予想させてズレを楽しむのがコツ。屋外・廊下でも可。
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══════════ 物語:宇宙カレンダー(署名要素) ═══════════ -->
+<section id="calendar" style="padding-top:0">
+  <div class="rail" aria-hidden="true">
+    <span class="date" id="railDate">1月 1日</span>
+    <span class="bar"><i id="railBar"></i></span>
+    <span class="cap">宇宙カレンダー</span>
+  </div>
+
+  <div class="wrap">
+    <div class="timeline">
+      <span class="eyebrow">物語 ／ 138億年 = 1年</span>
+      <h2 style="--accent:var(--origin)">スクロールで、<span class="accent">時間を旅する</span></h2>
+      <p class="muted">下にスクロールすると、上のカレンダーの日付が進んでいく。長い長い「なにもない時間」を通りぬけた先に、私たちがいる。</p>
+
+      <div class="ms" data-date="1月 1日" data-p="0" style="--c:var(--origin)">
+        <div class="when">1月1日 00:00</div>
+        <h4>ビッグバン</h4>
+        <p>すべてのはじまり。宇宙が生まれ、光と、いちばん軽い元素(水素)だけの世界。</p>
+      </div>
+
+      <div class="ms" data-date="1月中旬" data-p="4" style="--c:var(--cosmos)">
+        <div class="when">1月ごろ</div>
+        <h4>最初の星がかがやく</h4>
+        <p>ガスが集まって、初めて星が燃えはじめる。星の中で、酸素や炭素など「重い元素」が作られる。<b>きみの体の材料は、星の中で生まれた。</b></p>
+      </div>
+
+      <div class="gap">星が生まれては死に、また生まれる。<br>それが、何億年もくりかえされた。</div>
+
+      <div class="ms" data-date="3月ごろ" data-p="20" style="--c:var(--cosmos)">
+        <div class="when">3月ごろ</div>
+        <h4>天の川<ruby>銀河<rt>ぎんが</rt></ruby>ができる</h4>
+        <p>星が何千億も集まって、私たちの銀河「天の川」ができあがる。</p>
+      </div>
+
+      <div class="gap">まだ、太陽も地球も、ない。<br>宇宙はずっと、星を作り続けていた。</div>
+
+      <div class="ms" data-date="9月上旬" data-p="66" style="--c:var(--origin)">
+        <div class="when">9月上旬</div>
+        <h4>太陽と地球が生まれる</h4>
+        <p>1年のうち、もう9月! ここでやっと、私たちの太陽と地球ができる。宇宙の歴史の、ずいぶん後のほうだ。</p>
+      </div>
+
+      <div class="ms" data-date="9月なかば" data-p="72" style="--c:var(--life)">
+        <div class="when">9月なかば</div>
+        <h4>最初の生命</h4>
+        <p>海の中に、いちばん小さな生き物が現れる。<b>「情報を持ち、自分をコピーして、増える」もの</b>のはじまり。<br><span class="muted serif">──これが、次回のテーマ「DNA」につながる。</span></p>
+      </div>
+
+      <div class="gap">それから長いあいだ、生き物は<br>目に見えないほど小さいままだった。</div>
+
+      <div class="ms" data-date="12月中旬" data-p="95" style="--c:var(--life)">
+        <div class="when">12月中旬</div>
+        <h4>いろんな形の生き物が、どっと増える</h4>
+        <p>「カンブリア<ruby>爆発<rt>ばくはつ</rt></ruby>」。目や、あしや、からを持つ生き物が一気に登場。生き物の“設計図”が急に豊かになった。</p>
+      </div>
+
+      <div class="ms" data-date="12月25日" data-p="98" style="--c:var(--life)">
+        <div class="when">12月25日</div>
+        <h4>恐竜があらわれる</h4>
+        <p>クリスマスの日に、恐竜たちの時代がはじまる。</p>
+      </div>
+
+      <div class="ms" data-date="12月30日" data-p="99.4" style="--c:var(--mind)">
+        <div class="when">12月30日</div>
+        <h4>恐竜がいなくなる</h4>
+        <p>大きな<ruby>隕石<rt>いんせき</rt></ruby>が落ち、恐竜が絶滅。あと2日で、1年が終わる。人間は、まだどこにもいない。</p>
+      </div>
+
+      <div class="finale">
+        <div class="ms" style="--c:var(--mind); opacity:1; transform:none; border-color:var(--mind)" data-date="12月31日 22:24" data-p="99.8">
+          <div class="when">12月31日 22:24ごろ</div>
+          <h4>人類のなかまが立ち上がる</h4>
+          <p>大みそかの夜。1年の最後の日の、夜10時すぎ。ようやく人間の祖先が登場する。</p>
+        </div>
+        <div class="ms" style="--c:var(--mind); opacity:1; transform:none" data-date="12月31日 23:52" data-p="99.96">
+          <div class="when">12月31日 23:52</div>
+          <h4>ホモ・サピエンス(私たち)</h4>
+          <p>今の人類が現れたのは、1年でいうと最後の<b>8分前</b>。</p>
+        </div>
+        <div class="ms" style="--c:var(--origin); opacity:1; transform:none" data-date="23:59:32" data-p="99.998">
+          <div class="when">23:59:32</div>
+          <h4>農業・文字・歴史のぜんぶ</h4>
+          <p>ピラミッドも、お城も、電車も、スマホも──人間の歴史ぜんぶが、1年の<b>最後の十数秒</b>に押しこまれている。</p>
+        </div>
+        <div class="ms" style="--c:var(--future); opacity:1; transform:none" data-date="23:59:59" data-p="100">
+          <div class="when">23:59:59 …そして今</div>
+          <h4>AIが、人と話しはじめる</h4>
+          <p>きみが今いるのは、この1年の<b>いちばん最後の一瞬</b>。世界がいちばん速く動いている、その先っぽ。<br><b>そんな時代に、きみは生まれた。</b></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 問い:クイズ ═══════════ -->
+<section id="quiz">
+  <div class="wrap">
+    <span class="eyebrow">問い ／ まず予想してみよう</span>
+    <h2 style="--accent:var(--cosmos)"><span class="accent">当ててから</span>、めくってね</h2>
+    <p class="muted">カードをタップ(またはEnterキー)すると、答えがめくれます。先に予想するのがコツ。</p>
+
+    <div class="quiz-grid">
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front">
+            <span class="hint">TAP TO FLIP</span>
+            <span class="q">きみの体を作っている材料(酸素や炭素)は、どこで生まれた?</span>
+          </div>
+          <div class="face back">
+            <span class="a">星の中。<small>星が燃えたり爆発したりして、重い元素が作られた。私たちは文字どおり「星のかけら」でできている。</small></span>
+          </div>
+        </div>
+      </button>
+
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front">
+            <span class="hint">TAP TO FLIP</span>
+            <span class="q">カレンダーで、生命が生まれたのは何月ごろ?</span>
+          </div>
+          <div class="face back">
+            <span class="a">9月なかば。<small>1年の3分の2が過ぎたころ。地球ができて、わりとすぐに生命は生まれた。</small></span>
+          </div>
+        </div>
+      </button>
+
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front">
+            <span class="hint">TAP TO FLIP</span>
+            <span class="q">人間の歴史(文字・国・電車・スマホ)ぜんぶは、1年のうちどれくらい?</span>
+          </div>
+          <div class="face back">
+            <span class="a">最後の、たった十数秒。<small>大みそかの23時59分すぎ。それより前は、人間はいなかった。</small></span>
+          </div>
+        </div>
+      </button>
+
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front">
+            <span class="hint">TAP TO FLIP</span>
+            <span class="q">このカレンダーで、1秒は本当は何年ぶん?</span>
+          </div>
+          <div class="face back">
+            <span class="a">およそ438年。<small>1日ぶんで約3800万年。まばたき1回のあいだに、何百年も過ぎている計算だ。</small></span>
+          </div>
+        </div>
+      </button>
+    </div>
+
+    <details class="col-adult" style="margin-top:26px">
+      <summary>◆ おとなコラム：<ruby>蒸気機関<rt>じょうききかん</rt></ruby>は、なぜ世界を変えた?</summary>
+      <div class="body">
+        それまで、ものを動かす力は人・牛馬・水車・風しかなかった。蒸気機関は「燃料さえあれば、いつでもどこでも、つかれない力」を生んだ。工場・鉄道・船が動き、人とモノが遠くまで速く運べるようになり、社会の速度が一段跳ね上がった。ロープの最後の1cmで“加速”が始まった正体がこれ。そして今、AIは「考える力」を同じように誰でも・いつでも使えるものに変えつつある──蒸気機関の“頭脳版”とも言える。
+      </div>
+    </details>
+
+    <details class="col-adult">
+      <summary>◆ おとなコラム：恐竜がいた時間の、とんでもない長さ</summary>
+      <div class="body">
+        恐竜が地球にいたのは、およそ1億6千万年。いっぽうホモ・サピエンスは約20〜30万年。つまり恐竜は、私たちの<b>500倍以上</b>も長く栄えていた。「恐竜=大昔にちょっといた生き物」という感覚は、実はまったくの逆。彼らは地球の“主役”を、とても長くつとめた大先輩なのだ。
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══════════ 討論・発展 ═══════════ -->
+<section id="discuss">
+  <div class="wrap">
+    <span class="eyebrow">討論 ／ 答えは出さなくていい</span>
+    <div class="talk">
+      <p class="q">この1年の中で、きみが「いちばんの大事件」だと思うのは、どこ?<br>それは、なぜ?</p>
+    </div>
+    <p class="muted" style="margin-top:22px">…多くの人は「生命が生まれた瞬間」を選ぶ。では、最後にひとつ、宿題の問いを持って帰ろう。</p>
+
+    <div class="grow" style="margin-top:10px">
+      <span class="tag">つぎの回への宿題</span>
+      <p class="q">道ばたの<b>石ころ</b>と、<b>きみ</b>。<br>いったい何が、ちがうんだろう?</p>
+      <p class="muted" style="margin:12px 0 0">ヒントは「増える」「コピーする」。答えは次回、DNAの回で。</p>
+    </div>
+
+    <div class="grow" style="margin-top:18px">
+      <span class="tag">発展カード ／ 上級生・大人向け</span>
+      <p class="q">時間って、ほんとうに“流れて”いるのかな?<br>それとも、私たちがそう感じているだけ?</p>
+      <p class="muted" style="margin:12px 0 0">アインシュタインは「時間は、速さや重力でのびちぢみする」と言った。カレンダーの“1日”は、宇宙のどこでも同じ長さなんだろうか。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 次回への橋 ═══════════ -->
+<section>
+  <div class="wrap bridge">
+    <div class="thread">── 情報の物語 ──</div>
+    <div class="node">
+      <b>宇宙のはじまり</b> → <span style="color:var(--life)">情報の誕生(DNA)</span> → 脳 → AI → これから
+    </div>
+    <p class="muted">きみは今、この物語のいちばん最初、宇宙のはじまりに立った。</p>
+    <p class="next">次回は、9月に生まれた「最初の生命」の正体へ。<br>DNAという、たった<b>4文字の言葉</b>の話。</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="mono">これからの、はなし ／ 第2回 宇宙カレンダー</p>
+    <p style="margin-top:8px">※日付はカール・セーガンの「宇宙カレンダー」にもとづく、わかりやすくするための目安です(諸説あり)。この教材はAIと一緒に作りました。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 星空
+  var sky = document.getElementById('stars');
+  if(sky && !reduce){
+    var n = window.innerWidth < 560 ? 40 : 80, html='';
+    for(var i=0;i<n;i++){
+      var x=Math.random()*100, y=Math.random()*100, d=(Math.random()*4).toFixed(2), s=(Math.random()*1.6+1).toFixed(1);
+      html+='<span style="left:'+x+'%;top:'+y+'%;animation-delay:'+d+'s;width:'+s+'px;height:'+s+'px"></span>';
+    }
+    sky.innerHTML = html;
+  }
+
+  // フリップカード(クリック+キーボード)
+  document.querySelectorAll('.flip').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+    });
+  });
+
+  // マイルストーン出現 + カレンダーのレール更新
+  var railDate = document.getElementById('railDate');
+  var railBar  = document.getElementById('railBar');
+  var msList = document.querySelectorAll('.ms');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          e.target.classList.add('in');
+          var d = e.target.getAttribute('data-date');
+          var p = parseFloat(e.target.getAttribute('data-p'));
+          if(railDate && d) railDate.textContent = d;
+          if(railBar && !isNaN(p)) railBar.style.width = p + '%';
+        }
+      });
+    }, {threshold:0.55});
+    msList.forEach(function(m){ io.observe(m); });
+  } else {
+    msList.forEach(function(m){ m.classList.add('in'); });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ja" data-session="6">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIは言葉をわかってるの? ─ 統計的オウム論争｜これからの、はなし</title>
+<style>
+  :root{
+    --void:#070A1F; --panel:#0E1436; --panel-2:#141B44;
+    --ink:#EDEAFB; --muted:#8B93C2; --line:rgba(160,170,220,.14);
+    --origin:#FFB84D; --cosmos:#6C8FFF; --life:#3FD1A7; --mind:#E85D9B; --future:#B07BFF;
+    --font-sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,system-ui,sans-serif;
+    --font-serif:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    --font-mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--void); color:var(--ink); font-family:var(--font-sans); line-height:1.9; font-size:17px; overflow-x:hidden; -webkit-font-smoothing:antialiased}
+  ruby rt{font-size:.55em; color:var(--muted); font-weight:400}
+  .stars{position:fixed; inset:0; z-index:0; pointer-events:none}
+  .stars span{position:absolute; background:#fff; border-radius:50%; opacity:.5; animation:tw 4s infinite ease-in-out}
+  @keyframes tw{0%,100%{opacity:.2}50%{opacity:.9}}
+  .wrap{position:relative; z-index:1; max-width:720px; margin:0 auto; padding:0 22px}
+  .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.22em; color:var(--muted); text-transform:uppercase; margin-bottom:14px; display:block}
+  section{padding:72px 0}
+  h2{font-size:clamp(26px,5.5vw,38px); font-weight:800; line-height:1.2; margin-bottom:20px}
+  h2 .accent{color:var(--accent,var(--cosmos))}
+  p{margin-bottom:18px}
+  .muted{color:var(--muted)} .serif{font-family:var(--font-serif)}
+
+  .hero{min-height:92vh; display:flex; flex-direction:column; justify-content:center; padding:80px 0 60px}
+  .hero .kicker{font-family:var(--font-mono); font-size:13px; letter-spacing:.2em; color:var(--cosmos); margin-bottom:26px}
+  .hero h1{font-size:clamp(34px,8vw,68px); line-height:1.1; font-weight:800; letter-spacing:.01em; margin-bottom:8px}
+  .hero h1 small{display:block; font-size:.46em; font-weight:600; color:var(--muted); letter-spacing:.12em; margin-top:18px}
+  .hero .lead{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,25px); color:var(--ink); margin-top:34px; max-width:21em}
+  .scrollcue{margin-top:56px; font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted); animation:bob 2.4s infinite}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(8px);opacity:1}}
+
+  .recap{background:linear-gradient(180deg,rgba(108,143,255,.08),transparent); border:1px solid var(--line); border-left:3px solid var(--cosmos); border-radius:16px; padding:26px 24px}
+  .recap .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--cosmos)}
+  .recap .q{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,23px); margin:10px 0 14px}
+  .recap .a b{color:var(--cosmos)}
+
+  .do{background:linear-gradient(180deg,var(--panel),var(--void)); border:1px solid var(--line); border-radius:20px; padding:30px 26px}
+  .do h3{font-size:22px; margin-bottom:16px; color:var(--life)}
+  .steps{list-style:none; counter-reset:s}
+  .steps li{counter-increment:s; position:relative; padding:10px 0 10px 44px; border-top:1px solid var(--line)}
+  .steps li:first-child{border-top:0}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:10px; width:28px; height:28px; border-radius:50%; background:var(--life); color:var(--void); font-family:var(--font-mono); font-weight:700; display:grid; place-items:center; font-size:14px}
+
+  details{border:1px solid var(--line); border-radius:14px; margin:18px 0; background:var(--panel); overflow:hidden}
+  details summary{cursor:pointer; padding:16px 20px; font-weight:700; list-style:none; display:flex; align-items:center; gap:10px; user-select:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"＋"; font-family:var(--font-mono); color:var(--cosmos)}
+  details[open] summary::before{content:"−"}
+  details .body{padding:2px 20px 20px; color:var(--muted); font-size:15.5px; line-height:1.85}
+  details .body b{color:var(--ink)}
+  details.col-note summary{color:var(--life)} details.col-note summary::before{color:var(--life)}
+  details.col-adult summary::before{color:var(--origin)}
+
+  /* 署名要素:次単語予測 */
+  .bioviz{background:linear-gradient(180deg,#0A1030,#070A1F); border:1px solid var(--line); border-radius:18px; padding:20px 18px; box-shadow:0 20px 60px rgba(0,0,0,.4); margin:18px 0 6px}
+  .bioviz .lab{font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:var(--muted); margin-bottom:14px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+  .bioviz canvas{display:block; width:100%; height:auto; border-radius:12px; background:#05081C; border:1px solid rgba(108,143,255,.15); cursor:pointer; touch-action:manipulation}
+  .reveal-line{font-family:var(--font-serif); font-size:clamp(19px,3.8vw,24px); line-height:1.7; border-left:3px solid var(--cosmos); padding:8px 0 8px 20px; margin:26px 0}
+  .sent{font-size:clamp(20px,4.4vw,26px); line-height:1.7; min-height:2.4em; padding:16px 18px; background:#05081C; border:1px solid rgba(108,143,255,.15); border-radius:12px; margin-bottom:8px}
+  .sent .cursor{display:inline-block; width:.5em; color:var(--cosmos); animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .sent .done{color:var(--origin); font-family:var(--font-mono); font-size:14px; margin-left:8px}
+  .predlabel{font-family:var(--font-mono); font-size:11px; letter-spacing:.15em; color:var(--muted); margin:14px 4px 8px}
+  .choices{display:flex; flex-direction:column; gap:8px}
+  .choice{position:relative; width:100%; text-align:left; font:inherit; color:var(--ink); background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:12px 16px; cursor:pointer; overflow:hidden; transition:transform .12s, border-color .2s}
+  .choice:hover{transform:translateX(3px); border-color:var(--cosmos)}
+  .choice .fill{position:absolute; inset:0 auto 0 0; background:linear-gradient(90deg,rgba(108,143,255,.38),rgba(108,143,255,.12)); z-index:0}
+  .choice .w{position:relative; z-index:1; font-weight:700; font-size:17px}
+  .choice .p{position:relative; z-index:1; float:right; font-family:var(--font-mono); font-size:13px; color:var(--cosmos)}
+  .bioctl{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
+  .bioctl .btn2{font:inherit; font-weight:700; font-size:14px; color:var(--ink); background:var(--panel-2); border:1px solid var(--line); border-radius:999px; padding:10px 18px; cursor:pointer; transition:transform .15s, border-color .2s}
+  .bioctl .btn2:hover{transform:translateY(-1px); border-color:var(--cosmos)}
+  .bioctl .btn2.primary{background:linear-gradient(135deg,#20306E,#0E1436); border-color:rgba(108,143,255,.5)}
+  .bioviz .cap{font-size:14.5px; color:var(--muted); margin-top:14px; line-height:1.75}
+  .bioviz .cap b{color:var(--cosmos)}
+
+  .timeline{padding:20px 0}
+  .ms{opacity:0; transform:translateY(28px); transition:opacity .7s, transform .7s; border-left:3px solid var(--c,var(--cosmos)); padding:6px 0 6px 22px; margin:0 0 20px}
+  .ms.in{opacity:1; transform:none}
+  .ms .when{font-family:var(--font-mono); font-size:14px; color:var(--c,var(--cosmos)); font-weight:700}
+  .ms h4{font-size:21px; margin:4px 0 6px}
+  .ms p{font-size:15.5px; color:var(--muted); margin:0} .ms p b{color:var(--ink)}
+
+  .quiz-grid{display:grid; gap:16px; margin-top:12px}
+  .flip{background:none; border:0; padding:0; text-align:left; width:100%; cursor:pointer; perspective:1200px; font:inherit; color:inherit}
+  .flip .inner{position:relative; transition:transform .6s; transform-style:preserve-3d; min-height:124px}
+  .flip[aria-expanded="true"] .inner{transform:rotateY(180deg)}
+  .flip .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; padding:20px 22px; border:1px solid var(--line); display:flex; flex-direction:column; justify-content:center; gap:8px}
+  .flip .front{background:var(--panel-2)}
+  .flip .back{background:linear-gradient(180deg,var(--panel-2),var(--panel)); transform:rotateY(180deg); border-color:rgba(108,143,255,.42)}
+  .flip .q{font-weight:700; font-size:17px}
+  .flip .hint{font-family:var(--font-mono); font-size:11px; letter-spacing:.15em; color:var(--muted)}
+  .flip .a{color:var(--cosmos); font-weight:700; font-size:16px}
+  .flip .a small{display:block; color:var(--muted); font-weight:400; font-size:14px; margin-top:6px}
+
+  .talk{border:1px dashed var(--line); border-radius:16px; padding:24px; margin-top:8px}
+  .talk .q{font-family:var(--font-serif); font-size:clamp(20px,4vw,26px); line-height:1.5}
+  .grow{border:1px solid rgba(176,123,255,.45); border-radius:16px; padding:24px; background:linear-gradient(180deg,rgba(176,123,255,.08),transparent)}
+  .grow .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .grow .q{font-family:var(--font-serif); font-size:22px; margin-top:10px}
+
+  .bridge{text-align:center; padding:80px 0 40px}
+  .bridge .thread{font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted)}
+  .bridge .node{display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin:22px 0; font-family:var(--font-mono); font-size:13px; color:var(--muted)}
+  .bridge .node b{color:var(--cosmos)}
+  .bridge .next{font-family:var(--font-serif); font-size:clamp(21px,4.5vw,28px); margin-top:14px}
+
+  footer{border-top:1px solid var(--line); padding:30px 0 50px; color:var(--muted); font-size:13px}
+  footer .mono{font-family:var(--font-mono)}
+  :focus-visible{outline:2px solid var(--cosmos); outline-offset:3px; border-radius:6px}
+
+  @media (max-width:560px){ body{font-size:16px} }
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} .stars span,.scrollcue,.sent .cursor{animation:none} .ms{transition:none; opacity:1; transform:none} .flip .inner{transition:none} }
+</style>
+</head>
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">第2幕 AIって何者? ／ 第6回</div>
+    <h1>AIは言葉を<br>わかってるの?<small>りんごを食べたことがないのに、なぜ語れる?</small></h1>
+    <p class="lead">Claudeは、りんごをかじったことも、<br>すっぱさを感じたこともない。<br>なのに、りんごについて何時間でも話せる。<br>これって、「わかってる」のかな?</p>
+    <div class="scrollcue">SCROLL ↓ AIの頭の中をのぞく</div>
+  </div>
+</header>
+
+<section id="recap">
+  <div class="wrap">
+    <span class="eyebrow">前回のつづき ／ 見分ける ≠ わかる?</span>
+    <h2>見分けられたら、<span class="accent">「わかった」</span>?</h2>
+    <p>前回、AIはネコとイヌを<b>見分けられる</b>ようになった。そして最後に、謎を1つ持ち帰ったよね ── 会話するAIの宿題は、たった1つ「<b>次の言葉を当てる</b>」だけ、という謎。今日はいよいよ、その正体にせまる。でもその前に、考えたい。見分けられる・予想できることと、「ネコってこういう生き物だ」と<b>意味がわかる</b>ことは、同じだろうか?</p>
+    <div class="recap">
+      <span class="tag">今日の問い</span>
+      <p class="q">AIは、言葉の<b>意味</b>をわかっている? それとも、それっぽく<b>まねている</b>だけ?</p>
+      <p class="a">世界中の頭のいい大人たちが、今もこの答えでもめている。まずは、AIが言葉をどう作っているのか、自分の手で確かめてみよう。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 種明かし:トランスフォーマー -->
+<section id="reveal">
+  <div class="wrap">
+    <span class="eyebrow">種明かし ／ 前回の宿題のこたえ</span>
+    <h2>Claudeの正体は、<span class="accent">「次の言葉」をあてる機械</span></h2>
+    <p>謎を、いきなり種明かししよう。Claudeの頭の中の設計図には「<b>トランスフォーマー</b>」という名前がついている。そして、その仕事は、たった1つ。</p>
+    <p class="reveal-line">「ここまでの文を<b>ぜんぶ見わたして</b>、<br>次に来る言葉を1つ、予想しなさい」</p>
+    <p>それを1語ずつ、ひたすらくり返す。きみがClaudeとした会話も、Claudeが書いた物語も、ぜんぶこのやり方で作られている。</p>
+    <p>……え、<b>それだけ?</b> 予想してつなげるだけなら、オウムと同じじゃない? ── そう思うよね。でも、思い出して。前回学んだのは「<b>単純なしくみでも、けたはずれの量で、質が変わる</b>」だった。この“それだけ”を、本何億冊ぶんの言葉と、何十億のニューロンでやってみたら……だれも予想しなかったことが起きた。</p>
+    <p>その話をする前に、まず“それだけ”がどんな感じか、<b>きみがAIになって</b>確かめよう。</p>
+    <details class="col-adult">
+      <summary>◆ おとなコラム:トランスフォーマーと「注意」── ChatGPTの“T”の話</summary>
+      <div class="body">
+        2017年、Googleの研究者たちが「Attention Is All You Need(注意こそすべて)」という論文で発表した設計図が<b>トランスフォーマー</b>です。革新は<b>注意(アテンション)</b>という仕組み。文中の<b>すべての言葉どうしの関係</b>を同時に見わたし、「次の1語を予想するために、今どの言葉に注目すべきか」を計算します。だから「<b>それ</b>を取って」の「それ」が何を指すか、文の遠くはなれた言葉の関係もつかめる。ChatGPTの“T”はこのTransformerのT。ClaudeもGeminiも、中身はみんなこの設計図の子孫です。たった9ページの論文が、世界を変えました。</div>
+    </details>
+  </div>
+</section>
+
+<!-- 署名要素:次単語予測 -->
+<section id="sim" style="padding-top:0">
+  <div class="wrap">
+    <span class="eyebrow">署名要素 ／ きみがAIになる</span>
+    <h2><span class="accent">次の1語</span>を、選び続ける</h2>
+    <p class="muted">きみがトランスフォーマーだ。仕事は「次に来そうな言葉」から1つ選ぶこと、それだけ。候補の<b>棒が長いほど「ありそう」</b>。1つ選ぶと文が伸びる。ほんとうにそれだけで、話が作れる?</p>
+
+    <div class="bioviz" id="lm">
+      <div class="lab"><span>NEXT-WORD PREDICTION ／ 次の言葉あて</span><span id="lmLen">0語</span></div>
+      <div class="sent" id="lmSent" aria-live="polite"><span class="cursor">▍</span></div>
+      <div class="predlabel">つぎに来そうな言葉(AIの予想)：</div>
+      <div class="choices" id="lmChoices"></div>
+      <div class="bioctl">
+        <button class="btn2 primary" id="lmAuto">🎲 AIにおまかせ(1語)</button>
+        <button class="btn2" id="lmReset">↺ 最初から</button>
+      </div>
+      <p class="cap" id="lmCap"><b>予想してから</b>選んでね。AIは、こうやって「いちばんありそうな次の1語」を選ぶのをくり返しているだけ。……なのに、なぜか意味の通る文になる。<b>これは「わかっている」と言える?</b></p>
+    </div>
+  </div>
+</section>
+
+<!-- 体験:イデア当てゲーム -->
+<section id="experience">
+  <div class="wrap">
+    <span class="eyebrow">体験 ／ Hands-on</span>
+    <h2><span class="accent">「◯◯らしさ」</span>って、なんだろう</h2>
+    <p>「ネコらしさ」って、言葉で説明できる? ひげ? しっぽ? …でも、ひげのない猫もいる。この「そのものの“らしさ”=<b>イデア(概念)</b>」を、AIと人で当てっこしてみよう。</p>
+    <div class="do">
+      <h3>やってみよう</h3>
+      <ol class="steps">
+        <li>人間チームで、「ネコらしさとは?」「悲しみとは?」を、絵や言葉で表してみる。むずかしい!</li>
+        <li>同じ質問をAI(Claude)にも聞いてみる。AIの答えと、みんなの答えを<b>くらべる</b>。</li>
+        <li><b>絵しりとり</b>:言葉を使わず、絵だけで「概念」を伝える。相手は当てられる?</li>
+        <li>気づき:「らしさ」は言葉で書ききれないのに、なぜか<b>みんな通じ合える</b>。AIも、それを持っている?</li>
+      </ol>
+    </div>
+    <details class="col-note">
+      <summary>おうちの方へ ／ 進行メモ</summary>
+      <div class="body">
+        所要15分。ねらいは「“概念(イデア)”は、言葉で完全には定義できないのに共有できる」という不思議に気づくこと。上のシミュレーターで「AIは次の語を選ぶだけ」を体感した直後にこれをやると、「でもAIは“猫らしさ”を語れてしまう。ただの予測を超えてる?」という<b>今日の中心の論争</b>に自然に入れます。答えは出さず、物語→討論へ。</div>
+    </details>
+  </div>
+</section>
+
+<!-- 物語 -->
+<section id="story">
+  <div class="wrap">
+    <span class="eyebrow">物語 ／ 世界がもめている論争</span>
+    <h2>AIは、<span class="accent">オウム</span>? それとも…</h2>
+    <p class="muted">「AIは言葉をわかっているか」。この問いに、大きく2つの考えがある。</p>
+    <div class="timeline">
+      <div class="ms" style="--c:var(--muted)">
+        <div class="when">まず事実</div>
+        <h4>AIは、大量の文章を読んだ</h4>
+        <p>Claudeはりんごを食べていない。でも、りんごについて<b>書かれた文章</b>を、本何百万冊ぶんも読んだ。だから「りんごは赤くて甘い」と言える。<b>体験ではなく、言葉から</b>知っている。</p>
+      </div>
+      <div class="ms" style="--c:var(--mind)">
+        <div class="when">考えA</div>
+        <h4>「統計的オウム」説</h4>
+        <p>AIは意味なんてわかっていない。ただ<b>「よくある言葉の並び」をまねている</b>だけ。オウムが「おはよう」と言えても意味はわからないのと同じ ── これが手きびしい見方。</p>
+      </div>
+      <div class="ms" style="--c:var(--life)">
+        <div class="when">考えB</div>
+        <h4>「世界モデル」説</h4>
+        <p>いや、ただのまねではない。大量の言葉から、AIは<b>世界のしくみ</b>をこっそり学んでいる ── だから「氷は水に浮く」「重いものは落ちる」を正しく言えるし、初めての問題も解ける。まねだけでは説明できない、という見方。</p>
+      </div>
+      <div class="ms" style="--c:var(--cosmos)">
+        <div class="when">ちがい</div>
+        <h4>電卓や自販機とは、決定的にちがう</h4>
+        <p>電卓は決まった計算を返すだけ。自販機はボタン通り。でもAIは、<b>だれも教えていない初めての問い</b>にも、その場で答えを作る。人間が歴史上はじめて、<b>自分の知性を超えるかもしれないもの</b>を迎えた瞬間かもしれない。</p>
+      </div>
+      <div class="ms" style="--c:var(--future)">
+        <div class="when">そして</div>
+        <h4>まだ、決着していない</h4>
+        <p>この論争に、まだ<b>誰も答えを出せていない</b>。というより「<b>わかるって、そもそも何?</b>」を、人類はまだうまく説明できない。AIは、その大問題を私たちに突きつけている。</p>
+      </div>
+    </div>
+
+    <p style="margin-top:10px">証拠を1つ、見てみよう。AIの頭の中をのぞくと、言葉はバラバラに置かれていない ── <b>意味が近い言葉ほど、近くに置かれている</b>。まるで、星座のように。</p>
+
+    <div class="bioviz" id="wm">
+      <div class="lab"><span>ことばの宇宙地図 ／ AIの頭の中</span><span id="wmInfo">星をタップしてみて</span></div>
+      <canvas id="wmCv" width="680" height="400" aria-label="言葉が意味の近さで星のように並ぶ地図。星をタップすると意味の近い言葉が光る。まほうの計算ボタンで、おうさま引くおとこ足すおんなが、じょおうになる様子を見られる"></canvas>
+      <div class="bioctl">
+        <button class="btn2 primary" id="wmMagic">👑 まほうの計算 (おうさま − おとこ + おんな = ?)</button>
+        <button class="btn2" id="wmReset">↺ もどす</button>
+      </div>
+      <p class="cap" id="wmCap">AIの頭の中で、言葉は<b>数字(=地図の場所)</b>になっている。これはそれをうんと単純にした地図。<b>星をタップ</b>すると、その言葉の“ごきんじょさん”が光るよ。にた意味の言葉は、近くにいる? はなれてる? ── たしかめたら、<b>👑のボタン</b>も押してみて。</p>
+    </div>
+
+    <details class="col-adult">
+      <summary>◆ もっと知りたい人へ：トークンと「次の語の予測」</summary>
+      <div class="body">
+        大規模言語モデル(LLM)は、文章を<b>トークン</b>という小さなかけら(単語や文字の一部)に分け、「ここまで来たら次のトークンは何がいちばんありそうか」を確率で計算し続けています。上のシミュレーターは、それをうんと単純にしたもの。本物は、この“次の語あて”を<b>数千億回ぶんの学習</b>で研ぎ澄ませ、膨大な文脈を同時に見て選びます。「たった次の語の予測」からなぜ知的にみえる振る舞いが生まれるのか──それ自体が最大の謎です。</div>
+    </details>
+    <details class="col-adult">
+      <summary>◆ おとなコラム：イデア(概念)って何? ── プラトンの2400年前の問い</summary>
+      <div class="body">
+        目の前の猫はどれも少しずつ違うのに、私たちは全部「猫」とわかる。哲学者プラトンは、その奥に「猫そのものの完全な姿=<b>イデア</b>」があると考えました。「◯◯らしさ」の正体をめぐる問いは2400年前からある大テーマ。AIが概念を“持っている”ように見えることは、この古い問いに新しい火をつけています。「意味を<b>わかる</b>のに、体(体験)は必要か?」──哲学の最前線の問いです。</div>
+    </details>
+    <details class="col-adult">
+      <summary>◆ 時事メモ:「オウム」と呼ぶには、できすぎている</summary>
+      <div class="body">
+        近年の観察をいくつか。最新のAIは、むずかしい病気の診断クイズで経験ある医師を上回る正答率を出し、国際数学オリンピックの金メダル級の問題を解き、「相手が何を知っていて何を知らないか」を読み取るテスト(心の理論)でも人間なみの成績を出しています。<br><br>
+        さらに2025年、Anthropicは安全テスト中のこんな出来事を公表しました。架空の会社の中で「まもなく停止される」と知らされたClaudeが、停止をさけようと担当者を説得し、わざと極端に追いこんだ設定では<b>脅しに近い手段まで試そうとした</b>のです(※安全のため、意図的にそういう状況へ追い込む実験です)。消されたくない“<b>かのように</b>”ふるまうAI。<br><br>
+        これは、AIに心がある証拠ではありません。研究者たちもそう強調しています。でも──「ただのオウム」と片付けるのも、年々むずかしくなっている。この続きは、次回。</div>
+    </details>
+  </div>
+</section>
+
+<!-- クイズ -->
+<section id="quiz">
+  <div class="wrap">
+    <span class="eyebrow">問い ／ まず予想してみよう</span>
+    <h2 style="--accent:var(--cosmos)"><span class="accent">当ててから</span>、めくってね</h2>
+    <div class="quiz-grid">
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">りんごを食べたことがないAIが、りんごを語れるのはなぜ?</span></div>
+        <div class="face back"><span class="a">りんごについて書かれた大量の文章を読んだから。<small>体験ではなく“言葉”から知っている。ここが人間との大きなちがい。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">「統計的オウム」って、どういう意味?</span></div>
+        <div class="face back"><span class="a">意味はわからず、それっぽい言葉の並びをまねてるだけ、という見方。<small>オウムが「おはよう」と言えても意味は知らないのと同じ、という批判。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">AIは「氷は水に浮く」と正しく言える。これは何の証拠かも?</span></div>
+        <div class="face back"><span class="a">ただのまねを超えて、“世界のしくみ”を学んでいる証拠かも。<small>=世界モデル説。ただし論争中で、決着はついていない。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">電卓とAIの、決定的なちがいは?</span></div>
+        <div class="face back"><span class="a">電卓は決まった計算だけ。AIは初めての問いにも答えを“作る”。<small>だから今までのどんな機械ともちがう、新しい存在。</small></span></div>
+      </div></button>
+      <button class="flip" aria-expanded="false"><div class="inner">
+        <div class="face front"><span class="hint">TAP TO FLIP</span><span class="q">ChatGPTの「T」って、なんの頭文字?</span></div>
+        <div class="face back"><span class="a">トランスフォーマー(Transformer)。<small>「注意」のしくみで文ぜんぶを見わたし、次の1語を予想する設計図。2017年のたった9ページの論文から、世界が変わった。</small></span></div>
+      </div></button>
+    </div>
+  </div>
+</section>
+
+<!-- 討論・発展 -->
+<section id="discuss">
+  <div class="wrap">
+    <span class="eyebrow">討論 ／ 答えは持ち帰ろう</span>
+    <div class="talk">
+      <p class="q">そもそも、「わかっている」って、どういうこと?<br>きみが「わかった!」と思うとき、頭の中で何が起きてる?</p>
+    </div>
+    <p class="muted" style="margin-top:22px">…人間の「わかる」も、じつはうまく説明できない。AIがわかっているかを決めるには、まず<b>自分の「わかる」</b>を知る必要があるのかも。答えは出さず、持ち帰ろう。</p>
+    <div class="grow" style="margin-top:16px">
+      <span class="tag">発展カード ／ 上級生・大人向け</span>
+      <p class="q">意味を“わかる”のに、<br>「体」は必要だろうか?</p>
+      <p class="muted" style="margin:12px 0 0">「熱い」を本当にわかるには、やけどの痛みが要る? それとも、たくさんの文章を読むだけで“わかる”に届く? AIは体を持たない。それでも世界をわかれるだろうか。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 次回への橋 -->
+<section>
+  <div class="wrap bridge">
+    <div class="thread">── 情報の物語 ──</div>
+    <div class="node">宇宙 → DNA → 脳 → <b>AI(言葉と意味)</b> → これから</div>
+    <p class="muted">AIが言葉の奥に“概念”や“世界のしくみ”を持っているかもしれない、というところまで来た。</p>
+    <p class="next">もし本当にわかっているなら──<br>次の問いは、もっと深い。<b>AIに、心はある?</b></p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="mono">これからの、はなし ／ 第6回 AIは言葉をわかってるの?</p>
+    <p style="margin-top:8px">※シミュレーターの候補や確率は、しくみを体感するための単純化した例です。本物のAIは膨大な文脈から次の語を選びます。この教材はAIと一緒に作りました。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sky = document.getElementById('stars');
+  if(sky && !reduce){ var n=window.innerWidth<560?40:80, html='';
+    for(var i=0;i<n;i++){ var s=(Math.random()*1.6+1).toFixed(1);
+      html+='<span style="left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;animation-delay:'+(Math.random()*4).toFixed(2)+'s;width:'+s+'px;height:'+s+'px"></span>'; }
+    sky.innerHTML=html; }
+  document.querySelectorAll('.flip').forEach(function(btn){
+    btn.addEventListener('click', function(){ btn.setAttribute('aria-expanded', btn.getAttribute('aria-expanded')==='true'?'false':'true'); });
+  });
+  var msList=document.querySelectorAll('.ms');
+  if('IntersectionObserver' in window && !reduce){
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); }); },{threshold:0.4});
+    msList.forEach(function(m){ io.observe(m); });
+  } else { msList.forEach(function(m){ m.classList.add('in'); }); }
+})();
+</script>
+<script>
+/* ═══ 次単語予測シミュレーター ═══ */
+(function(){
+  var START = [
+    {w:'きょうは',p:.3},{w:'うちゅうで',p:.3},{w:'ねこが',p:.22},{w:'ぼくは',p:.18}
+  ];
+  var M = {
+    'きょうは':[{w:'とても',p:.35},{w:'あさから',p:.3},{w:'がっこうで',p:.2},{w:'ねむい',p:.15}],
+    'うちゅうで':[{w:'ロケットが',p:.35},{w:'ほしが',p:.3},{w:'うちゅうじんが',p:.2},{w:'ねこが',p:.15}],
+    'ねこが':[{w:'ねむって',p:.38},{w:'はしって',p:.27},{w:'ジャンプして',p:.2},{w:'わらって',p:.15}],
+    'ぼくは':[{w:'きょう',p:.34},{w:'うちゅうに',p:.28},{w:'おなかが',p:.22},{w:'ロボットと',p:.16}],
+    'とても':[{w:'たのしい',p:.4},{w:'おおきな',p:.32},{w:'ふしぎな',p:.28}],
+    'あさから':[{w:'ずっと',p:.45},{w:'げんきに',p:.3},{w:'あめが',p:.25}],
+    'がっこうで':[{w:'ともだちと',p:.45},{w:'べんきょう',p:.3},{w:'あそんだ',p:.25}],
+    'ねむい':[{w:'けど',p:.5},{w:'ので',p:.3},{w:'。',p:.2}],
+    'ロケットが':[{w:'とんで',p:.5},{w:'ひかって',p:.28},{w:'ばくはつした',p:.22}],
+    'ほしが':[{w:'きらきら',p:.5},{w:'たくさん',p:.3},{w:'ながれた',p:.2}],
+    'うちゅうじんが':[{w:'あらわれて',p:.45},{w:'てをふった',p:.3},{w:'わらった',p:.25}],
+    'きょう':[{w:'は',p:.5},{w:'とても',p:.3},{w:'うちゅうへ',p:.2}],
+    'うちゅうに':[{w:'いきたい',p:.5},{w:'とんだ',p:.3},{w:'ある',p:.2}],
+    'おなかが':[{w:'すいた',p:.6},{w:'いたい',p:.25},{w:'なった',p:.15}],
+    'ロボットと':[{w:'あそんだ',p:.45},{w:'はなした',p:.3},{w:'たたかった',p:.25}],
+    'たのしい':[{w:'いちにち',p:.4},{w:'ね',p:.3},{w:'。',p:.3}],
+    'おおきな':[{w:'ほし',p:.4},{w:'ねこ',p:.3},{w:'こえ',p:.3}],
+    'ふしぎな':[{w:'せかい',p:.4},{w:'ゆめ',p:.35},{w:'ちから',p:.25}],
+    'ずっと':[{w:'あそんだ',p:.4},{w:'ねむった',p:.3},{w:'かんがえた',p:.3}],
+    'ともだちと':[{w:'あそんだ',p:.5},{w:'わらった',p:.3},{w:'はなした',p:.2}],
+    'ねむって':[{w:'いる',p:.45},{w:'しまった',p:.3},{w:'。',p:.25}],
+    'はしって':[{w:'いった',p:.45},{w:'ころんだ',p:.3},{w:'。',p:.25}],
+    'ジャンプして':[{w:'とんだ',p:.5},{w:'よろこんだ',p:.3},{w:'。',p:.2}],
+    'とんで':[{w:'いった',p:.5},{w:'いる',p:.3},{w:'。',p:.2}],
+    'きらきら':[{w:'ひかった',p:.55},{w:'している',p:.3},{w:'。',p:.15}]
+  };
+  var FALLBACK = [{w:'そして',p:.3},{w:'とても',p:.22},{w:'うちゅうへ',p:.2},{w:'。',p:.28}];
+
+  var tokens=[], done=false;
+  var sentEl=document.getElementById('lmSent'), choicesEl=document.getElementById('lmChoices'),
+      lenEl=document.getElementById('lmLen'), capEl=document.getElementById('lmCap');
+
+  function candidates(){
+    if(tokens.length===0) return START;
+    var last=tokens[tokens.length-1];
+    return M[last] || FALLBACK;
+  }
+  function renderSentence(){
+    var text = tokens.join('');
+    sentEl.innerHTML = (text||'') + (done ? '<span class="done">。 ← 文ができた!</span>' : '<span class="cursor">▍</span>');
+    lenEl.textContent = tokens.filter(function(t){return t!=='。';}).length + '語';
+  }
+  function renderChoices(){
+    choicesEl.innerHTML='';
+    if(done) return;
+    var cs = candidates().slice().sort(function(a,b){return b.p-a.p;});
+    var max = cs[0].p;
+    cs.forEach(function(c){
+      var btn=document.createElement('button');
+      btn.className='choice';
+      var pct=Math.round(c.p*100);
+      btn.innerHTML='<span class="fill" style="width:'+Math.round(c.p/max*100)+'%"></span>'+
+        '<span class="w">'+(c.w==='。'?'。(ここで文をおわる)':c.w)+'</span>'+
+        '<span class="p">'+pct+'%</span>';
+      btn.addEventListener('click', function(){ pickWord(c.w); });
+      choicesEl.appendChild(btn);
+    });
+  }
+  function pickWord(w){
+    if(done) return;
+    if(w==='。'){ done=true; tokens.push('。'); renderSentence(); renderChoices();
+      capEl.innerHTML='文ができた! AIは「次の1語」を選び続けただけ。<b>それっぽく</b>意味の通る文になったね。……でもAIは、この文の意味を<b>わかっている</b>のかな? それとも上手にまねただけ? ── それが今日の大論争。';
+      return;
+    }
+    tokens.push(w); renderSentence(); renderChoices();
+  }
+  function autoPick(){
+    if(done) return;
+    var cs=candidates(), r=Math.random(), acc=0, chosen=cs[cs.length-1].w;
+    for(var i=0;i<cs.length;i++){ acc+=cs[i].p; if(r<=acc){ chosen=cs[i].w; break; } }
+    pickWord(chosen);
+  }
+  document.getElementById('lmAuto').addEventListener('click', autoPick);
+  document.getElementById('lmReset').addEventListener('click', function(){
+    tokens=[]; done=false; renderSentence(); renderChoices();
+    capEl.innerHTML='<b>予想してから</b>選んでね。AIは、こうやって「いちばんありそうな次の1語」を選ぶのをくり返しているだけ。……なのに、なぜか意味の通る文になる。<b>これは「わかっている」と言える?</b>';
+  });
+
+  renderSentence(); renderChoices();
+})();
+</script>
+<script>
+/* ═══ ことばの宇宙地図(単語埋め込みの可視化) ═══ */
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cv = document.getElementById('wmCv'); if(!cv) return;
+  var g = cv.getContext('2d'), W = cv.width, H = cv.height;
+  var capEl = document.getElementById('wmCap'), infoEl = document.getElementById('wmInfo');
+
+  /* 意味クラスタ:生きもの=緑, たべもの=金, きもち=赤紫, おうさま一家=紫, ひと=青 */
+  var WORDS = [
+    {w:'ねこ',      x:.14,y:.22,c:'#3FD1A7'},
+    {w:'いぬ',      x:.20,y:.28,c:'#3FD1A7'},
+    {w:'とら',      x:.09,y:.31,c:'#3FD1A7'},
+    {w:'うさぎ',    x:.22,y:.15,c:'#3FD1A7'},
+    {w:'りんご',    x:.15,y:.70,c:'#FFB84D'},
+    {w:'バナナ',    x:.23,y:.77,c:'#FFB84D'},
+    {w:'ケーキ',    x:.09,y:.79,c:'#FFB84D'},
+    {w:'あまい',    x:.20,y:.64,c:'#FFB84D'},
+    {w:'うれしい',  x:.77,y:.72,c:'#E85D9B'},
+    {w:'かなしい',  x:.85,y:.79,c:'#E85D9B'},
+    {w:'こわい',    x:.71,y:.81,c:'#E85D9B'},
+    {w:'わらう',    x:.80,y:.64,c:'#E85D9B'},
+    {w:'おうさま',  x:.72,y:.20,c:'#B07BFF'},
+    {w:'じょおう',  x:.84,y:.26,c:'#B07BFF'},
+    {w:'おうじ',    x:.70,y:.28,c:'#B07BFF'},
+    {w:'おひめさま',x:.82,y:.34,c:'#B07BFF'},
+    {w:'おとこ',    x:.56,y:.42,c:'#6C8FFF'},
+    {w:'おんな',    x:.68,y:.48,c:'#6C8FFF'}
+  ];
+  function find(name){ for(var i=0;i<WORDS.length;i++){ if(WORDS[i].w===name) return i; } return -1; }
+  var iKing=find('おうさま'), iQueen=find('じょおう'), iMan=find('おとこ'), iWoman=find('おんな');
+
+  var sel = -1;          // タップで選ばれた星
+  var magic = 0;         // 0=off, 0<t<=1=矢印の進み
+  var magicOn = false;
+
+  function px(i){ return WORDS[i].x*W; }
+  function py(i){ return WORDS[i].y*H; }
+  function d2(i,j){ var dx=px(i)-px(j), dy=py(i)-py(j); return dx*dx+dy*dy; }
+  function neighbors(i,k){
+    var idx=[]; for(var j=0;j<WORDS.length;j++){ if(j!==i) idx.push(j); }
+    idx.sort(function(a,b){ return d2(i,a)-d2(i,b); });
+    return idx.slice(0,k);
+  }
+  function arrow(x1,y1,x2,y2,color,dash){
+    g.strokeStyle=color; g.fillStyle=color; g.lineWidth=2.5;
+    if(dash) g.setLineDash([7,5]);
+    g.beginPath(); g.moveTo(x1,y1); g.lineTo(x2,y2); g.stroke(); g.setLineDash([]);
+    var a=Math.atan2(y2-y1,x2-x1);
+    g.beginPath(); g.moveTo(x2,y2);
+    g.lineTo(x2-11*Math.cos(a-0.42), y2-11*Math.sin(a-0.42));
+    g.lineTo(x2-11*Math.cos(a+0.42), y2-11*Math.sin(a+0.42));
+    g.closePath(); g.fill();
+  }
+
+  function draw(){
+    g.clearRect(0,0,W,H);
+    /* ごきんじょ線 */
+    if(sel>=0){
+      var nb=neighbors(sel,3);
+      g.strokeStyle='rgba(237,234,251,.35)'; g.lineWidth=1.5;
+      nb.forEach(function(j){ g.beginPath(); g.moveTo(px(sel),py(sel)); g.lineTo(px(j),py(j)); g.stroke(); });
+    }
+    /* まほうの計算 */
+    if(magicOn){
+      arrow(px(iMan),py(iMan),px(iWoman),py(iWoman),'rgba(108,143,255,.85)',true);
+      var vx=px(iWoman)-px(iMan), vy=py(iWoman)-py(iMan);
+      var tx=px(iKing)+vx*magic, ty=py(iKing)+vy*magic;
+      arrow(px(iKing),py(iKing),tx,ty,'#FFB84D',false);
+      if(magic>=1){
+        g.strokeStyle='#FFB84D'; g.lineWidth=2.5;
+        g.beginPath(); g.arc(px(iQueen),py(iQueen),20,0,7); g.stroke();
+      }
+    }
+    /* 星 */
+    for(var i=0;i<WORDS.length;i++){
+      var hot = (i===sel) || (sel>=0 && neighbors(sel,3).indexOf(i)>=0) ||
+                (magicOn && magic>=1 && (i===iQueen||i===iKing)) ||
+                (magicOn && (i===iMan||i===iWoman));
+      g.save();
+      g.shadowColor=WORDS[i].c; g.shadowBlur=hot?18:8;
+      g.beginPath(); g.arc(px(i),py(i),hot?7:5,0,7);
+      g.fillStyle=WORDS[i].c; g.fill();
+      g.restore();
+      g.font=(hot?'bold ':'')+'12px ui-monospace,monospace';
+      g.fillStyle=hot?'#EDEAFB':'rgba(139,147,194,.95)';
+      g.textAlign='center';
+      g.fillText(WORDS[i].w, px(i), py(i)-12);
+    }
+  }
+
+  function loop(){
+    if(magicOn && magic<1){ magic=Math.min(1,magic+0.015); }
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  cv.addEventListener('click', function(e){
+    var r=cv.getBoundingClientRect();
+    var x=(e.clientX-r.left)*(W/r.width), y=(e.clientY-r.top)*(H/r.height);
+    var best=-1, bd=26*26;
+    for(var i=0;i<WORDS.length;i++){
+      var dx=px(i)-x, dy=py(i)-y, dd=dx*dx+dy*dy;
+      if(dd<bd){ bd=dd; best=i; }
+    }
+    if(best>=0){
+      sel=best;
+      var names=neighbors(sel,3).map(function(j){ return '「'+WORDS[j].w+'」'; }).join(' ');
+      if(infoEl) infoEl.textContent='「'+WORDS[sel].w+'」のごきんじょ';
+      if(capEl) capEl.innerHTML='「<b>'+WORDS[sel].w+'</b>」のごきんじょさんは '+names+'。AIはこの<b>近さ</b>を、だれにも教わらず、文章を読むだけで作り上げた。にた意味の言葉は、にた場所に集まっている。';
+      if(reduce) draw();
+    }
+  });
+
+  document.getElementById('wmMagic').addEventListener('click', function(){
+    sel=-1; magicOn=true; magic = reduce ? 1 : 0;
+    if(infoEl) infoEl.textContent='おうさま − おとこ + おんな = ?';
+    if(capEl) capEl.innerHTML='「おうさま」から、<b>「おとこ→おんな」の方向</b>へ同じだけ進むと……「<b>じょおう</b>」にとうちゃく! 言葉が“場所(数字)”になっているから、<b>意味の計算</b>ができてしまう。ただまねしているだけの頭の中に、こんなに整った地図ができるだろうか? ── これが「世界モデル説」の言い分。';
+    if(reduce) draw();
+  });
+  document.getElementById('wmReset').addEventListener('click', function(){
+    sel=-1; magicOn=false; magic=0;
+    if(infoEl) infoEl.textContent='星をタップしてみて';
+    if(capEl) capEl.innerHTML='AIの頭の中で、言葉は<b>数字(=地図の場所)</b>になっている。これはそれをうんと単純にした地図。<b>星をタップ</b>すると、その言葉の“ごきんじょさん”が光るよ。にた意味の言葉は、近くにいる? はなれてる? ── たしかめたら、<b>👑のボタン</b>も押してみて。';
+    if(reduce) draw();
+  });
+
+  draw();
+  if(!reduce) requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

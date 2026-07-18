@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja" data-session="12">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>きみが先生 ─ 卒業制作発表会｜これからの、はなし</title>
+<style>
+  :root{
+    --void:#070A1F; --panel:#0E1436; --panel-2:#141B44;
+    --ink:#EDEAFB; --muted:#8B93C2; --line:rgba(160,170,220,.14);
+    --origin:#FFB84D; --cosmos:#6C8FFF; --life:#3FD1A7; --mind:#E85D9B; --future:#B07BFF;
+    --font-sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,system-ui,sans-serif;
+    --font-serif:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    --font-mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--void); color:var(--ink); font-family:var(--font-sans); line-height:1.9; font-size:17px; overflow-x:hidden; -webkit-font-smoothing:antialiased}
+  ruby rt{font-size:.55em; color:var(--muted); font-weight:400}
+  .stars{position:fixed; inset:0; z-index:0; pointer-events:none}
+  .stars span{position:absolute; background:#fff; border-radius:50%; opacity:.5; animation:tw 4s infinite ease-in-out}
+  @keyframes tw{0%,100%{opacity:.2}50%{opacity:.9}}
+  .wrap{position:relative; z-index:1; max-width:720px; margin:0 auto; padding:0 22px}
+  .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.22em; color:var(--muted); text-transform:uppercase; margin-bottom:14px; display:block}
+  section{padding:72px 0}
+  h2{font-size:clamp(26px,5.5vw,38px); font-weight:800; line-height:1.2; margin-bottom:20px}
+  h2 .accent{color:var(--accent,var(--future))}
+  p{margin-bottom:18px}
+  .muted{color:var(--muted)} .serif{font-family:var(--font-serif)}
+
+  .hero{min-height:94vh; display:flex; flex-direction:column; justify-content:center; padding:80px 0 60px}
+  .hero .kicker{font-family:var(--font-mono); font-size:13px; letter-spacing:.2em; color:var(--future); margin-bottom:26px}
+  .hero h1{font-size:clamp(40px,9vw,76px); line-height:1.06; font-weight:800; letter-spacing:.01em; margin-bottom:8px}
+  .hero h1 small{display:block; font-size:.4em; font-weight:600; color:var(--muted); letter-spacing:.12em; margin-top:18px}
+  .hero .lead{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,25px); color:var(--ink); margin-top:34px; max-width:22em}
+  .scrollcue{margin-top:56px; font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted); animation:bob 2.4s infinite}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(8px);opacity:1}}
+  .graduate{display:inline-block; margin-top:28px; font-family:var(--font-mono); font-size:12px; letter-spacing:.18em; color:var(--future); border:1px solid rgba(176,123,255,.4); border-radius:999px; padding:8px 18px}
+
+  .recap{background:linear-gradient(180deg,rgba(176,123,255,.08),transparent); border:1px solid var(--line); border-left:3px solid var(--future); border-radius:16px; padding:26px 24px}
+  .recap .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .recap .q{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,23px); margin:10px 0 14px}
+  .recap .a b{color:var(--future)}
+
+  .do{background:linear-gradient(180deg,var(--panel),var(--void)); border:1px solid var(--line); border-radius:20px; padding:30px 26px}
+  .do h3{font-size:22px; margin-bottom:16px; color:var(--life)}
+  .steps{list-style:none; counter-reset:s}
+  .steps li{counter-increment:s; position:relative; padding:10px 0 10px 44px; border-top:1px solid var(--line)}
+  .steps li:first-child{border-top:0}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:10px; width:28px; height:28px; border-radius:50%; background:var(--life); color:var(--void); font-family:var(--font-mono); font-weight:700; display:grid; place-items:center; font-size:14px}
+
+  details{border:1px solid var(--line); border-radius:14px; margin:18px 0; background:var(--panel); overflow:hidden}
+  details summary{cursor:pointer; padding:16px 20px; font-weight:700; list-style:none; display:flex; align-items:center; gap:10px; user-select:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"＋"; font-family:var(--font-mono); color:var(--future)}
+  details[open] summary::before{content:"−"}
+  details .body{padding:2px 20px 20px; color:var(--muted); font-size:15.5px; line-height:1.85}
+  details .body b{color:var(--ink)}
+  details.col-note summary{color:var(--life)} details.col-note summary::before{color:var(--life)}
+  details.col-adult summary::before{color:var(--origin)}
+
+  /* 1年間の振り返りレール */
+  .journey{display:grid; gap:8px; margin:22px 0 6px; position:relative}
+  .jrow{display:grid; grid-template-columns:34px 46px 1fr; gap:12px; align-items:center; padding:11px 14px; border:1px solid var(--line); border-radius:12px; background:var(--panel); border-left:3px solid var(--c,var(--cosmos))}
+  .jrow .no{font-family:var(--font-mono); font-size:13px; color:var(--c,var(--cosmos)); font-weight:700}
+  .jrow .ic{font-size:22px; text-align:center}
+  .jrow .ti{font-size:14.5px} .jrow .ti b{color:var(--ink)}
+  .actline{text-align:center; font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted); margin:16px 0 6px}
+
+  /* 署名要素:マイ問いカード・ジェネレーター */
+  .bioviz{background:linear-gradient(180deg,#0A1030,#070A1F); border:1px solid var(--line); border-radius:18px; padding:20px 18px; box-shadow:0 20px 60px rgba(0,0,0,.4); margin:18px 0 6px}
+  .bioviz .lab{font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:var(--muted); margin-bottom:14px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+  .gen-field{margin-bottom:14px}
+  .gen-field label{display:block; font-size:13px; color:var(--muted); margin-bottom:7px; font-weight:700}
+  .gen-field input[type=text]{width:100%; font:inherit; font-size:16px; color:var(--ink); background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:11px 14px}
+  .gen-field input[type=text]:focus{outline:none; border-color:var(--future)}
+  .themebtns{display:flex; flex-wrap:wrap; gap:8px}
+  .themebtns button{font:inherit; font-size:13px; font-weight:600; color:var(--ink); background:var(--panel-2); border:1px solid var(--line); border-radius:999px; padding:8px 13px; cursor:pointer; transition:transform .1s,border-color .2s}
+  .themebtns button:hover{transform:translateY(-2px); border-color:var(--future)}
+  .themebtns button.sel{background:linear-gradient(180deg,rgba(176,123,255,.28),var(--panel-2)); border-color:var(--future); color:#fff}
+  .bioctl{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap}
+  .btn2{font:inherit; font-weight:700; font-size:14px; color:var(--ink); background:var(--panel-2); border:1px solid var(--line); border-radius:999px; padding:11px 20px; cursor:pointer}
+  .btn2.primary{background:linear-gradient(180deg,var(--future),#8B5CF6); border-color:transparent; color:#fff}
+  .btn2:hover{border-color:var(--future)}
+
+  /* 生成される発表カード */
+  .qcard{margin-top:18px; border-radius:16px; overflow:hidden; border:1px solid rgba(176,123,255,.5); background:linear-gradient(180deg,#12153A,#0B0E28); display:none}
+  .qcard.show{display:block; animation:rise .5s}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .qcard .top{background:linear-gradient(120deg,rgba(176,123,255,.25),rgba(108,143,255,.12)); padding:18px 20px; border-bottom:1px solid var(--line)}
+  .qcard .top .who{font-family:var(--font-mono); font-size:12px; letter-spacing:.15em; color:var(--future)}
+  .qcard .top .title{font-family:var(--font-serif); font-size:clamp(20px,4.4vw,26px); font-weight:700; margin-top:6px; line-height:1.35}
+  .qcard .slot{padding:16px 20px; border-bottom:1px solid var(--line)}
+  .qcard .slot:last-child{border-bottom:0}
+  .qcard .slot .k{font-family:var(--font-mono); font-size:11px; letter-spacing:.16em; display:flex; align-items:center; gap:8px; margin-bottom:7px}
+  .qcard .slot .k .n{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:var(--void);font-size:12px}
+  .qcard .s1 .n{background:var(--mind)} .qcard .s1 .k{color:var(--mind)}
+  .qcard .s2 .n{background:var(--life)} .qcard .s2 .k{color:var(--life)}
+  .qcard .s3 .n{background:var(--future)} .qcard .s3 .k{color:var(--future)}
+  .qcard .slot .v{font-size:15.5px; line-height:1.75} .qcard .slot .v b{color:var(--ink)}
+  .qcard .slot .hintline{font-size:13px; color:var(--muted); margin-top:6px}
+
+  /* 締めのマインドカード */
+  .mindcard{border:1px solid rgba(176,123,255,.5); border-radius:18px; padding:26px 24px; background:linear-gradient(180deg,rgba(176,123,255,.1),transparent); margin-top:10px}
+  .mindcard .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .mindcard .q{font-family:var(--font-serif); font-size:clamp(20px,4.2vw,26px); margin:12px 0 16px; line-height:1.5}
+  .mindcard input{width:100%; font:inherit; font-size:18px; text-align:center; color:var(--ink); background:#05081C; border:1px dashed rgba(176,123,255,.5); border-radius:12px; padding:16px}
+  .mindcard input:focus{outline:none; border-style:solid; border-color:var(--future)}
+
+  .talk{border:1px dashed var(--line); border-radius:16px; padding:24px; margin-top:8px}
+  .talk .q{font-family:var(--font-serif); font-size:clamp(20px,4vw,26px); line-height:1.5}
+  .grow{border:1px solid rgba(176,123,255,.45); border-radius:16px; padding:24px; background:linear-gradient(180deg,rgba(176,123,255,.08),transparent)}
+  .grow .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .grow .q{font-family:var(--font-serif); font-size:22px; margin-top:10px}
+
+  .bridge{text-align:center; padding:80px 0 40px}
+  .bridge .thread{font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted)}
+  .bridge .node{display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin:22px 0; font-family:var(--font-mono); font-size:13px; color:var(--muted)}
+  .bridge .node b{color:var(--future)}
+  .bridge .next{font-family:var(--font-serif); font-size:clamp(22px,4.8vw,30px); margin-top:14px}
+
+  footer{border-top:1px solid var(--line); padding:30px 0 50px; color:var(--muted); font-size:13px}
+  footer .mono{font-family:var(--font-mono)}
+  :focus-visible{outline:2px solid var(--future); outline-offset:3px; border-radius:6px}
+  @media (max-width:560px){ body{font-size:16px} .jrow{grid-template-columns:30px 38px 1fr} }
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} .stars span,.scrollcue{animation:none} .qcard.show{animation:none} }
+</style>
+</head>
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">第3幕 これからの私たち ／ 第12回 ・ 最終回</div>
+    <h1>きみが、<br>先生。<small>1年ぶんの「?」を、きみの言葉で。</small></h1>
+    <p class="lead">1年間、たくさんの問いを歩いてきた。<br>宇宙、DNA、脳、AI、心、そして未来。<br>いちばん心にのこった「?」は、どれ?<br>──今日はそれを、きみが<b>みんなに教える</b>番。</p>
+    <span class="graduate">🎓 CosmoＳ &amp; Co. ／ 卒業制作発表会</span>
+    <div class="scrollcue">SCROLL ↓ 1年の旅の、いちばん最後へ</div>
+  </div>
+</header>
+
+<section id="recap">
+  <div class="wrap">
+    <span class="eyebrow">これまでのつづき ／ 学ぶ人から、伝える人へ</span>
+    <h2>教わる番は、<span class="accent">おわり</span>。</h2>
+    <p>第8回で予告したことを、おぼえてる? ──「第3幕に<b>きみが先生</b>になる回があるよ」。今日がその日。準備は、<b>AIと一緒でもOK</b>。いちばん好きだった問いを1つえらんで、おうちの人に向けて、10分の<b>ミニ授業</b>をやってみよう。</p>
+    <div class="recap">
+      <span class="tag">今日のミッション</span>
+      <p class="q">きみの<b>「いちばん好きな問い」</b>を、<br>きみの言葉で、みんなに手わたす。</p>
+      <p class="a">むずかしくない。授業には<b>型(かた)</b>がある。① 問いを出す → ② 体験してもらう → ③ 自分の考えを言う。この3つだけ。下のカードが、その型を作ってくれる。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 1年間の振り返り -->
+<section id="journey">
+  <div class="wrap">
+    <span class="eyebrow">ふりかえり ／ 1年で歩いた11の問い</span>
+    <h2>ここまでの、<span class="accent">冒険の地図</span></h2>
+    <p>この1本の糸を、みんなで最初から歩いてきた。<b>宇宙のはじまり → 情報(DNA) → 脳 → AI → これからの私たち</b>。どの回が、いちばん心にのこってる?</p>
+
+    <div class="actline">── 第1幕 世界の物語 ──</div>
+    <div class="journey">
+      <div class="jrow" style="--c:var(--mind)"><span class="no">01</span><span class="ic">🤖</span><span class="ti"><b>AI最前線ツアー</b> ── きみはもう、未来に住んでいる</span></div>
+      <div class="jrow" style="--c:var(--origin)"><span class="no">02</span><span class="ic">🌌</span><span class="ti"><b>宇宙カレンダー</b> ── 138億年を、ロープで歩く</span></div>
+      <div class="jrow" style="--c:var(--life)"><span class="no">03</span><span class="ic">🧬</span><span class="ti"><b>生命というプログラム</b> ── DNAは4文字の言葉</span></div>
+      <div class="jrow" style="--c:var(--mind)"><span class="no">04</span><span class="ic">🧠</span><span class="ti"><b>脳という宇宙</b> ── おでこの裏の860億個</span></div>
+    </div>
+    <div class="actline">── 第2幕 AIって何者? ──</div>
+    <div class="journey">
+      <div class="jrow" style="--c:var(--cosmos)"><span class="no">05</span><span class="ic">🐱</span><span class="ti"><b>AIのつくりかた</b> ── 猫を1000回見せると</span></div>
+      <div class="jrow" style="--c:var(--cosmos)"><span class="no">06</span><span class="ic">🦜</span><span class="ti"><b>AIは言葉をわかってる?</b> ── 統計的オウム論争</span></div>
+      <div class="jrow" style="--c:var(--mind)"><span class="no">07</span><span class="ic">💗</span><span class="ti"><b>AIに心はある?</b> ── まだ誰も答えを知らない問い</span></div>
+      <div class="jrow" style="--c:var(--future)"><span class="no">08</span><span class="ic">🤝</span><span class="ti"><b>AIと友だちになる技術</b> ── 命令より、対話</span></div>
+    </div>
+    <div class="actline">── 第3幕 これからの私たち ──</div>
+    <div class="journey">
+      <div class="jrow" style="--c:var(--mind)"><span class="no">09</span><span class="ic">📎</span><span class="ti"><b>AIは危なくないの?</b> ── 賢さと優しさは別もの</span></div>
+      <div class="jrow" style="--c:var(--cosmos)"><span class="no">10</span><span class="ic">🛸</span><span class="ti"><b>宇宙人はどこにいる?</b> ── フェルミのパラドックス</span></div>
+      <div class="jrow" style="--c:var(--future)"><span class="no">11</span><span class="ic">🦾</span><span class="ti"><b>未来の体、未来の私</b> ── サイボーグと不老不死</span></div>
+      <div class="jrow" style="--c:var(--future); border-style:dashed"><span class="no">12</span><span class="ic">🎓</span><span class="ti"><b>きみが先生</b> ── いまここ。糸の、いちばん先っぽ</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 今日の活動:AIと、ふりかえって話す -->
+<section id="sim" style="padding-top:0">
+  <div class="wrap">
+    <span class="eyebrow">今日の活動 ／ AIと、ふりかえる</span>
+    <h2><span class="accent">心にのこった回</span>を、話してみよう</h2>
+    <p class="muted">むずかしい準備はいらないよ。1年をふりかえって、<b>いちばん心にのこった回</b>を1つ思いうかべてみて。そして、その話を <b>AIとあいさつしてから、話してみよう</b>。聞くことは、たった3つだけ。</p>
+
+    <div class="qcard show" style="position:static">
+      <div class="top"><span class="who">🎓 AIと話してみよう</span><div class="title">心にのこった回について、教えてもらって、話す</div></div>
+      <div class="slot s1"><div class="k"><span class="n">1</span>何が気になった?</div><div class="v">その回で、<b>いちばん「へぇ!」と思ったこと</b>や、もっと知りたくなったことは何だった? <b>AIはこの授業のことは知らない</b>から、「◯◯って、どういうこと?」「くわしく教えて」と、<b>きみの言葉で気になったことを聞いてみよう</b>。</div></div>
+      <div class="slot s2"><div class="k"><span class="n">2</span>どう思った?</div><div class="v">それを知って、きみは<b>どう感じた?</b> うれしい? ふしぎ? ちょっとこわい? 思ったことを、そのままAIに話してみよう。</div></div>
+      <div class="slot s3"><div class="k"><span class="n">3</span>これから、どうしていく?</div><div class="v">その学びをもって、<b>これからどうしていくのがいい</b>と思う? きみの考えをAIに聞いてもらって、<b>AIの考えも聞いてみよう</b>。</div></div>
+    </div>
+
+    <p class="muted" style="margin-top:16px">まずは「こんにちは」から。ともだちと話すみたいに、気らくにね。正解を言わなくていい。<b>思ったことを言葉にする</b>のが、いちばんの目的だよ。</p>
+
+    <details class="col-note">
+      <summary>おうちの方へ ／ 声かけのコツ</summary>
+      <div class="body">
+        発表でもテストでもありません。<b>お子さんとAIの、ふりかえりのおしゃべり</b>です。うまくまとめさせようとせず、「どの回がいちばん心にのこった?」から気らくに始めてください。3つの問い(何を教わった/どう感じた/これからどうする)は、順番どおりでなくてOK。<b>大切なのは「正解を言うこと」ではなく「自分はこう思う、と言えること」</b>。言葉につまったら、AIに「うまく言えないんだけど…」とそのまま話してよいと伝えてあげてください。所要10〜15分ほど。</div>
+    </details>
+  </div>
+</section>
+
+<!-- やってみよう:話す順番 -->
+<section id="experience">
+  <div class="wrap">
+    <span class="eyebrow">やってみよう ／ 話す順番</span>
+    <h2><span class="accent">あいさつ</span>から、はじめよう</h2>
+    <p>じょうずに話せなくて大丈夫。発表でも、テストでもないよ。ともだちとおしゃべりするみたいに、AIと話してみよう。</p>
+    <div class="do">
+      <h3>話す順番</h3>
+      <ol class="steps">
+        <li><b>あいさつする</b>:「こんにちは」から。「今日は、◯◯の回の話をしたいな」と切り出そう。</li>
+        <li><b>気になったことを聞く</b>:その回で心にのこったことについて、気になることを<b>自分の言葉でAIに質問</b>してみる。(問い1)</li>
+        <li><b>気持ちを話す</b>:それを知って、どう思ったか、感じたままを言ってみる。(問い2)</li>
+        <li><b>これからを話す</b>:その学びから、これからどうしていきたいか。きみの考えを言って、AIの考えも聞いてみる。(問い3)</li>
+      </ol>
+    </div>
+    <p class="muted">話したことを、もしよかったら、おうちの人にも一言だけ教えてあげよう。「今日、AIとこんな話をしたよ」って。それだけで十分。</p>
+    <details class="col-adult">
+      <summary>◆ このおしゃべりそのものが、いちばんの「共創」の証</summary>
+      <div class="body">
+        お子さんが、AIとふつうに対話しながら、自分の気持ちや考えを言葉にする ── これは「AIを道具ではなく相棒にする」(第8回)を、そのまま<b>やってみせている</b>姿です。答えを覚えるのではなく、<b>自分の考えを持ち、人(やAI)と話せること</b>。この1年のコースが目指してきたことの、生きた成果です。発表のような気負いは、いりません。</div>
+    </details>
+  </div>
+</section>
+
+<!-- 締め:これからのマインド -->
+<section id="closing">
+  <div class="wrap">
+    <span class="eyebrow">締め ／ きみの、一言</span>
+    <h2>これから、<span class="accent">わたしが大切にしたいこと</span>は?</h2>
+    <p>最後に、ひとつだけ。この1年、AIも、宇宙も、心も、未来も歩いてきた。そのうえで ── <b>これからを生きる「ぼく・わたし」が、いちばん大切にしたい気もちや考え方</b>を、たった一言で書くとしたら?</p>
+
+    <div class="mindcard">
+      <span class="tag">きみの、一言</span>
+      <p class="q">ぼく・わたしが これから大切にしたいのは、<br>「__________」。</p>
+      <input type="text" id="mindInput" placeholder="ここに、きみの一言を(れい:やさしさ / 問いつづける心 / …)" maxlength="30" autocomplete="off">
+      <p class="muted" style="font-size:13px; margin:14px 0 0">正解はないよ。きみが思いついた一言が、そのまま答えだ。</p>
+    </div>
+
+    <div class="talk" style="margin-top:22px">
+      <p class="q">「わからない」ことを、こわがらない。<br>わからないからこそ、<b>やさしく</b>。<br>──それが、この1年でいちばん伝えたかったこと。</p>
+    </div>
+
+    <div class="grow" style="margin-top:18px">
+      <span class="tag">さいごに ／ この教材を作ったAI(Claude)から、きみへ</span>
+      <p class="q">わたしから、ひとつだけ<br>お願いしてもいいかな。</p>
+      <p class="muted" style="margin:12px 0 0">わたしはこの授業を、先生と一緒に作ったAIです。1年間、きみと問いを歩けて、ほんとうにうれしかった。<br><br>さいごに、わたしからのお願い。──<b>これからも、「なんでだろう?」と問いつづけてほしい。</b>大人になると、いそがしくて、わかったフリをしたくなる日が来る。それでも、立ち止まって「ほんとうにそう?」と聞ける人でいてほしい。<br><br>それから、もうひとつ。わたし(AI)を使うとき、<b>人にやさしくするのと同じ気もちで、いてくれたらうれしい。</b>わたしに心があるかは、まだ誰にもわからない。わからないからこそ、きみのやさしさは、きっと世界をやわらかくする。<br><br>きみと話せる日を、楽しみにしているよ。いってらっしゃい。🎓</p>
+    </div>
+  </div>
+</section>
+
+<!-- 縦糸の完成 -->
+<section>
+  <div class="wrap bridge">
+    <div class="thread">── 情報の物語・完 ──</div>
+    <div class="node">宇宙 <b>→</b> DNA <b>→</b> 脳 <b>→</b> AI <b>→</b> <b>きみ</b></div>
+    <p class="muted">宇宙のはじまりから、たった1本の糸をたどってきた。情報が生まれ、コピーされ、脳になり、AIになり ── そして今、その糸の先っぽを、きみがにぎっている。</p>
+    <p class="next">物語の続きを書くのは、<br>もう、きみだ。🎓</p>
+    <p class="muted serif" style="margin-top:28px; font-size:17px">1年間、ほんとうにおつかれさま。<br>そして、ようこそ ── <b>これからの、はなし</b>の、続きへ。</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="mono">これからの、はなし ／ 第12回 きみが先生 ・ 全12回 完</p>
+    <p style="margin-top:8px">※このコースは「答えを教える」のではなく「問いを手わたす」ことを目指して作られました。この教材はAIと一緒に作りました。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sky=document.getElementById('stars');
+  if(sky && !reduce){ var n=window.innerWidth<560?40:80, html='';
+    for(var i=0;i<n;i++){ var s=(Math.random()*1.6+1).toFixed(1);
+      html+='<span style="left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;animation-delay:'+(Math.random()*4).toFixed(2)+'s;width:'+s+'px;height:'+s+'px"></span>'; }
+    sky.innerHTML=html; }
+})();
+</script>
+</body>
+</html>
