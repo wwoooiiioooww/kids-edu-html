@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>冒険の地図 ─ これからの、はなし ｜ 全12回</title>
+<title>冒険の地図 ─ これからの、はなし ｜ 序章+全12回</title>
 <style>
   :root{
     --void:#070A1F; --panel:#0E1436; --panel-2:#141B44;
@@ -106,7 +106,7 @@
 
 <header class="hero">
   <div class="wrap">
-    <div class="kicker">CosmoＳ &amp; Co. ／ 全12回・冒険の地図</div>
+    <div class="kicker">CosmoＳ &amp; Co. ／ 序章+全12回・冒険の地図</div>
     <h1>これからの、<br><span class="grad">はなし</span>。</h1>
     <p class="sub">宇宙のはじまりから、きみ自身の未来まで。<br>1本の糸を、1年かけて歩く冒険。</p>
     <div class="thread">🌌 宇宙 <span>→</span> 🧬 <b>DNA</b> <span>→</span> 🧠 <b>脳</b> <span>→</span> 🤖 <b>AI</b> <span>→</span> ✨ <b>きみ</b></div>
@@ -115,6 +115,9 @@
 </header>
 
 <div class="wrap">
+
+  <div class="actlabel">序 章<span class="big">とびらを開ける ── AIでゲームを作ってみよう</span></div>
+  <div class="map" id="map0"></div>
 
   <div class="actlabel">第 1 幕<span class="big">世界の物語 ── 私たちはどこから来たのか</span></div>
   <div class="map" id="map1"></div>
@@ -154,6 +157,7 @@
 
   var C={origin:'var(--origin)',cosmos:'var(--cosmos)',life:'var(--life)',mind:'var(--mind)',future:'var(--future)'};
   var SESSIONS=[
+    {n:0, act:0, c:'future', ic:'🎮', file:'第0回_AIでゲームを作ってみよう.html', t:'AIでゲームを作ってみよう!', s:'きみの「あったらいいな」は今日うごく'},
     {n:1, act:1, c:'mind',   ic:'🤖', file:'第1回_AI最前線ツアー.html',        t:'AI最前線ツアー',       s:'きみはもう、未来に住んでいる'},
     {n:2, act:1, c:'origin', ic:'🌌', file:'第2回_宇宙カレンダー.html',        t:'宇宙カレンダー',       s:'138億年を、ロープで歩く'},
     {n:3, act:1, c:'life',   ic:'🧬', file:'第3回_生命というプログラム.html',  t:'生命というプログラム', s:'DNAは4文字の言葉'},
@@ -174,14 +178,14 @@
   var state=load();
 
   function build(){
-    [1,2,3].forEach(function(act){
+    [0,1,2,3].forEach(function(act){
       var box=document.getElementById('map'+act); box.innerHTML='';
       SESSIONS.filter(function(x){return x.act===act;}).forEach(function(x,idx){
         var side = (idx%2===0)?'left':'right';
         var st=document.createElement('div'); st.className='station '+side;
         var done = !!state[x.n];
         st.innerHTML =
-          '<div class="dot" style="--c:'+C[x.c]+'"><div class="badge">'+x.ic+'</div><span class="no">'+x.n+'</span></div>'+
+          '<div class="dot" style="--c:'+C[x.c]+'"><div class="badge">'+x.ic+'</div><span class="no">'+(x.n===0?'序':x.n)+'</span></div>'+
           '<div class="card'+(done?' done':'')+'" style="--c:'+C[x.c]+'" data-file="'+x.file+'" tabindex="0" role="link">'+
             '<div class="head"><span class="ttl">'+x.t+'</span></div>'+
             '<span class="sub">'+x.s+'</span>'+
