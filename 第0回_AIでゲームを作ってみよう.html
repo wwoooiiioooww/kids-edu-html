@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ja" data-session="0">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIでゲームを作ってみよう! ─ きみの「あったらいいな」は今日うごく｜これからの、はなし</title>
+<style>
+  :root{
+    --void:#070A1F; --panel:#0E1436; --panel-2:#141B44;
+    --ink:#EDEAFB; --muted:#8B93C2; --line:rgba(160,170,220,.14);
+    --origin:#FFB84D; --cosmos:#6C8FFF; --life:#3FD1A7; --mind:#E85D9B; --future:#B07BFF;
+    --font-sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,system-ui,sans-serif;
+    --font-serif:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    --font-mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--void); color:var(--ink); font-family:var(--font-sans);
+    line-height:1.9; font-size:17px; overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ruby rt{font-size:.55em; color:var(--muted); font-weight:400}
+
+  /* 星空(背景・reduced-motionで停止) */
+  .stars{position:fixed; inset:0; z-index:0; pointer-events:none}
+  .stars span{position:absolute; width:2px; height:2px; background:#fff; border-radius:50%;
+    opacity:.5; animation:tw 4s infinite ease-in-out}
+  @keyframes tw{0%,100%{opacity:.2}50%{opacity:.9}}
+
+  .wrap{position:relative; z-index:1; max-width:720px; margin:0 auto; padding:0 22px}
+
+  .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.22em;
+    color:var(--muted); text-transform:uppercase; margin-bottom:14px; display:block}
+
+  /* ヒーロー */
+  .hero{min-height:92vh; display:flex; flex-direction:column; justify-content:center;
+    padding:80px 0 60px}
+  .hero .kicker{font-family:var(--font-mono); font-size:13px; letter-spacing:.2em;
+    color:var(--future); margin-bottom:26px}
+  .hero h1{font-size:clamp(38px,9vw,76px); line-height:1.08; font-weight:800;
+    letter-spacing:.01em; margin-bottom:8px}
+  .hero h1 small{display:block; font-size:.42em; font-weight:600; color:var(--muted);
+    letter-spacing:.14em; margin-top:18px}
+  .hero .lead{font-family:var(--font-serif); font-size:clamp(19px,3.6vw,25px);
+    color:var(--ink); margin-top:34px; max-width:20em}
+  .scrollcue{margin-top:60px; font-family:var(--font-mono); font-size:12px;
+    letter-spacing:.2em; color:var(--muted); animation:bob 2.4s infinite}
+  @keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(8px);opacity:1}}
+
+  section{padding:72px 0}
+  h2{font-size:clamp(26px,5.5vw,38px); font-weight:800; line-height:1.2; margin-bottom:20px}
+  h2 .accent{color:var(--accent,var(--future))}
+  p{margin-bottom:18px}
+  .muted{color:var(--muted)}
+  .serif{font-family:var(--font-serif)}
+
+  /* 体験ボックス */
+  .do{background:linear-gradient(180deg,var(--panel),var(--void));
+    border:1px solid var(--line); border-radius:20px; padding:30px 26px}
+  .do h3{font-size:22px; margin-bottom:16px; color:var(--life)}
+  .steps{list-style:none; counter-reset:s}
+  .steps li{counter-increment:s; position:relative; padding:10px 0 10px 44px; border-top:1px solid var(--line)}
+  .steps li:first-child{border-top:0}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:10px;
+    width:28px; height:28px; border-radius:50%; background:var(--life); color:var(--void);
+    font-family:var(--font-mono); font-weight:700; display:grid; place-items:center; font-size:14px}
+
+  /* コラム・進行メモ(details) */
+  details{border:1px solid var(--line); border-radius:14px; margin:18px 0;
+    background:var(--panel); overflow:hidden}
+  details summary{cursor:pointer; padding:16px 20px; font-weight:700; list-style:none;
+    display:flex; align-items:center; gap:10px; user-select:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"＋"; font-family:var(--font-mono); color:var(--cosmos)}
+  details[open] summary::before{content:"−"}
+  details .body{padding:2px 20px 20px; color:var(--muted); font-size:15.5px; line-height:1.85}
+  details.col-note summary{color:var(--life)}
+  details.col-note summary::before{color:var(--life)}
+  details.col-adult summary::before{color:var(--origin)}
+
+  /* フリップ・クイズカード */
+  .quiz-grid{display:grid; gap:16px; margin-top:12px}
+  .flip{background:none; border:0; padding:0; text-align:left; width:100%; cursor:pointer;
+    perspective:1200px; font:inherit; color:inherit}
+  .flip .inner{position:relative; transition:transform .6s; transform-style:preserve-3d;
+    min-height:112px}
+  .flip[aria-expanded="true"] .inner{transform:rotateY(180deg)}
+  .flip .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:16px;
+    padding:20px 22px; border:1px solid var(--line); display:flex; flex-direction:column;
+    justify-content:center; gap:8px}
+  .flip .front{background:var(--panel-2)}
+  .flip .back{background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    transform:rotateY(180deg); border-color:rgba(176,123,255,.4)}
+  .flip .q{font-weight:700; font-size:17px}
+  .flip .hint{font-family:var(--font-mono); font-size:11px; letter-spacing:.15em; color:var(--muted)}
+  .flip .a{color:var(--future); font-weight:700; font-size:16px}
+  .flip .a small{display:block; color:var(--muted); font-weight:400; font-size:14px; margin-top:6px}
+
+  /* 討論・発展 */
+  .talk{border:1px dashed var(--line); border-radius:16px; padding:24px; margin-top:8px}
+  .talk .q{font-family:var(--font-serif); font-size:clamp(20px,4vw,26px); line-height:1.5}
+  .grow{border:1px solid rgba(176,123,255,.45); border-radius:16px; padding:24px;
+    background:linear-gradient(180deg,rgba(176,123,255,.08),transparent)}
+  .grow .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--future)}
+  .grow .q{font-family:var(--font-serif); font-size:22px; margin-top:10px}
+
+  /* 次回への橋 */
+  .bridge{text-align:center; padding:80px 0 40px}
+  .bridge .thread{font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--muted)}
+  .bridge .node{display:flex; align-items:center; justify-content:center; gap:10px;
+    flex-wrap:wrap; margin:22px 0; font-family:var(--font-mono); font-size:13px; color:var(--muted)}
+  .bridge .node b{color:var(--future)}
+  .bridge .next{font-family:var(--font-serif); font-size:clamp(21px,4.5vw,28px); margin-top:14px}
+
+  footer{border-top:1px solid var(--line); padding:30px 0 50px; color:var(--muted); font-size:13px}
+  footer .mono{font-family:var(--font-mono)}
+
+  :focus-visible{outline:2px solid var(--future); outline-offset:3px; border-radius:6px}
+
+  /* ═══ 署名要素:ゲーム注文ビルダー ═══ */
+  .builder{background:linear-gradient(180deg,var(--panel),var(--void));
+    border:1px solid var(--line); border-radius:20px; padding:26px 22px; margin-top:10px}
+  .bstep{margin-bottom:22px}
+  .blabel{font-weight:800; font-size:17px; margin-bottom:10px}
+  .blabel .bno{display:inline-grid; place-items:center; width:26px; height:26px; border-radius:50%;
+    background:var(--future); color:var(--void); font-family:var(--font-mono); font-size:14px;
+    font-weight:700; margin-right:8px; vertical-align:-4px}
+  .opts{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+  .opt{font:inherit; color:var(--ink); background:var(--panel-2); border:2px solid var(--line);
+    border-radius:14px; padding:12px 8px; cursor:pointer; text-align:center; line-height:1.5;
+    transition:border-color .15s, transform .15s}
+  .opt .oe{display:block; font-size:26px; margin-bottom:4px}
+  .opt .ol{display:block; font-weight:700; font-size:14.5px}
+  .opt .od{display:block; font-size:11.5px; color:var(--muted); margin-top:2px}
+  .opt:hover{border-color:var(--future)}
+  .opt.on{border-color:var(--future); background:linear-gradient(180deg,rgba(176,123,255,.22),var(--panel-2));
+    transform:scale(1.03)}
+  .order{border:1px dashed rgba(176,123,255,.5); border-radius:14px; padding:18px 20px;
+    background:rgba(176,123,255,.06); margin:6px 0 16px}
+  .order .olabel{font-family:var(--font-mono); font-size:12px; letter-spacing:.16em;
+    color:var(--future); margin-bottom:8px}
+  .order .otext{font-family:var(--font-serif); font-size:16.5px; line-height:2; margin:0}
+  .order .otext .sel{color:var(--origin); font-weight:700}
+  .order .otext .ph{color:var(--muted)}
+  .bctl{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px}
+  .bctl button{font:inherit; font-weight:700; cursor:pointer; border-radius:99px;
+    padding:12px 22px; border:1px solid var(--line); background:var(--panel-2); color:var(--ink);
+    transition:all .18s}
+  .bctl button.primary{background:linear-gradient(180deg,var(--future),#8a55e0);
+    color:#fff; border-color:transparent; font-size:17px}
+  .bctl button.primary:disabled{opacity:.35; cursor:not-allowed}
+  .bctl button:not(:disabled):hover{transform:translateY(-2px)}
+  .bcap{font-family:var(--font-mono); font-size:13px; color:var(--muted); margin:0}
+
+  /* AIが作っています…(工場) */
+  .factory{border:1px solid var(--line); border-radius:20px; background:var(--panel);
+    padding:24px 22px; margin-top:20px}
+  .factory .fline{font-family:var(--font-mono); font-size:14.5px; color:var(--muted);
+    padding:6px 0; opacity:0; transition:opacity .4s}
+  .factory .fline.show{opacity:1}
+  .factory .fline.done-line{color:var(--life); font-weight:700}
+
+  /* できあがったアプリ(スマホ画面ふう) */
+  .appframe{border-radius:26px; border:1px solid var(--line); overflow:hidden; margin-top:20px;
+    box-shadow:0 24px 60px -20px rgba(0,0,0,.7)}
+  .appbar{display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:12px 18px; background:rgba(0,0,0,.28); border-bottom:1px solid rgba(255,255,255,.1)}
+  .appbar .apptitle{font-weight:800; font-size:16px}
+  .appbar button{font:inherit; cursor:pointer; border:1px solid rgba(255,255,255,.25);
+    background:rgba(0,0,0,.2); color:inherit; border-radius:99px; padding:4px 14px; font-size:13px}
+  .appbody{padding:26px 20px 30px; text-align:center; min-height:300px}
+  .app-hint{font-size:14.5px; opacity:.75; margin-bottom:14px}
+  .app-msg{font-weight:700; font-size:17px; margin:16px 0 0; min-height:1.8em}
+  .app-btns{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px}
+  .appbody button{font:inherit; font-weight:700; cursor:pointer; border-radius:14px;
+    border:2px solid var(--app-line); background:var(--app-btn); color:inherit; padding:10px 18px;
+    transition:transform .12s}
+  .appbody button:not(:disabled):hover{transform:scale(1.06)}
+  .appbody button:disabled{opacity:.4; cursor:not-allowed}
+  .honest{font-size:13px; color:var(--muted); padding:14px 18px; background:rgba(0,0,0,.25);
+    margin:0; border-top:1px solid rgba(255,255,255,.08)}
+
+  /* アプリのテーマ(見た目) */
+  .th-space{background:linear-gradient(180deg,#0B1030,#1A2258); color:#EDEAFB;
+    --app-line:rgba(108,143,255,.5); --app-btn:rgba(108,143,255,.18); --app-accent:#6C8FFF}
+  .th-cute{background:linear-gradient(180deg,#FFE9F2,#FFD6E7); color:#5A2A45;
+    --app-line:rgba(232,93,155,.45); --app-btn:rgba(255,255,255,.65); --app-accent:#E85D9B}
+  .th-cool{background:linear-gradient(180deg,#17171C,#2B0F14); color:#F5F1EA;
+    --app-line:rgba(255,93,93,.5); --app-btn:rgba(255,93,93,.16); --app-accent:#FF5D5D}
+
+  /* じゃんけん */
+  .jk-hands{display:flex; align-items:center; justify-content:center; gap:18px;
+    font-size:54px; margin:8px 0 4px}
+  .jk-hands .vs{font-family:var(--font-mono); font-size:15px; opacity:.7}
+  .jk-who{display:flex; justify-content:center; gap:74px; font-size:12.5px; opacity:.75;
+    font-family:var(--font-mono)}
+  .jk-score{font-family:var(--font-mono); font-size:14px; margin-top:16px; opacity:.85}
+  .jk-score b{color:var(--app-accent)}
+
+  /* タイマー */
+  .tm-opts{display:flex; gap:8px; justify-content:center; flex-wrap:wrap}
+  .tm-opts button.on{border-color:var(--app-accent); box-shadow:0 0 0 2px var(--app-accent) inset}
+  .tm-disp{font-family:var(--font-mono); font-size:clamp(44px,12vw,64px); font-weight:700;
+    letter-spacing:.04em; margin:14px 0 2px; font-variant-numeric:tabular-nums}
+
+  /* ガチャ */
+  .ga-cap{font-size:74px; margin:10px 0; display:inline-block}
+  .ga-cap.shake{animation:gshake .5s ease-in-out 2}
+  @keyframes gshake{0%,100%{transform:rotate(0)}25%{transform:rotate(-14deg)}75%{transform:rotate(14deg)}}
+  .ga-result{font-size:22px; font-weight:800; margin-top:6px}
+  .ga-result .rank{font-size:34px; display:block; color:var(--app-accent)}
+
+  /* 絵文字ふぶき */
+  .burst-e{position:absolute; font-size:24px; pointer-events:none; animation:rise 1s ease-out forwards}
+  @keyframes rise{0%{opacity:1; transform:translateY(0) scale(1)}100%{opacity:0; transform:translateY(-90px) scale(1.5)}}
+
+  /* ことば比較(物語) */
+  .code-compare{display:grid; gap:14px; margin:20px 0}
+  @media(min-width:560px){ .code-compare{grid-template-columns:1fr 1fr} }
+  .codebox{border:1px solid var(--line); border-radius:14px; padding:16px 18px; background:var(--panel)}
+  .codebox .clabel{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.14em;
+    color:var(--muted); margin-bottom:10px}
+  .codebox pre{font-family:var(--font-mono); font-size:13px; color:var(--cosmos);
+    white-space:pre-wrap; line-height:1.7}
+  .codebox.jp{border-color:rgba(176,123,255,.45)}
+  .codebox.jp p{font-family:var(--font-serif); font-size:16px; margin:0}
+
+  @media (max-width:560px){
+    body{font-size:16px}
+    .opts{grid-template-columns:1fr}
+    .opt{display:flex; align-items:center; gap:10px; text-align:left; padding:10px 14px}
+    .opt .oe{margin-bottom:0}
+    .opt .ol{font-size:15px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .stars span{animation:none}
+    .scrollcue{animation:none}
+    .flip .inner{transition:none}
+    .opt{transition:none}
+    .opt.on{transform:none}
+    .factory .fline{transition:none}
+    .ga-cap.shake{animation:none}
+    .burst-e{animation:none; display:none}
+  }
+</style>
+</head>
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+
+<!-- ═══════════ ヒーロー ═══════════ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">序章 ／ 第0回・体験会</div>
+    <h1>AIでゲームを<br>作ってみよう!<small>きみの「あったらいいな」は、今日うごく。</small></h1>
+    <p class="lead">ゲームは、遊ぶだけのものじゃない。<br>今日から、きみは「作る側」だ。<br>相棒は──AI。</p>
+    <div class="scrollcue">SCROLL ↓ ゲームを注文しにいく</div>
+  </div>
+</header>
+
+<!-- ═══════════ 体験:まず予想 ═══════════ -->
+<section id="experience">
+  <div class="wrap">
+    <span class="eyebrow">体験 ／ Hands-on</span>
+    <h2 style="--accent:var(--life)">その前に、<span class="accent">予想</span>してみよう</h2>
+    <p>ゲームを作るのって、どれくらい大変なんだろう? まずはカードをめくる前に、自分の予想を声に出してみよう。</p>
+
+    <div class="quiz-grid">
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front">
+            <span class="hint">TAP TO FLIP ── まず予想!</span>
+            <span class="q">かんたんなゲームを1本作るのに、どれくらい時間がかかると思う?<br>1年? 1ヶ月? 1週間?</span>
+          </div>
+          <div class="face back">
+            <span class="a">AIに注文すれば──数分。<small>ちょっと前まで、プログラムを何ヶ月も勉強しないと作れなかった。いまは「ことばで注文」できる。今日、この場でためしてみよう。</small></span>
+          </div>
+        </div>
+      </button>
+    </div>
+
+    <div class="do" style="margin-top:26px">
+      <h3>やってみよう</h3>
+      <ol class="steps">
+        <li>下の<b>「ゲーム注文ビルダー」</b>で、作りたいゲームを<b>タップでえらぶ</b>(3つえらぶだけ)。</li>
+        <li>できあがった<b>「注文書」を声に出して読んでみる</b>。じつはこれ、AIへの本物のお願い文(プロンプト)だ。</li>
+        <li>「🚀 AIにおくってみる」で、できあがりの<b>見本</b>で遊んでみる。</li>
+        <li>教室では、その注文書を<b>本物のAIに送って</b>、きみだけのゲームが生まれるのをライブで見よう。</li>
+      </ol>
+    </div>
+
+    <details class="col-note">
+      <summary>おうちの方へ ／ 進行メモ</summary>
+      <div class="body">
+        所要30〜40分。前半はこのページだけで完結します(オフライン可)。後半のライブ共創は、講師のPC(またはスマホ)でClaude等のAIを開き、子どもが組んだ注文書をそのまま送って、目の前でゲームができあがる様子をプロジェクタで見せます。<b>ネットが不安定なときは、このページの見本モードだけでも体験は成立します</b>(見本はフォールバックを兼ねています)。ポイントは「自分でえらんだ注文が、そのまま通じた」という手ごたえ。注文書は子どもに読み上げてもらうと、全員がプロンプトを1回「書いた(組んだ)」ことになります。
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══════════ 署名要素:ゲーム注文ビルダー ═══════════ -->
+<section id="builder-sec" style="padding-top:0">
+  <div class="wrap">
+    <span class="eyebrow">つくる ／ Game Order Builder</span>
+    <h2>きみの<span class="accent">注文書</span>を組み立てよう</h2>
+    <p class="muted">レストランでオムライスをたのむとき、シェフにレシピは渡さないよね。「オムライスください」って言うだけ。AIへの注文も、同じだ。</p>
+
+    <div class="builder" id="builder">
+      <div class="bstep">
+        <div class="blabel"><span class="bno">1</span>なにを作る?</div>
+        <div class="opts" role="group" aria-label="なにを作るかをえらぶ">
+          <button type="button" class="opt" data-k="game" data-v="janken"><span class="oe">✊</span><span><span class="ol">じゃんけんバトル</span><span class="od">AIキャラと勝負!</span></span></button>
+          <button type="button" class="opt" data-k="game" data-v="timer"><span class="oe">⏰</span><span><span class="ol">宿題タイマー</span><span class="od">がんばりを応援</span></span></button>
+          <button type="button" class="opt" data-k="game" data-v="gacha"><span class="oe">🎰</span><span><span class="ol">今日の<ruby>運勢<rt>うんせい</rt></ruby>ガチャ</span><span class="od">まわすとお告げが!</span></span></button>
+        </div>
+      </div>
+      <div class="bstep">
+        <div class="blabel"><span class="bno">2</span>どんな見た目?</div>
+        <div class="opts" role="group" aria-label="見た目をえらぶ">
+          <button type="button" class="opt" data-k="look" data-v="space"><span class="oe">🌌</span><span><span class="ol">宇宙ふう</span><span class="od">ほしぞらキラキラ</span></span></button>
+          <button type="button" class="opt" data-k="look" data-v="cute"><span class="oe">🌸</span><span><span class="ol">かわいいふう</span><span class="od">ピンクでふわふわ</span></span></button>
+          <button type="button" class="opt" data-k="look" data-v="cool"><span class="oe">🔥</span><span><span class="ol">かっこいいふう</span><span class="od">黒と赤でバチバチ</span></span></button>
+        </div>
+      </div>
+      <div class="bstep">
+        <div class="blabel"><span class="bno">3</span>アプリのキャラの、せいかくは?</div>
+        <div class="opts" role="group" aria-label="キャラのせいかくをえらぶ">
+          <button type="button" class="opt" data-k="chara" data-v="kind"><span class="oe">💖</span><span><span class="ol">やさしい</span><span class="od">いつも応援してくれる</span></span></button>
+          <button type="button" class="opt" data-k="chara" data-v="funny"><span class="oe">🤪</span><span><span class="ol">おちゃめ</span><span class="od">じょうだんが大すき</span></span></button>
+          <button type="button" class="opt" data-k="chara" data-v="cool"><span class="oe">😎</span><span><span class="ol">クール</span><span class="od">口かずは少なめ</span></span></button>
+        </div>
+      </div>
+
+      <div class="order">
+        <div class="olabel">📝 きみの注文書(= プロンプト)</div>
+        <p class="otext" id="orderText" aria-live="polite">AIさん、こんにちは! ゲームを1つ作ってください。<br>・つくるもの:<span class="ph">(①でえらんでね)</span><br>・見た目:<span class="ph">(②でえらんでね)</span><br>・キャラのせいかく:<span class="ph">(③でえらんでね)</span><br>スマホでも遊べる、1つのHTMLファイルでおねがいします!</p>
+      </div>
+
+      <div class="bctl">
+        <button type="button" class="primary" id="sendBtn" disabled>🚀 AIにおくってみる</button>
+        <button type="button" id="resetOrder">↺ 注文をやりなおす</button>
+      </div>
+      <p class="bcap" id="bcap">まず ① から、タップでえらんでね。</p>
+    </div>
+
+    <div class="factory" id="factory" hidden aria-live="polite">
+      <div class="fline" data-f="1">✍️ 注文書を読んでいます…</div>
+      <div class="fline" data-f="2"></div>
+      <div class="fline" data-f="3"></div>
+      <div class="fline" data-f="4"></div>
+      <div class="fline done-line" data-f="5">✅ できあがり!</div>
+    </div>
+
+    <div class="appframe" id="appframe" hidden tabindex="-1" role="region" aria-label="できあがったゲームの見本">
+      <div class="appbar">
+        <span class="apptitle" id="appTitle"></span>
+        <button type="button" id="closeApp">✕ とじる</button>
+      </div>
+      <div class="appbody" id="appBody" style="position:relative"></div>
+      <p class="honest">※ いま動いたのは、この教材を作ったAIが<b>前もって作っておいた見本</b>だよ。教室では、同じ注文書を<b>本物のAI</b>に送って、世界に1つのきみのゲームを作ってもらおう。</p>
+    </div>
+
+    <details class="col-note" style="margin-top:26px">
+      <summary>おうちの方へ ／ 本物のAIに送るときの安全メモ</summary>
+      <div class="body">
+        実際にAIサービスへ注文を送るのは<b>保護者・講師のアカウント</b>から行ってください(多くのサービスに年齢条件があります)。注文文に<b>本名・学校名・住所などの個人情報を入れない</b>ことを、最初のお約束にするのがおすすめです。できあがったHTMLファイルは、ダブルクリックでブラウザから開けば動きます。
+      </div>
+    </details>
+
+    <details class="col-adult">
+      <summary>◆ おとなコラム:「プロンプト」ということば</summary>
+      <div class="body">
+        AIへのお願い文を<b>プロンプト(prompt)</b>と呼びます。今日子どもが組んだ注文書は、形式こそ選択式ですが、構造は実務のプロンプトと同じ──「作ってほしいもの・条件・出力形式」を並べたものです。世界中の大人が毎日これを書いて仕事をしています。「良い注文と雑な注文で結果がどう変わるか」は、本編の第8回「AIと友だちになる技術」でじっくり扱います。
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══════════ 物語 ═══════════ -->
+<section id="story">
+  <div class="wrap">
+    <span class="eyebrow">物語 ／ ことばのはなし</span>
+    <h2>ゲームもアプリも、<span class="accent">ことば</span>でできている</h2>
+    <p>スマホの中のアプリもゲームも、じつは<b>文字のならんだ<ruby>設計図<rt>せっけいず</rt></ruby></b>でできている。「プログラム」という、コンピュータにだけ通じる特別なことばだ。</p>
+
+    <div class="code-compare">
+      <div class="codebox">
+        <div class="clabel">むかし:プログラムのことばで書く</div>
+        <pre>if (you === ai) {
+  result = "あいこ";
+  drawCount = drawCount + 1;
+}</pre>
+      </div>
+      <div class="codebox jp">
+        <div class="clabel">いま:きみのことばで注文する</div>
+        <p>「じゃんけんで、あいこの回数も<br>数えてね」</p>
+      </div>
+    </div>
+
+    <p>ちょっと前まで、左のことばを何年も勉強した人しか、ゲームを作れなかった。いまは、きみの日本語の注文を、<b>AIがプログラムのことばに<ruby>翻訳<rt>ほんやく</rt></ruby>してくれる</b>。だから今日、きみはゲームを「注文」できた。</p>
+    <p class="serif" style="font-size:clamp(18px,3.4vw,22px)">──ところで。<br>きみの日本語を聞きとって、べつのことばに翻訳して、動くものまで作ってしまう、この賢いやつ。<br><b>いったい、何者なんだろう?</b></p>
+    <p class="muted">その正体を、宇宙のはじまりまでさかのぼって解き明かすのが、ここからはじまる<b>全12回の冒険</b>だ。</p>
+  </div>
+</section>
+
+<!-- ═══════════ 問い:クイズ ═══════════ -->
+<section id="quiz">
+  <div class="wrap">
+    <span class="eyebrow">問い ／ まず予想してみよう</span>
+    <h2 style="--accent:var(--cosmos)"><span class="accent">当ててから</span>、めくってね</h2>
+    <p class="muted">カードをタップ(またはEnterキー)すると、答えがめくれます。先に予想するのがコツ。</p>
+
+    <div class="quiz-grid">
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front">
+            <span class="hint">TAP TO FLIP</span>
+            <span class="q">きみが今日組んだ「注文書」、おとなの世界では何とよばれている?</span>
+          </div>
+          <div class="face back">
+            <span class="a">プロンプト。<small>AIへのお願い文のこと。世界中の大人が、毎日これを書いて仕事をしている。きみは今日、その第一歩を踏んだ。</small></span>
+          </div>
+        </div>
+      </button>
+
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front">
+            <span class="hint">TAP TO FLIP</span>
+            <span class="q">スマホに入っている大きなゲームは、何人くらいで作っていると思う?</span>
+          </div>
+          <div class="face back">
+            <span class="a">100人をこえるチームで、何年もかけることも。<small>(規模はゲームによる目安。)人がたくさんの時間をかけて作る大作と、AIに数分で注文する小さなゲーム。どちらも「ことばの設計図」でできているのは同じ。</small></span>
+          </div>
+        </div>
+      </button>
+
+      <button class="flip" aria-expanded="false">
+        <div class="inner">
+          <div class="face front">
+            <span class="hint">TAP TO FLIP</span>
+            <span class="q">じつは、いま見ているこの教材ページも、だれかの「注文」でできている。だれが作った?</span>
+          </div>
+          <div class="face back">
+            <span class="a">人間の注文 × AIの手。<small>この教材そのものも、先生がAIに注文して、相談しながら一緒に作ったもの。きみが今日やったことと、同じやり方だ。</small></span>
+          </div>
+        </div>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 討論・発展 ═══════════ -->
+<section id="discuss">
+  <div class="wrap">
+    <span class="eyebrow">討論 ／ 答えは出さなくていい</span>
+    <div class="talk">
+      <p class="q">AIがなんでも作ってくれる時代。<br>そのとき人間は、「何をする人」になるんだろう?</p>
+    </div>
+    <p class="muted" style="margin-top:22px">「作る人」「注文する人」「えらぶ人」「たしかめる人」…いろんな答えが出ていい。決めつけなくていい問いだ。</p>
+
+    <div class="grow" style="margin-top:10px">
+      <span class="tag">発展カード ／ 上級生・大人向け</span>
+      <p class="q">「いい注文」と「ざつな注文」で、<br>できあがりは変わると思う?</p>
+      <p class="muted" style="margin:12px 0 0">ためしに、同じゲームを「じゃんけん作って」とだけ頼んだら、今日の注文書と同じものができるだろうか。──この謎は、本編の第8回「AIと友だちになる技術」でたしかめる。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 次回への橋 ═══════════ -->
+<section>
+  <div class="wrap bridge">
+    <div class="thread">── 情報の物語 ──</div>
+    <div class="node">
+      宇宙のはじまり → 情報の誕生(DNA) → 脳 → <b>AI</b> → これから
+    </div>
+    <p class="muted">きみは今日、この物語の入口の、とびらを開けた。<br>次回から、この糸を1年かけてたどる冒険がはじまる。</p>
+    <p class="next">第1回は「AI最前線ツアー」。<br>きみがもう<b>未来に住んでいる</b>ことを、たしかめに行こう。</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="mono">これからの、はなし ／ 序章(第0回) AIでゲームを作ってみよう!</p>
+    <p style="margin-top:8px">※ゲーム制作の期間・人数は目安です(作品による)。この教材はAIと一緒に作りました──今日きみがやったのと、同じやり方で。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 星空
+  var sky = document.getElementById('stars');
+  if(sky && !reduce){
+    var n = window.innerWidth < 560 ? 40 : 80, html='';
+    for(var i=0;i<n;i++){
+      var x=Math.random()*100, y=Math.random()*100, d=(Math.random()*4).toFixed(2), s=(Math.random()*1.6+1).toFixed(1);
+      html+='<span style="left:'+x+'%;top:'+y+'%;animation-delay:'+d+'s;width:'+s+'px;height:'+s+'px"></span>';
+    }
+    sky.innerHTML = html;
+  }
+
+  // フリップカード(クリック+キーボード)
+  document.querySelectorAll('.flip').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+    });
+  });
+})();
+</script>
+
+<!-- ═══ 署名要素:ゲーム注文ビルダー(追加スクリプト・他と衝突しない) ═══ -->
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var DATA = {
+    game: {
+      janken: {label:'じゃんけんバトル', emoji:'✊', desc:'AIキャラと じゃんけんで勝負。勝ち負けとあいこの回数も数えてね', title:'じゃんけんバトル'},
+      timer:  {label:'宿題タイマー',     emoji:'⏰', desc:'がんばる時間をえらんでカウントダウン。終わったら ほめてね', title:'しゅくだいタイマー'},
+      gacha:  {label:'今日の運勢ガチャ', emoji:'🎰', desc:'ボタンをおすと 今日の運勢とラッキーアイテムが出てくるよ', title:'今日の運勢ガチャ'}
+    },
+    look: {
+      space: {label:'宇宙ふう',       emoji:'🌌', desc:'ほしぞらみたいに きらきらした感じ'},
+      cute:  {label:'かわいいふう',   emoji:'🌸', desc:'ピンクで ふわふわした感じ'},
+      cool:  {label:'かっこいいふう', emoji:'🔥', desc:'黒と赤で バチバチにかっこよく'}
+    },
+    chara: {
+      kind:  {label:'やさしい', emoji:'💖', desc:'いつも おうえんしてくれる'},
+      funny: {label:'おちゃめ', emoji:'🤪', desc:'じょうだんが大すき'},
+      cool:  {label:'クール',   emoji:'😎', desc:'口かずは少ないけど たよれる'}
+    }
+  };
+
+  // キャラのせいかく別メッセージ(ゲームごと)
+  var MSG = {
+    janken: {
+      kind:  {hello:'いっしょに じゃんけんしよう! ✊✌️✋ どれか えらんでね', win:'すごい! きみの勝ち! 🎉', lose:'ざんねん…! でも つぎは勝てるよ、おうえんしてる!', draw:'あいこ! 息ぴったりだね'},
+      funny: {hello:'じゃんけん王の ぼくに ちょうせんする気? ✊✌️✋ どうぞ!', win:'まけたー!? きみ、つよすぎん!?', lose:'よっしゃ勝った! えっへん🤭', draw:'あいこ! ジンクスでは つぎが本番らしいよ'},
+      cool:  {hello:'…はじめようか。✊✌️✋ えらべ', win:'…やるな。きみの勝ちだ', lose:'今回は もらった', draw:'引き分け。つぎで決めよう'}
+    },
+    timer: {
+      kind:  {hello:'がんばる時間を えらんでね。いっしょに がんばろう!', start:'スタート! ぼくは ここで見守ってるよ', done:'おつかれさま! さいごまで やりきったね、はなまる💮'},
+      funny: {hello:'時間をえらんだら しゅくだいレースの はじまり〜!', start:'よーい ドン! ぼくは おうえん係!', done:'ゴール!! はくしゅ〜👏 きみ、やるねえ!'},
+      cool:  {hello:'時間をえらべ。準備は それからだ', start:'集中。時間は もどらない', done:'完了だ。いい集中だった'}
+    },
+    gacha: {
+      kind:  {hello:'今日のきみに、いいことが ありますように。ガチャを どうぞ!', after:'いい一日に なりますように🍀'},
+      funny: {hello:'まわせ まわせ〜! 何が出るかな、出るかな?', after:'ドンピシャだったら ぼくの手がら🤭'},
+      cool:  {hello:'…運勢が知りたいか。ボタンを おせ', after:'結果は結果だ。あとは きみしだい'}
+    }
+  };
+
+  var FORTUNES = [
+    {rank:'だいきち', note:'なにをやっても うまくいく日!'},
+    {rank:'きち',     note:'こつこつやると いいことある日'},
+    {rank:'ちゅうきち', note:'ともだちと いっしょだと運アップ'},
+    {rank:'しょうきち', note:'あわてなければ だいじょうぶ'}
+  ];
+  var ITEMS = ['けしゴム','青いえんぴつ','くつした','おんがく','ねこ','からあげ','ノート','ぼうし','水とう','ほし'];
+
+  var state = {game:null, look:null, chara:null};
+  var timerInt = null;
+
+  var builder  = document.getElementById('builder');
+  var orderEl  = document.getElementById('orderText');
+  var sendBtn  = document.getElementById('sendBtn');
+  var bcap     = document.getElementById('bcap');
+  var factory  = document.getElementById('factory');
+  var frame    = document.getElementById('appframe');
+  var appTitle = document.getElementById('appTitle');
+  var appBody  = document.getElementById('appBody');
+
+  function part(k, ph){
+    return state[k] ? '<span class="sel">【'+DATA[k][state[k]].label+'】</span>('+DATA[k][state[k]].desc+')' : '<span class="ph">('+ph+')</span>';
+  }
+  function updateOrder(){
+    orderEl.innerHTML = 'AIさん、こんにちは! ゲームを1つ作ってください。<br>'+
+      '・つくるもの:'+part('game','①でえらんでね')+'<br>'+
+      '・見た目:'+part('look','②でえらんでね')+'<br>'+
+      '・キャラのせいかく:'+part('chara','③でえらんでね')+'<br>'+
+      'スマホでも遊べる、1つのHTMLファイルでおねがいします!';
+    var picked = ['game','look','chara'].filter(function(k){return state[k];}).length;
+    sendBtn.disabled = picked < 3;
+    if(picked === 0){ bcap.textContent = 'まず ① から、タップでえらんでね。'; }
+    else if(picked < 3){ bcap.textContent = 'いいね! あと '+(3-picked)+' つ えらぶと注文書が完成。'; }
+    else { bcap.textContent = '注文書が完成! 声に出して読んでから、🚀ボタンをおしてみよう。'; }
+  }
+
+  builder.addEventListener('click', function(e){
+    var btn = e.target.closest('.opt');
+    if(!btn) return;
+    var k = btn.getAttribute('data-k'), v = btn.getAttribute('data-v');
+    state[k] = v;
+    builder.querySelectorAll('.opt[data-k="'+k+'"]').forEach(function(o){ o.classList.toggle('on', o === btn); });
+    updateOrder();
+  });
+
+  document.getElementById('resetOrder').addEventListener('click', function(){
+    state = {game:null, look:null, chara:null};
+    if(timerInt){ clearInterval(timerInt); timerInt = null; }
+    builder.querySelectorAll('.opt').forEach(function(o){ o.classList.remove('on'); });
+    factory.hidden = true; frame.hidden = true;
+    updateOrder();
+  });
+
+  // ── 「AIが作っています…」演出 → 見本アプリ起動 ──
+  sendBtn.addEventListener('click', function(){
+    if(sendBtn.disabled) return;
+    frame.hidden = true;
+    var lines = factory.querySelectorAll('.fline');
+    lines[1].textContent = '🧩 【'+DATA.game[state.game].label+'】の部品を組み立てています…';
+    lines[2].textContent = '🎨 【'+DATA.look[state.look].label+'】の色をぬっています…';
+    lines[3].textContent = '💬 キャラに【'+DATA.chara[state.chara].label+'】のせいかくを教えています…';
+    factory.hidden = false;
+    if(reduce){
+      lines.forEach(function(l){ l.classList.add('show'); });
+      openApp();
+      return;
+    }
+    lines.forEach(function(l){ l.classList.remove('show'); });
+    factory.scrollIntoView({behavior:'smooth', block:'nearest'});
+    var i = 0;
+    (function next(){
+      if(i < lines.length){ lines[i].classList.add('show'); i++; setTimeout(next, 650); }
+      else { setTimeout(openApp, 350); }
+    })();
+  });
+
+  function openApp(){
+    if(timerInt){ clearInterval(timerInt); timerInt = null; }
+    frame.className = 'appframe th-' + state.look;
+    appTitle.textContent = DATA.look[state.look].emoji + ' ' + DATA.game[state.game].title;
+    if(state.game === 'janken') renderJanken();
+    if(state.game === 'timer')  renderTimer();
+    if(state.game === 'gacha')  renderGacha();
+    frame.hidden = false;
+    frame.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'center'});
+    frame.focus({preventScroll:true});
+  }
+
+  document.getElementById('closeApp').addEventListener('click', function(){
+    if(timerInt){ clearInterval(timerInt); timerInt = null; }
+    frame.hidden = true; factory.hidden = true;
+    builder.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'center'});
+  });
+
+  // 絵文字ふぶき(reduced-motionでは出さない)
+  function burst(emojis){
+    if(reduce) return;
+    for(var i=0;i<10;i++){
+      var sp = document.createElement('span');
+      sp.className = 'burst-e';
+      sp.textContent = emojis[i % emojis.length];
+      sp.style.left = (10 + Math.random()*80) + '%';
+      sp.style.top  = (30 + Math.random()*50) + '%';
+      sp.style.animationDelay = (Math.random()*0.3) + 's';
+      appBody.appendChild(sp);
+      (function(el){ setTimeout(function(){ el.remove(); }, 1600); })(sp);
+    }
+  }
+
+  // ── 見本1:じゃんけんバトル ──
+  function renderJanken(){
+    var M = MSG.janken[state.chara];
+    var C = DATA.chara[state.chara].emoji;
+    appBody.innerHTML =
+      '<div class="jk">'+
+        '<div class="jk-hands"><span id="jkAiHand">❔</span><span class="vs">VS</span><span id="jkMyHand">❔</span></div>'+
+        '<div class="jk-who"><span>'+C+' AIキャラ</span><span>きみ</span></div>'+
+        '<p class="app-msg" id="jkMsg" aria-live="polite">'+M.hello+'</p>'+
+        '<div class="app-btns">'+
+          '<button type="button" data-h="0">✊ グー</button>'+
+          '<button type="button" data-h="1">✌️ チョキ</button>'+
+          '<button type="button" data-h="2">✋ パー</button>'+
+        '</div>'+
+        '<div class="jk-score">きみ <b id="jkW">0</b> 勝 ／ AIキャラ <b id="jkL">0</b> 勝 ／ あいこ <b id="jkD">0</b> 回</div>'+
+      '</div>';
+    var HANDS = ['✊','✌️','✋'];
+    var w=0,l=0,d=0;
+    appBody.querySelectorAll('.app-btns button').forEach(function(b){
+      b.addEventListener('click', function(){
+        var me = +b.getAttribute('data-h');
+        var ai = Math.floor(Math.random()*3);
+        document.getElementById('jkMyHand').textContent = HANDS[me];
+        document.getElementById('jkAiHand').textContent = HANDS[ai];
+        var msg = document.getElementById('jkMsg');
+        if(me === ai){ d++; msg.textContent = M.draw; }
+        else if((me+1)%3 === ai){ w++; msg.textContent = M.win; burst(['🎉','⭐','✨']); }
+        else { l++; msg.textContent = M.lose; }
+        document.getElementById('jkW').textContent = w;
+        document.getElementById('jkL').textContent = l;
+        document.getElementById('jkD').textContent = d;
+      });
+    });
+  }
+
+  // ── 見本2:宿題タイマー ──
+  function renderTimer(){
+    var M = MSG.timer[state.chara];
+    var C = DATA.chara[state.chara].emoji;
+    appBody.innerHTML =
+      '<div class="tm">'+
+        '<p class="app-hint">'+C+' がんばる時間を えらんでね</p>'+
+        '<div class="tm-opts app-btns" style="margin-top:0">'+
+          '<button type="button" data-s="10">10びょう おためし</button>'+
+          '<button type="button" data-s="300">5分</button>'+
+          '<button type="button" data-s="600">10分</button>'+
+          '<button type="button" data-s="900">15分</button>'+
+        '</div>'+
+        '<div class="tm-disp" id="tmDisp">--:--</div>'+
+        '<div class="app-btns">'+
+          '<button type="button" id="tmGo" disabled>▶ スタート</button>'+
+          '<button type="button" id="tmRe">↺ リセット</button>'+
+        '</div>'+
+        '<p class="app-msg" id="tmMsg" aria-live="polite">'+M.hello+'</p>'+
+      '</div>';
+    var dur=0, remain=0, running=false;
+    var disp = document.getElementById('tmDisp');
+    var msg  = document.getElementById('tmMsg');
+    var go   = document.getElementById('tmGo');
+    function fmt(s){ var m=Math.floor(s/60), r=s%60; return (m<10?'0':'')+m+':'+(r<10?'0':'')+r; }
+    function show(){ disp.textContent = fmt(remain); }
+    function stopTick(){ if(timerInt){ clearInterval(timerInt); timerInt=null; } }
+    appBody.querySelectorAll('.tm-opts button').forEach(function(b){
+      b.addEventListener('click', function(){
+        stopTick(); running=false;
+        dur = +b.getAttribute('data-s'); remain = dur;
+        appBody.querySelectorAll('.tm-opts button').forEach(function(o){ o.classList.toggle('on', o===b); });
+        go.disabled = false; go.textContent = '▶ スタート';
+        msg.textContent = M.hello; show();
+      });
+    });
+    go.addEventListener('click', function(){
+      if(!dur) return;
+      if(running){ stopTick(); running=false; go.textContent='▶ スタート'; return; }
+      running = true; go.textContent = '⏸ ストップ';
+      msg.textContent = M.start;
+      var end = Date.now() + remain*1000;
+      timerInt = setInterval(function(){
+        remain = Math.max(0, Math.round((end - Date.now())/1000));
+        show();
+        if(remain <= 0){
+          stopTick(); running=false;
+          go.textContent='▶ スタート'; go.disabled = true;
+          msg.textContent = M.done; burst(['💮','🎉','⭐']);
+        }
+      }, 250);
+    });
+    document.getElementById('tmRe').addEventListener('click', function(){
+      stopTick(); running=false; dur=0; remain=0;
+      appBody.querySelectorAll('.tm-opts button').forEach(function(o){ o.classList.remove('on'); });
+      go.disabled = true; go.textContent='▶ スタート';
+      disp.textContent='--:--'; msg.textContent = M.hello;
+    });
+  }
+
+  // ── 見本3:今日の運勢ガチャ ──
+  function renderGacha(){
+    var M = MSG.gacha[state.chara];
+    var C = DATA.chara[state.chara].emoji;
+    appBody.innerHTML =
+      '<div class="ga">'+
+        '<p class="app-hint">'+C+' '+M.hello+'</p>'+
+        '<div class="ga-cap" id="gaCap" aria-hidden="true">🎁</div>'+
+        '<div class="app-btns"><button type="button" id="gaBtn">🎰 ガチャを まわす!</button></div>'+
+        '<div class="ga-result" id="gaRes" aria-live="polite"></div>'+
+        '<p class="app-msg" id="gaMsg"></p>'+
+      '</div>';
+    var cap = document.getElementById('gaCap');
+    var btn = document.getElementById('gaBtn');
+    btn.addEventListener('click', function(){
+      var f = FORTUNES[Math.floor(Math.random()*FORTUNES.length)];
+      var it = ITEMS[Math.floor(Math.random()*ITEMS.length)];
+      var res = document.getElementById('gaRes');
+      function reveal(){
+        res.innerHTML = '<span class="rank">'+f.rank+'</span>'+f.note+'<br>ラッキーアイテム:'+it;
+        document.getElementById('gaMsg').textContent = M.after;
+        burst(['✨','🎊','⭐']);
+      }
+      res.textContent = ''; document.getElementById('gaMsg').textContent = '';
+      if(reduce){ reveal(); return; }
+      cap.classList.remove('shake');
+      void cap.offsetWidth;
+      cap.classList.add('shake');
+      btn.disabled = true;
+      setTimeout(function(){ btn.disabled = false; reveal(); }, 1000);
+    });
+  }
+
+  updateOrder();
+})();
+</script>
+</body>
+</html>
