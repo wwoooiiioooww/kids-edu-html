@@ -146,6 +146,13 @@
   footer{border-top:1px solid var(--line); padding:30px 0 50px; color:var(--muted); font-size:13px}
   footer .mono{font-family:var(--font-mono)}
 
+  /* ロープ位置の答え表(進行メモ内) */
+  .ropetable{width:100%; border-collapse:collapse; margin:14px 0 6px; font-size:14px}
+  .ropetable th,.ropetable td{text-align:left; padding:7px 10px; border-top:1px solid var(--line)}
+  .ropetable th{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.12em; color:var(--muted); border-top:0}
+  .ropetable td.pos{font-family:var(--font-mono); white-space:nowrap; color:var(--origin); font-weight:700}
+  .ropetable tr.tail td.pos{color:var(--mind)}
+
   :focus-visible{outline:2px solid var(--cosmos); outline-offset:3px; border-radius:6px}
 
   @media (max-width:560px){
@@ -194,7 +201,24 @@
     <details class="col-note">
       <summary>おうちの方へ ／ 進行メモ</summary>
       <div class="body">
-        所要15〜20分。ロープ10m・付箋・技術カルタ・虫めがねを用意。ねらいは「加速」を体で入れること(以降12回の座標軸になります)。正解位置の目安はこの後の年表と同じ。<b>技術カルタは間隔もわざと本物に近づけて</b>並べると、発明が終盤に密集する“爆発”が体で見えます。答えを急がず、まず全員に予想させてズレを楽しむのがコツ。屋外・廊下でも可。
+        所要15〜20分。ロープ10m・付箋・技術カルタ・虫めがねを用意。ねらいは「加速」を体で入れること(以降12回の座標軸になります)。<b>技術カルタは間隔もわざと本物に近づけて</b>並べると、発明が終盤に密集する“爆発”が体で見えます。答えを急がず、まず全員に予想させてズレを楽しむのがコツ。屋外・廊下でも可。
+        <br><br>
+        <b>こたえ:ロープのどこに立つ?(10m=138億年、1m=13.8億年、1cm=1380万年で換算した目安)</b>
+        <table class="ropetable">
+          <tr><th>できごと</th><th>スタートから</th></tr>
+          <tr><td>ビッグバン</td><td class="pos">0cm(スタート)</td></tr>
+          <tr><td>最初の星(約136億年前)</td><td class="pos">約15cm</td></tr>
+          <tr><td>天の川銀河(約110億年前)</td><td class="pos">約2m</td></tr>
+          <tr><td>太陽と地球(約46億年前)</td><td class="pos">約6m70cm</td></tr>
+          <tr><td>最初の生命(約38億年前)</td><td class="pos">約7m25cm</td></tr>
+          <tr><td>カンブリア爆発(約5.4億年前)</td><td class="pos">約9m61cm</td></tr>
+          <tr><td>恐竜あらわれる(約2.3億年前)</td><td class="pos">約9m83cm</td></tr>
+          <tr><td>恐竜いなくなる(6600万年前)</td><td class="pos">約9m95cm</td></tr>
+          <tr class="tail"><td>人類の祖先(約700万年前)</td><td class="pos">ゴールまで残り約5mm</td></tr>
+          <tr class="tail"><td>ホモ・サピエンス(約30万年前)</td><td class="pos">残り約0.2mm</td></tr>
+          <tr class="tail"><td>文字・歴史ぜんぶ(約5000年)</td><td class="pos">残り約0.004mm(紙1枚より薄い)</td></tr>
+        </table>
+        進行のコツ:技術カルタ(火〜AI)は、本当の縮尺だと<b>すべて残り1mm未満</b>に重なってしまいます。だからこそ広げて並べておき、最後に「本当はぜんぶこの薄さの中」と種明かしすると、加速がいちばん伝わります。※年数は諸説ある目安です。
       </div>
     </details>
   </div>
