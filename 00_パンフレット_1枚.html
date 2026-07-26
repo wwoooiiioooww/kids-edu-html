@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>これからの、はなし ─ 親子で学ぶ12ヶ月の冒険｜パンフレット</title>
+<style>
+  :root{
+    --void:#070A1F; --panel:#0E1436; --panel-2:#141B44;
+    --ink:#EDEAFB; --muted:#8B93C2; --line:rgba(160,170,220,.16);
+    --origin:#FFB84D; --cosmos:#6C8FFF; --life:#3FD1A7; --mind:#E85D9B; --future:#B07BFF;
+    --font-sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,system-ui,sans-serif;
+    --font-serif:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    --font-mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{background:#04060F; font-family:var(--font-sans); color:var(--ink);
+    -webkit-font-smoothing:antialiased; display:flex; justify-content:center;
+    padding:24px 12px}
+
+  /* ── A4・1ページの用紙 ── */
+  .sheet{
+    position:relative; width:210mm; height:297mm; flex:none;
+    background:
+      radial-gradient(120% 80% at 82% -8%, rgba(176,123,255,.20), transparent 60%),
+      radial-gradient(90% 60% at 8% 4%, rgba(108,143,255,.16), transparent 62%),
+      radial-gradient(80% 50% at 50% 108%, rgba(63,209,167,.10), transparent 60%),
+      var(--void);
+    padding:14mm 15mm 11mm; overflow:hidden;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.9);
+    display:flex; flex-direction:column;
+  }
+  .stars{position:absolute; inset:0; pointer-events:none}
+  .stars span{position:absolute; background:#fff; border-radius:50%; opacity:.45}
+  .sheet > *{position:relative; z-index:1}
+
+  /* ── ヘッダー ── */
+  .kicker{font-family:var(--font-mono); font-size:8.4pt; letter-spacing:.2em;
+    color:var(--future); margin-bottom:4mm}
+  h1{font-size:33pt; font-weight:800; line-height:1.06; letter-spacing:.01em}
+  h1 .grad{background:linear-gradient(92deg,var(--origin),var(--cosmos),var(--life),var(--mind),var(--future));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent}
+  .tagline{font-family:var(--font-mono); font-size:8.6pt; letter-spacing:.13em;
+    color:var(--muted); margin-top:3mm}
+  .rule{height:1px; margin:4mm 0 3.6mm;
+    background:linear-gradient(90deg,var(--origin),var(--cosmos),var(--life),var(--mind),var(--future));
+    opacity:.6}
+
+  /* ── リード(5行) ── */
+  .lead{font-family:var(--font-serif); font-size:11.4pt; line-height:1.92; color:var(--ink)}
+  .lead b{color:var(--origin); font-weight:700}
+  .lead .big{display:block; font-size:14pt; margin-bottom:2mm}
+
+  /* ── 縦糸 ── */
+  .thread{display:flex; align-items:center; justify-content:center; gap:2.6mm; flex-wrap:wrap;
+    font-family:var(--font-mono); font-size:8.8pt; color:var(--muted);
+    border:1px solid var(--line); border-radius:99px; padding:2.3mm 4mm; margin:3.6mm 0 3.4mm;
+    background:rgba(20,27,68,.5)}
+  .thread b{color:var(--ink); font-weight:700}
+  .thread .ar{opacity:.5}
+
+  /* ── 3つの問い ── */
+  .qs{display:grid; grid-template-columns:repeat(3,1fr); gap:3mm}
+  .q{border:1px solid var(--line); border-top:2px solid var(--c); border-radius:3mm;
+    background:linear-gradient(180deg,rgba(20,27,68,.85),rgba(14,20,54,.35));
+    padding:3.4mm 3.4mm 3mm}
+  .q .qt{font-family:var(--font-serif); font-size:10.4pt; line-height:1.62; font-weight:600}
+  .q .qn{font-family:var(--font-mono); font-size:7.2pt; letter-spacing:.1em; color:var(--c); margin-top:2.2mm}
+
+  /* ── カリキュラム ── */
+  .curr{margin-top:3.6mm; flex:1}
+  .sect{font-family:var(--font-mono); font-size:7.6pt; letter-spacing:.2em; color:var(--muted);
+    display:flex; align-items:center; gap:2.5mm; margin:2.8mm 0 1.6mm}
+  .sect::after{content:""; flex:1; height:1px; background:var(--line)}
+  .sect:first-child{margin-top:0}
+  .list{display:grid; grid-template-columns:1fr 1fr; gap:1.4mm 5mm}
+  .it{display:flex; align-items:baseline; gap:2mm; font-size:9.1pt; line-height:1.5}
+  .it .no{font-family:var(--font-mono); font-size:7.4pt; font-weight:700; color:var(--void);
+    background:var(--c); border-radius:99px; padding:.3mm 1.8mm; flex:none; min-width:5.2mm;
+    text-align:center}
+  .it .tt{font-weight:700}
+  .it .ds{color:var(--muted); font-size:8.3pt}
+  .it.solo{grid-column:1 / -1}
+
+  /* ── 概要 ── */
+  .meta{display:grid; grid-template-columns:repeat(4,1fr); gap:3mm; margin-top:3.6mm;
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:3mm 0}
+  .meta .m .k{font-family:var(--font-mono); font-size:7.2pt; letter-spacing:.14em; color:var(--future)}
+  .meta .m .v{font-size:9.2pt; font-weight:700; margin-top:.8mm; line-height:1.5}
+  .meta .m .v small{display:block; font-weight:400; font-size:7.8pt; color:var(--muted); letter-spacing:0}
+
+  /* ── フッター ── */
+  footer{margin-top:3.2mm; display:flex; justify-content:space-between; align-items:flex-end; gap:5mm}
+  footer .note{font-size:7.8pt; color:var(--muted); line-height:1.7}
+  footer .note b{color:var(--ink)}
+  footer .url{font-family:var(--font-mono); font-size:7.6pt; color:var(--cosmos);
+    text-align:right; line-height:1.7; flex:none}
+  footer .url .lbl{display:block; color:var(--muted); letter-spacing:.12em; font-size:6.8pt}
+
+  /* ── 印刷:A4・1ページ・背景色を保持 ── */
+  @page{ size:A4; margin:0 }
+  @media print{
+    html,body{background:var(--void); padding:0; display:block}
+    .sheet{width:210mm; height:297mm; box-shadow:none; margin:0; break-inside:avoid}
+    *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+  }
+  /* 画面が狭いときは用紙を縮小(内容は変えない) */
+  @media screen and (max-width:840px){
+    body{padding:12px 0}
+    .sheet{transform:scale(var(--fit,.52)); transform-origin:top center;
+      margin-bottom:calc((var(--fit,.52) - 1) * 297mm)}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="stars" id="stars" aria-hidden="true"></div>
+
+  <div class="kicker">AI × 宇宙 × 生命 ／ 親子で学ぶ、12ヶ月の冒険</div>
+  <h1>これからの、<span class="grad">はなし</span>。</h1>
+  <div class="tagline">序章 + 全12回 ／ 小学3年生〜5年生 と、その保護者のかたへ</div>
+
+  <div class="rule"></div>
+
+  <p class="lead">
+    <span class="big">これは「AIの使い方講座」では、ありません。</span>
+    <b>「私たちは、どんな時代に生まれたのか」</b>を考える授業です。<br>
+    宇宙のはじまりから、DNA、脳、そしてAIへ。138億年つづく<b>“情報の物語”</b>を、<br>
+    1本の糸としてたどり、その糸の<b>いちばん先っぽに立っている自分</b>に出会います。<br>
+    答えを教わる教室ではなく、<b>問いを持ち帰る教室</b>です。
+  </p>
+
+  <div class="thread">
+    🌌 <b>宇宙</b> <span class="ar">→</span> 🧬 <b>DNA</b> <span class="ar">→</span> 🧠 <b>脳</b>
+    <span class="ar">→</span> 🤖 <b>AI</b> <span class="ar">→</span> ✨ <b>きみ</b>
+  </div>
+
+  <div class="qs">
+    <div class="q" style="--c:var(--life)">
+      <div class="qt">道ばたの石ころと、きみ。<br>何が、ちがうんだろう?</div>
+      <div class="qn">第3回 ／ 生命というプログラム</div>
+    </div>
+    <div class="q" style="--c:var(--mind)">
+      <div class="qt">AIに、心はあるのかな?<br>隣の人に心がある証明は?</div>
+      <div class="qn">第7回 ／ AIに心はある?</div>
+    </div>
+    <div class="q" style="--c:var(--future)">
+      <div class="qt">体の何%を機械にしたら、<br>「別人」になるんだろう?</div>
+      <div class="qn">第11回 ／ 未来の体、未来の私</div>
+    </div>
+  </div>
+
+  <div class="curr">
+    <div class="sect">序章 ／ とびらを開ける</div>
+    <div class="list">
+      <div class="it solo" style="--c:var(--future)"><span class="no">序</span>
+        <span>🎮 <span class="tt">AIでゲームを作ってみよう!</span> <span class="ds">── きみの「あったらいいな」は、今日うごく</span></span></div>
+    </div>
+
+    <div class="sect">第1幕 ／ 世界の物語 ── 私たちはどこから来たのか</div>
+    <div class="list">
+      <div class="it" style="--c:var(--mind)"><span class="no">1</span>
+        <span>🤖 <span class="tt">AI最前線ツアー</span><br><span class="ds">きみはもう、未来に住んでいる</span></span></div>
+      <div class="it" style="--c:var(--origin)"><span class="no">2</span>
+        <span>🌌 <span class="tt">宇宙カレンダー</span><br><span class="ds">138億年を、10mのロープで歩く</span></span></div>
+      <div class="it" style="--c:var(--life)"><span class="no">3</span>
+        <span>🧬 <span class="tt">生命というプログラム</span><br><span class="ds">DNAは、たった4文字の言葉</span></span></div>
+      <div class="it" style="--c:var(--mind)"><span class="no">4</span>
+        <span>🧠 <span class="tt">脳という宇宙</span><br><span class="ds">おでこの裏の、860億個</span></span></div>
+    </div>
+
+    <div class="sect">第2幕 ／ AIって何者? ── 隣にいる新しい知性</div>
+    <div class="list">
+      <div class="it" style="--c:var(--cosmos)"><span class="no">5</span>
+        <span>🐱 <span class="tt">AIのつくりかた</span><br><span class="ds">猫を1000回見せると、何が起きる?</span></span></div>
+      <div class="it" style="--c:var(--cosmos)"><span class="no">6</span>
+        <span>🦜 <span class="tt">AIは言葉をわかってる?</span><br><span class="ds">統計的オウム論争</span></span></div>
+      <div class="it" style="--c:var(--mind)"><span class="no">7</span>
+        <span>💗 <span class="tt">AIに心はある?</span><br><span class="ds">まだ誰も、答えを知らない問い</span></span></div>
+      <div class="it" style="--c:var(--future)"><span class="no">8</span>
+        <span>🤝 <span class="tt">AIと友だちになる技術</span><br><span class="ds">命令より、対話。親子で共創ハンズオン</span></span></div>
+    </div>
+
+    <div class="sect">第3幕 ／ これからの私たち ── 未来を選ぶ</div>
+    <div class="list">
+      <div class="it" style="--c:var(--mind)"><span class="no">9</span>
+        <span>📎 <span class="tt">AIは危なくないの?</span><br><span class="ds">賢さと優しさは、別もの</span></span></div>
+      <div class="it" style="--c:var(--cosmos)"><span class="no">10</span>
+        <span>🛸 <span class="tt">宇宙人はどこにいる?</span><br><span class="ds">フェルミのパラドックス</span></span></div>
+      <div class="it" style="--c:var(--future)"><span class="no">11</span>
+        <span>🦾 <span class="tt">未来の体、未来の私</span><br><span class="ds">サイボーグと、不老不死</span></span></div>
+      <div class="it" style="--c:var(--future)"><span class="no">12</span>
+        <span>🎓 <span class="tt">きみが先生</span><br><span class="ds">卒業制作発表会 ── 子どもが親に教える日</span></span></div>
+    </div>
+  </div>
+
+  <div class="meta">
+    <div class="m"><div class="k">対象</div><div class="v">小学3〜5年生<small>＋保護者のかた</small></div></div>
+    <div class="m"><div class="k">回数</div><div class="v">月1回 × 12ヶ月<small>＋序章の体験会</small></div></div>
+    <div class="m"><div class="k">1回の時間</div><div class="v">90分<small>体験30／物語30／問い30</small></div></div>
+    <div class="m"><div class="k">かたち</div><div class="v">親子ワークショップ<small>手を動かす・話し合う</small></div></div>
+  </div>
+
+  <footer>
+    <div class="note">
+      ロープを歩き、ビーズでDNAを組み、AIとゲームを作る。<b>体験してから、考える。</b><br>
+      正解を配らないので、おうちでも話が続きます。<b>この教材は、AIと一緒に作りました。</b>
+    </div>
+    <div class="url">
+      <span class="lbl">教材と目次はこちら ／ ぜんぶブラウザで開けます</span>
+      wwoooiiioooww.github.io/kids-edu-html
+    </div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // 星(印刷でも出るよう静的配置・アニメなし)
+  var sky = document.getElementById('stars');
+  if(sky){
+    var html = '';
+    for(var i=0;i<70;i++){
+      var s = (Math.random()*1.5 + 0.6).toFixed(2);
+      html += '<span style="left:'+(Math.random()*100).toFixed(2)+'%;top:'+(Math.random()*100).toFixed(2)
+           + '%;width:'+s+'px;height:'+s+'px;opacity:'+(Math.random()*0.4+0.18).toFixed(2)+'"></span>';
+    }
+    sky.innerHTML = html;
+  }
+  // 狭い画面では用紙全体を縮小して1枚が見渡せるようにする(A4の幅=210mm≒793.7px)
+  var A4W = 793.7;
+  function fit(){
+    if(window.innerWidth > 840){ document.body.style.removeProperty('--fit'); return; }
+    document.body.style.setProperty('--fit', Math.min(1, (window.innerWidth - 16) / A4W).toFixed(3));
+  }
+  fit();
+  window.addEventListener('resize', fit);
+})();
+</script>
+</body>
+</html>
